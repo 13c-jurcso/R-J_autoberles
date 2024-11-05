@@ -1,0 +1,30 @@
+#torzs{
+    padding-top: 25%;
+    background-image:url(torzs.jpg);
+    min-height: 900px;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    margin-top: -10px;
+}
+#kezdo_input{
+    padding: 50px;
+    background-color: rgb(217, 217, 217) ;
+    border: 2px solid rgb(217, 217, 217);
+    border-radius: 12px;
+    margin-left: 10px;
+    margin-right:  10px; 
+    text-align: center;
+
+}
+#hely{
+    padding: 10px
+}
+#atvetel{
+    padding: 10px
+}
+#leadas{
+    padding: 10px;
+}
+#submit_jarmuvek{
+    padding: 10px;
+}
