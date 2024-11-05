@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $jelszo = $_POST['jelszo'];
 
     $sql = "SELECT jelszo FROM felhasznalo WHERE felhasznalo_nev = '$felhasznalo_nev'";
-    $result = $conn->query($sql);
+    $result = $db->query($sql);
 
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-$conn->close();
+$db->close();
 ?>
 
 <!DOCTYPE html>
