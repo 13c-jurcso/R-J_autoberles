@@ -93,6 +93,7 @@ $conn->close();
         <input type="text" name="szamlazasi_cim" placeholder="Számlázási cím" required><br>
         <input type="password" name="jelszo" placeholder="Jelszó" required><br>
         <button type="submit">Regisztráció</button>
+        <a href="index.php">Vissza a főoldalra</a>
     </form>
 </body>
 </html>
