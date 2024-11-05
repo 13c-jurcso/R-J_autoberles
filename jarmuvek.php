@@ -82,34 +82,31 @@
     </nav>
 </header>
 <div class="card-container">
-    <div class="card">
-        <h3>Opel Astra G</h3>
-         <?php
-            
-         ?>
-        <input type="submit" value="Bérlés" name="berles">
-    </div>
-    
-    <div class="card">
-        <img src="https://via.placeholder.com/150" alt="Kép 2" class="card-image">
-        <div class="card-content">
-            <h3 class="card-title">Kártya címe 2</h3>
-            <p class="card-text">Ez egy másik kártya példája.</p>
-            <input type="submit" value="Bérlés" name="berles">
-        </div>
-    </div>
-
-    <div class="card">
-        <img src="https://via.placeholder.com/150" alt="Kép 3" class="card-image">
-        <div class="card-content">
-            <h3 class="card-title">Kártya címe 3</h3>
-            <p class="card-text">Harmadik kártya leírása.</p>
-            <input type="submit" value="Bérlés" name="berles">
-        </div>
-    </div>
+    <?php
+        include './adatLekeres.php';
+        $kocsi_kartya_sql = "SELECT jarmuvek.gyarto, jarmuvek.tipus, jarmuvek.gyartasi_ev, jarmuvek.motor, jarmuvek.leiras, jarmuvek.ar FROM jarmuvek;";
+        $kocsiKartya = adatokLekerese($kocsi_kartya_sql);
+        if(is_array($kocsiKartya)){
+            foreach ($kocsiKartya as $kocsi) {
+                echo '<div class="card">';
+                    echo '<img src="https://via.placeholder.com/150" alt="' . $kocsi['gyarto'] . '" class="card-image">';
+                    echo '<div class="card-content">';
+                        echo '<h3 class="card-title">' . $kocsi['gyarto'] . '</h3>';
+                        echo '<p class="card-text">' . $kocsi['tipus'] . '</p>';
+                        echo '<p class="card-text">' . $kocsi['gyartasi_ev'] . '</p>';
+                        echo '<p class="card-text">' . $kocsi['motor'] . '</p>';
+                        echo '<p class="card-text">' . $kocsi['leiras'] . '</p>';
+                        echo '<p class="card-text">' . $kocsi['ar'] . '</p>';
+                    echo '</div>';
+                    echo '<input type="submit" value="Bérlés" name="berles">';
+                echo '</div>';
+            } 
+        }
+        else{
+            return $kocsiKartya;
+        }
+    ?>
 </div>
-
-
 <script>
     document.querySelector(".menu-toggle").addEventListener("click", function () {
         document.querySelector("header").classList.toggle("menu-opened");
