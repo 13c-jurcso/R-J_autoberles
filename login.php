@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($jelszo, $row['jelszo'])) {
             $_SESSION['felhasznalo_nev'] = $felhasznalo_nev;
             echo "Sikeres bejelentkezés!";
-            header("Location: index.php"); // Redirect to home page
+            header("Location: index.php"); 
             exit();
         } else {
             echo "Hibás jelszó!";

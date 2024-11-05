@@ -7,13 +7,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $emailcim = $_POST['emailcim'];
     $jogositvany_kiallitasDatum = $_POST['jogositvany_kiallitasDatum'];
     $szamlazasi_cim = $_POST['szamlazasi_cim'];
-    $jelszo = password_hash($_POST['jelszo'], PASSWORD_BCRYPT); // Hash the password
+    $jelszo = password_hash($_POST['jelszo'], PASSWORD_BCRYPT); 
 
     $sql = "INSERT INTO felhasznalo (felhasznalo_nev, nev, emailcim, jogositvany_kiallitasDatum, szamlazasi_cim, husegpontok, jelszo)
             VALUES ('$felhasznalo_nev', '$nev', '$emailcim', '$jogositvany_kiallitasDatum', '$szamlazasi_cim', 0, '$jelszo')";
 
     if ($conn->query($sql) === TRUE) {
         echo "Sikeres regisztráció!";
+        header("Location: index.php"); 
     } else {
         echo "Hiba: " . $sql . "<br>" . $conn->error;
     }
