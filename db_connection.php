@@ -1,15 +1,14 @@
 <?php
-// db_connection.php
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "root"; // Ha más adatbázis felhasználód van, akkor ezt módosítsd
+$password = ""; // Ha van jelszavad, írd be
 $dbname = "autoberles"; // Az adatbázis neve
 
-// Kapcsolódás az adatbázishoz
-$db = new mysqli($servername, $username, $password, $dbname);
+// Kapcsolódás létrehozása
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-// Ellenőrzés, hogy sikerült-e kapcsolódni
-if ($db->connect_errno) {
-    die("Kapcsolódási hiba: " . $db->connect_error);
+// Kapcsolat ellenőrzése
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 ?>

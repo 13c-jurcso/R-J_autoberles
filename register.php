@@ -31,7 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashed_jelszo = password_hash($jelszo, PASSWORD_DEFAULT);
 
         // Felhasználó hozzáadása az adatbázishoz
-        $insert_muvelet = "INSERT INTO felhasznalo (felhasznalo_nev, nev, emailcim,jogositvany_kiallitasDatum, szamlazasi_cim, jelszo) VALUES ('$felhasznalo_nev', '$nev', '$emailcim', '$jogositvany_kiallitasDatum', '$szamlazasi_cim', 0, '$jelszo')";
+        $insert_muvelet = "INSERT INTO felhasznalo (felhasznalo_nev, nev, emailcim, jogositvany_kiallitasDatum, szamlazasi_cim, jelszo) 
+VALUES ('$felhasznalo_nev', '$nev', '$emailcim', '$jogositvany_kiallitasDatum', '$szamlazasi_cim', '$hashed_jelszo')";
+
         if ($db->query($insert_muvelet)) {
             echo "Sikeres regisztráció!";
             // Átirányítás a bejelentkezéshez
