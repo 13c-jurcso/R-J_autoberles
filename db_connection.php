@@ -12,4 +12,5 @@ $db = new mysqli($servername, $username, $password, $dbname);
 if ($db->connect_errno) {
     die("Kapcsolódási hiba: " . $db->connect_error);
 }
+$db->set_charset("utf8mb4");
 ?>

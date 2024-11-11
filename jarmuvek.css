@@ -1,0 +1,142 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    }
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.card-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 16px;
+}
+
+.card-title {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.card-text {
+    font-size: 1em;
+    color: #666;
+}
+
+#berles_gomb{
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Színátmenet */
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 7px;
+    margin-left: 7px;
+  
+}
+
+#berles_gomb:hover {
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3); /* Mélyebb árnyék hover állapotban */
+}
+  
+#berles_gomb:active {
+    transform: scale(0.96); /* Kicsit összemegy kattintáskor */
+}
+  
+#berles_gomb:focus {
+    outline: 2px solid rgba(255, 126, 95, 0.5); /* Lágy fókuszkeret */
+    outline-offset: 4px;
+}
+
+/* Alapértelmezetten rejtett modális ablak */
+.modal {
+    display: none; /* Az alapértelmezett állapotban rejtve */
+    position: fixed;
+    z-index: 1; /* A modális ablak legyen a legfelső rétegen */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Homályos háttér */
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* A modális ablak tartalma */
+.modal-content {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-50px);
+    transition: transform 0.3s ease;
+}
+  
+/* A záró gomb */
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* A homályosító réteg */
+.overlay {
+    display: none; /* Alapértelmezetten elrejtve */
+    position: fixed;
+    z-index: 0; /* A háttér mögött */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Homályos háttér */
+}
