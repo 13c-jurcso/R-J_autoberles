@@ -13,7 +13,7 @@ $felhasznalo_nev = $_SESSION['felhasznalo_nev'];
 
 // SQL lekérdezés a felhasználó adatainak lekérdezésére
 $sql = "SELECT * FROM felhasznalo WHERE felhasznalo_nev = '$felhasznalo_nev'";
-$result = $conn->query($sql);
+$result = $db->query($sql);
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
@@ -32,10 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // SQL lekérdezés az adatok frissítésére
     $update_sql = "UPDATE felhasznalo SET nev='$nev', emailcim='$emailcim', szamlazasi_cim='$szamlazasi_cim', jogositvany_kiallitasDatum='$jogositvany_kiallitasDatum' WHERE felhasznalo_nev='$felhasznalo_nev'";
 
-    if ($conn->query($update_sql) === TRUE) {
+    if ($db->query($update_sql) === TRUE) {
         echo "<p>Az adatok sikeresen frissítve!</p>";
     } else {
-        echo "<p>Hiba történt az adatok frissítésekor: " . $conn->error . "</p>";
+        echo "<p>Hiba történt az adatok frissítésekor: " . $db->error . "</p>";
     }
 }
 ?>

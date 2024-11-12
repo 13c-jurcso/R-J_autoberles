@@ -13,7 +13,7 @@ $felhasznalo_nev = $_SESSION['felhasznalo_nev'];
 
 // SQL lekérdezés a felhasználó adatainak lekérdezésére
 $sql = "SELECT * FROM felhasznalo WHERE felhasznalo_nev = '$felhasznalo_nev'";
-$result = $conn->query($sql);
+$result = $db->query($sql);
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
