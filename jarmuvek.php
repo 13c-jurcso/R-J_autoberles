@@ -28,7 +28,7 @@
 <div class="card-container">
     <?php
         include './adatLekeres.php';
-        $kocsi_kartya_sql = "SELECT jarmuvek.gyarto, jarmuvek.tipus, jarmuvek.gyartasi_ev, jarmuvek.motor, jarmuvek.leiras, jarmuvek.ar, jarmuvek.kep_url FROM jarmuvek;";
+        $kocsi_kartya_sql = "SELECT jarmuvek.jarmu_id, jarmuvek.gyarto, jarmuvek.tipus, jarmuvek.gyartasi_ev, jarmuvek.motor, jarmuvek.leiras, jarmuvek.ar, jarmuvek.kep_url FROM jarmuvek;";
         $kocsiKartya = adatokLekerese($kocsi_kartya_sql);
         if(is_array($kocsiKartya)){
             foreach ($kocsiKartya as $kocsi) {
@@ -42,16 +42,13 @@
                         echo '<p class="card-text">' . $kocsi['leiras'] . '</p>';
                         echo '<p class="card-text">' . $kocsi['ar'] . '</p>';
                     echo '</div>';
-                    echo '<input type="submit" value="Bérlés" name="berles" id="berles_gomb" onclick="openModal()">';
+                    echo '<input class="berles-gomb" type="button" value="Bérlés" name="berles" id="' . $kocsi['jarmu_id'] . '" onclick="openModal()">';
                 echo '</div>';
             } 
             echo '<div id="modal" class="modal">';
                 echo '<div class="modal-content">';
                     echo '<span class="close" onclick="closeModal()">&times;</span>';
-                    foreach ($kocsiKartya as $berles) {
-                        echo '<h2>' . $berles['gyarto'] . '</h2>';
-                        echo '<p>Itt adhatsz meg részleteket a bérléshez...</p>';
-                    }
+                    
 
                 echo '</div>';
             echo '</div>';

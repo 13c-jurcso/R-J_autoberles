@@ -54,7 +54,7 @@ body {
     color: #666;
 }
 
-#berles_gomb{
+.berles-gomb{
     padding: 12px 32px;
     font-size: 16px;
     font-weight: bold;
@@ -70,15 +70,15 @@ body {
   
 }
 
-#berles_gomb:hover {
+.berles-gomb:hover {
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3); /* Mélyebb árnyék hover állapotban */
 }
   
-#berles_gomb:active {
+.berles-gomb:active {
     transform: scale(0.96); /* Kicsit összemegy kattintáskor */
 }
   
-#berles_gomb:focus {
+.berles-gomb:focus {
     outline: 2px solid rgba(255, 126, 95, 0.5); /* Lágy fókuszkeret */
     outline-offset: 4px;
 }

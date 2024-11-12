@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2024. Nov 12. 09:49
--- Kiszolgáló verziója: 10.4.27-MariaDB
--- PHP verzió: 8.2.0
+-- Létrehozás ideje: 2024. Nov 12. 10:39
+-- Kiszolgáló verziója: 10.4.32-MariaDB
+-- PHP verzió: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -112,19 +112,20 @@ CREATE TABLE `jarmuvek` (
   `motor` varchar(255) DEFAULT NULL,
   `gyartasi_ev` datetime DEFAULT NULL,
   `leiras` varchar(255) DEFAULT NULL,
-  `ar` int(11) DEFAULT NULL
+  `ar` int(11) DEFAULT NULL,
+  `kep_url` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `jarmuvek`
 --
 
-INSERT INTO `jarmuvek` (`jarmu_id`, `felhasznalas_id`, `szerviz_id`, `gyarto`, `tipus`, `motor`, `gyartasi_ev`, `leiras`, `ar`) VALUES
-(1, 1, 1, 'Toyota', 'Corolla', '1.8L Hybrid', '2022-01-01 00:00:00', 'Megbízható városi autó', 15000),
-(2, 2, 2, 'Volkswagen', 'Passat', '2.0 TDI', '2020-06-15 00:00:00', 'Tágas családi autó', 20000),
-(3, 3, 3, 'Ford', 'Transit', '2.2 Diesel', '2019-08-20 00:00:00', 'Ideális munkára', 18000),
-(4, 4, 1, 'Mazda', 'MX-5', '2.0 Skyactiv', '2021-05-10 00:00:00', 'Sportos élményautó', 25000),
-(5, 5, 4, 'Mercedes', 'Marco Polo', '2.2 Diesel', '2023-03-03 00:00:00', 'Lakóautó hosszú utakra', 45000);
+INSERT INTO `jarmuvek` (`jarmu_id`, `felhasznalas_id`, `szerviz_id`, `gyarto`, `tipus`, `motor`, `gyartasi_ev`, `leiras`, `ar`, `kep_url`) VALUES
+(1, 1, 1, 'Toyota', 'Corolla', '1.8L Hybrid', '2022-01-01 00:00:00', 'Megbízható városi autó', 15000, 'https://www.buyatoyota.com/sharpr/bat/assets/img/vehicle-info/corollahatchback/2022/hero-corollahatchback.png'),
+(2, 2, 2, 'Volkswagen', 'Passat', '2.0 TDI', '2020-06-15 00:00:00', 'Tágas családi autó', 20000, 'https://file.kelleybluebookimages.com/kbb/base/evox/CP/15269/2022-Volkswagen-Passat-front_15269_032_2400x1800_0Q0Q.png'),
+(3, 3, 3, 'Ford', 'Transit', '2.2 Diesel', '2019-08-20 00:00:00', 'Ideális munkára', 18000, ''),
+(4, 4, 1, 'Mazda', 'MX-5', '2.0 Skyactiv', '2021-05-10 00:00:00', 'Sportos élményautó', 25000, ''),
+(5, 5, 4, 'Mercedes', 'Marco Polo', '2.2 Diesel', '2023-03-03 00:00:00', 'Lakóautó hosszú utakra', 45000, '');
 
 -- --------------------------------------------------------
 
