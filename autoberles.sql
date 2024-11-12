@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2024. Nov 04. 21:01
+-- Létrehozás ideje: 2024. Nov 12. 09:49
 -- Kiszolgáló verziója: 10.4.27-MariaDB
 -- PHP verzió: 8.2.0
 
@@ -90,6 +90,7 @@ CREATE TABLE `felhasznalo` (
 --
 
 INSERT INTO `felhasznalo` (`felhasznalo_nev`, `nev`, `emailcim`, `jogositvany_kiallitasDatum`, `szamlazasi_cim`, `husegpontok`, `jelszo`) VALUES
+('admin', 'admin', 'admin@admin.com', '2024-11-15 00:00:00', 'dsdsd', 500, '$2y$10$eA4teVtYs8mUFgNVW/fi7Om.pWa9QzTVQ0SKsnzdy4hgDujq8V/m.'),
 ('jani', 'Jurcso Janos', 'dsdads@dsd.dsd', '2019-01-09 00:00:00', 'teszt varos teszt utca 1', 0, '$2y$10$B22AtfhKqS3TpOhUkR9yFedcJPm0zUUr4FLTJCCwR5xmj1NELJbD6'),
 ('user1', 'Kiss János', 'janos.kiss@example.com', '2018-08-12 00:00:00', 'Budapest, 1011', 150, NULL),
 ('user2', 'Nagy Anna', 'anna.nagy@example.com', '2020-05-30 00:00:00', 'Budapest, 1022', 90.5, NULL),
