@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Nincs ilyen felhasználónév!";
     }
 }
+//valami
 
 $db->close();
 ?>
