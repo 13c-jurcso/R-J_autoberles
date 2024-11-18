@@ -8,6 +8,8 @@ include 'db_connection.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS link -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" >
     <title>R&J Autókölcsönző</title>
     <link rel="stylesheet" href="styles.css">
     <script defer src="script.js"></script>
@@ -98,7 +100,12 @@ include 'db_connection.php';
     document.querySelector('.hamburger').addEventListener('click', function() {
         const nav = document.querySelector('nav ul');
         nav.classList.toggle('active');
+        
     });
+    document.querySelector('.hamburger').addEventListener('click', function() {
+    document.querySelector('nav').classList.toggle('active');
+});
+
 </script>
 
 </body>
