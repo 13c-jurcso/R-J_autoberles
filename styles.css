@@ -20,90 +20,77 @@ body {
     min-height: 100vh; /* A teljes magasságot lefedi */
 }
 
-/* Navigációs sáv */
 header {
-    background-color: rgba(42, 42, 42, 0.85); /* Átlátszó háttér */
-    color: white;
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
     width: 100%;
+    background-color: #333;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-/* Navigáció menü */
 nav ul {
+    list-style: none;
     display: flex;
     justify-content: center;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    flex-wrap: wrap;
-    width: 100%;
+    align-items: center;
+    padding: 10px;
 }
 
 nav ul li {
-    margin: 0 15px; /* Kisebb margó a mobil nézethez */
+    margin: 0 15px;
 }
 
 nav ul li a {
-    color: white;
-    font-size: 1.5rem; /* Betűméret csökkentése */
-    font-weight: 500;
-    padding: 1rem 1.5rem;
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 8px 15px;
     border-radius: 5px;
-    transition: background-color 0.3s, transform 0.3s;
+    transition: background-color 0.3s ease;
 }
 
 nav ul li a:hover {
-    background-color: #f4b400;
-    transform: scale(1.1);
+    background-color: #555;
 }
 
-/* Hamburger menü */
-.hamburger {
-    display: none;
-    flex-direction: column;
+/* Responsive Menu - Mobile View */
+.menu-toggle {
+    display: none; /* Hidden on desktop */
+    color: #fff;
+    font-size: 24px;
+    padding: 10px 15px;
     cursor: pointer;
-    justify-content: space-around;
-    width: 6rem;
-    height: 5rem;
-    background-color: transparent;
-    border: none;
+    text-align: center;
 }
 
-.hamburger div {
-    width: 100%;
-    height: 0.5rem;
-    background-color: #fff;
-    border-radius: 5px;
-}
-
-/* Mobil nézet - hamburger menü */
 @media (max-width: 768px) {
     nav ul {
         flex-direction: column;
-        text-align: center;
-        display: none; /* Alapértelmezett rejtett */
-    }
-
-    .hamburger {
-        display: flex;
-    }
-
-    .navbar.active ul {
-        display: flex; /* Megjelenítés aktiválása */
+        display: none; /* Initially hidden */
+        width: 100%;
+        background-color: #333;
     }
 
     nav ul li {
-        margin: 10px 0; /* Függőleges margó */
+        margin: 10px 0;
     }
 
-    nav ul li a {
-        font-size: 1.2rem; /* Betűméret csökkentése mobilon */
+    /* Show the hamburger icon on smaller screens */
+    .menu-toggle {
+        display: block;
+        background-color: #333;
+        text-align: center;
+    }
+
+    /* Show the menu when toggled */
+    .menu-opened nav ul {
+        display: flex;
     }
 }
+
 
 /* Törzs szakasz */
 #torzs {
@@ -192,14 +179,7 @@ nav ul li a:hover {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modal-content {
-    background-color: white;
-    margin: 15% auto;
-    padding: 2rem;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 400px;
-}
+
 
 /* Animációk */
 @keyframes fadeIn {
@@ -249,4 +229,89 @@ nav ul li a:hover {
     #kezdo_input input, #kezdo_input select {
         font-size: 0.9rem; /* További csökkentés */
     }
+}
+/* Modal tartalom */
+.modal-content-login {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px; /* Állítható méret */
+    height: 350px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+.modal-content-register {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px; /* Állítható méret */
+    height: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* Bezárás gomb */
+.close {
+    color: #c01e1e;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Címek */
+h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+/* Formázott inputok */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Gondoskodik arról, hogy a padding beleférjen az inputba */
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+/* Gombok */
+input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049;
 }
