@@ -12,31 +12,26 @@ include 'db_connection.php';
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" >
     <title>R&J Autókölcsönző</title>
     <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
 </head>
 <body>
 <header>
-    <nav>
-        <ul>
-            <li><a href="index.php">R&J</a></li>
-            <li><a href="kapcsolat.php">Kapcsolat</a></li>
-            <li><a href="husegpontok.php">Hűségpontok</a></li>
-            <li><a href="jarmuvek.php">Gépjárművek</a></li>
-            <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+        <div class="menu-toggle">☰ Menu</div>
+        <nav>
+            <ul>
+                <li><a href="index.php">R&J</a></li>
+                <li><a href="kapcsolat.php">Kapcsolat</a></li>
+                <li><a href="husegpontok.php">Hűségpontok</a></li>
+                <li><a href="jarmuvek.php">Gépjárművek</a></li>
+                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
                 <li><a href="profilom.php">Profilom</a></li>
                 <li><a href="logout.php">Kijelentkezés</a></li>
             <?php else: ?>
                 <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
                 <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
             <?php endif; ?>
-        </ul>
-        <button class="hamburger">
-            <div></div>
-            <div></div>
-            <div></div>
-        </button>
-    </nav>
-</header>
+            </ul>
+        </nav>
+    </header>
 
 <div id="torzs">
     <h1>R&J autókölcsönző. Indulás!</h1>
@@ -56,7 +51,7 @@ include 'db_connection.php';
 
 <!-- Bejelentkezés Modal -->
 <div id="loginModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content-login">
         <span id="closeLoginModal" class="close" onclick="closeModal()">&times;</span>
         <h2>Bejelentkezés</h2>
         <form action="login.php" method="post">
@@ -69,7 +64,7 @@ include 'db_connection.php';
 
 <!-- Regisztráció Modal -->
 <div id="registerModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content-register">
         <span id="closeRegisterModal" class="close" onclick="closeModal()">&times;</span>
         <h2>Regisztráció</h2>
         <form action="register.php" method="post">
@@ -96,15 +91,11 @@ include 'db_connection.php';
         });
     }
 
-    // Toggle navigation for small screens
-    document.querySelector('.hamburger').addEventListener('click', function() {
-        const nav = document.querySelector('nav ul');
-        nav.classList.toggle('active');
-        
-    });
-    document.querySelector('.hamburger').addEventListener('click', function() {
-    document.querySelector('nav').classList.toggle('active');
-});
+    
+        document.querySelector(".menu-toggle").addEventListener("click", function () {
+            document.querySelector("header").classList.toggle("menu-opened");
+        });
+    
 
 </script>
 
