@@ -1,5 +1,6 @@
 <?php
 include "./db_connection.php";
+include "./adatLekeres.php";
 // Jármű hozzáadása
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $felhasznalas_id = $_POST['felhasznalas_id'];
@@ -11,31 +12,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
 
-    $stmt = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar) 
+    $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("iisssssi", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar);
+    $modositas->bind_param("iisssssi", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar);
 
-    if ($stmt->execute()) {
-        echo "Új jármű sikeresen hozzáadva!";
+    if ($modositas->execute()) {
+        echo '<div class="alert">';
     } else {
-        echo "Hiba: " . $stmt->error;
+        echo "Hiba: " . $modositas->error;
     }
-    $stmt->close();
+    $modositas->close();
 }
 
 // Jármű törlése
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
     $jarmu_id = $_POST['jarmu_id'];
 
-    $stmt = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
-    $stmt->bind_param("i", $jarmu_id);
+    $modositas = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
+    $modositas->bind_param("i", $jarmu_id);
 
-    if ($stmt->execute()) {
+    if ($modositas->execute()) {
         echo "Jármű sikeresen törölve!";
     } else {
-        echo "Hiba: " . $stmt->error;
+        echo "Hiba: " . $modositas->error;
     }
-    $stmt->close();
+    $modositas->close();
 }
 
 // Jármű lista lekérése
@@ -47,29 +48,42 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Felület</title>
+    <title>Vezérlőpult</title>
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <h1>Admin Felület</h1>
+    <h1>Vezérlőpult</h1>
 
     <!-- Jármű hozzáadása -->
     <h2>Jármű hozzáadása</h2>
-    <form method="POST" action="">
-        <label for="felhasznalas_id">Felhasználás ID:</label>
-        <input type="number" name="felhasznalas_id" required><br>
-
-        <label for="szerviz_id">Szerviz ID:</label>
-        <input type="number" name="szerviz_id" required><br>
-
+    <form method="POST">
         <label for="gyarto">Gyártó:</label>
         <input type="text" name="gyarto" required><br>
-
+        
         <label for="tipus">Típus:</label>
         <input type="text" name="tipus" required><br>
 
         <label for="motor">Motor:</label>
         <input type="text" name="motor" required><br>
+
+        <label for="felhasznalas_id">Felhasználási mód:</label>
+        <select name="felhasznalas_id">
+            <?php
+                $felhasznalas_sql = "SELECT felhasznalas.nev FROM felhasznalas;";
+                $felhasznalas = adatokLekerese($felhasznalas_sql);
+                if(is_array($felhasznalas)){
+                    foreach ($felhasznalas as $f) {
+                        echo '<option>' . $f['nev'] . '</option>';
+                    }
+                }
+                else{
+                    echo $felhasznalas;
+                }
+            ?>
+        </select>
+
+        <label for="szerviz_id">Szerviz ID:</label>
+        <input type="number" name="szerviz_id" required><br>
 
         <label for="gyartasi_ev">Gyártási év:</label>
         <input type="date" name="gyartasi_ev" required><br>

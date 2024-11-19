@@ -28,7 +28,7 @@ form label {
     font-weight: bold;
 }
 
-form input, form button {
+form input, form button, form select {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -89,3 +89,4 @@ button {
 button:hover {
     background-color: #c9302c;
 }
+
