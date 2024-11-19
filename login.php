@@ -3,97 +3,33 @@ session_start();
 include 'db_connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $felhasznalo_nev = $_POST['felhasznalo_nev'];
-    $jelszo = $_POST['jelszo'];
+    // Ellenőrizzük, hogy léteznek-e a szükséges adatok a POST tömbben
+    if (isset($_POST['felhasznalo_nev']) && isset($_POST['jelszo'])) {
+        $felhasznalo_nev = $db->real_escape_string($_POST['felhasznalo_nev']);
+        $jelszo = $_POST['jelszo'];
 
-    $sql = "SELECT jelszo FROM felhasznalo WHERE felhasznalo_nev = '$felhasznalo_nev'";
-    $result = $db->query($sql);
+        // Ellenőrizzük, hogy a felhasználónév létezik-e az adatbázisban
+        $query = "SELECT * FROM felhasznalo WHERE felhasznalo_nev = ?";
+        $stmt = $db->prepare($query);
+        $stmt->bind_param("s", $felhasznalo_nev);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        if (password_verify($jelszo, $row['jelszo'])) {
-            $_SESSION['felhasznalo_nev'] = $felhasznalo_nev;
-            echo "Sikeres bejelentkezés!";
-            header("Location: index.php"); 
-            exit();
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            // Ellenőrizzük, hogy a jelszó helyes-e
+            if (password_verify($jelszo, $user['jelszo'])) {
+                $_SESSION['felhasznalo_nev'] = $felhasznalo_nev; // Bejelentkezés sikeres
+                header("Location: index.php"); // Átirányítás a főoldalra
+                exit();
+            } else {
+                echo "Hibás jelszó!";
+            }
         } else {
-            echo "Hibás jelszó!";
+            echo "Nincs ilyen felhasználónév!";
         }
     } else {
-        echo "Nincs ilyen felhasználónév!";
+        echo "Kérlek, töltsd ki az összes mezőt!";
     }
 }
-
-$db->close();
 ?>
-
-<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <title>Bejelentkezés</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        form {
-            max-width: 400px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        input[type="text"],
-        input[type="password"],
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus {
-            border-color: #007BFF;
-            outline: none;
-        }
-
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <h2>Bejelentkezés</h2>
-    <form action="login.php" method="post">
-        <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required><br>
-        <input type="password" name="jelszo" placeholder="Jelszó" required><br>
-        <button type="submit">Bejelentkezés</button>
-    </form>
-</body>
-</html>
