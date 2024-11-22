@@ -11,10 +11,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $gyartasi_ev = $_POST['gyartasi_ev'];
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
+    $kep = $_FILES['kep_url'];
+    $kepmappa ="kepek/";
+    $filenev = $kepmappa.basename($kep['name']);
 
-    $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $modositas->bind_param("iisssssi", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar);
+    move_uploaded_file($kep["tmp_name"],$filenev);
+
+    $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $filenev);
 
     if ($modositas->execute()) {
         echo '<div class="alert">';
@@ -56,7 +61,7 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
 
     <!-- Jármű hozzáadása -->
     <h2>Jármű hozzáadása</h2>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <label for="gyarto">Gyártó:</label>
         <input type="text" name="gyarto" required><br>
         
@@ -69,11 +74,11 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
         <label for="felhasznalas_id">Felhasználási mód:</label>
         <select name="felhasznalas_id">
             <?php
-                $felhasznalas_sql = "SELECT felhasznalas.nev FROM felhasznalas;";
+                $felhasznalas_sql = "SELECT felhasznalas_id, felhasznalas.nev FROM felhasznalas;";
                 $felhasznalas = adatokLekerese($felhasznalas_sql);
                 if(is_array($felhasznalas)){
                     foreach ($felhasznalas as $f) {
-                        echo '<option>' . $f['nev'] . '</option>';
+                        echo '<option value="'. $f['felhasznalas_id'].'">' . $f['nev'] . '</option>'; 
                     }
                 }
                 else{
@@ -93,6 +98,8 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
 
         <label for="ar">Ár:</label>
         <input type="number" name="ar" required><br>
+        <label for="kep_url">Kép:</label>
+        <input type="file" name="kep_url" accept="image/*" required><br>
 
         <button type="submit" name="add_vehicle">Hozzáadás</button>
     </form>

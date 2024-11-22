@@ -40,7 +40,7 @@
                         echo '<p class="card-text">' . $kocsi['gyartasi_ev'] . '</p>';
                         echo '<p class="card-text">' . $kocsi['motor'] . '</p>';
                         echo '<p class="card-text">' . $kocsi['leiras'] . '</p>';
-                        echo '<p class="card-text">' . $kocsi['ar'] . '</p>';
+                        echo '<p class="card-text">' . $kocsi['ar'] .' Ft'. '</p>';
                     echo '</div>';
                     echo '<input class="berles-gomb" type="button" value="Bérlés" name="berles" id="' . $kocsi['jarmu_id'] . '" onclick="openModal()">';
                 echo '</div>';
