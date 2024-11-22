@@ -42,7 +42,9 @@ include './db_connection.php';
                 <option value="Budapest">Budapest</option>
                 <option value="Debrecen">Debrecen</option>
             </select>
+            <label id="datuma">Átvétel dátuma</label>
             <input type="datetime-local" name="atvetel" required>
+            <label id="datuma">Leadás dátuma</label>
             <input type="datetime-local" name="leadas" required>
             <input type="submit" value="Járművek megtekintése">
         </form>
@@ -73,6 +75,8 @@ include './db_connection.php';
             <input type="email" name="emailcim" placeholder="Email" required><br>
             <input type="password" name="jelszo" placeholder="Jelszó" required><br>
             <input type="password" name="jelszo_ujra" placeholder="Jelszó újra" required><br>
+            <input type="date" name="jogositvany_kiallitasDatum" placeholder="Jogosítvány érvénnysségi dátuma" required><br>
+            <input type="text" name="szamlazasi_cim" placeholder="Számlázási cím" required><br>
             <input type="submit" value="Regisztráció">
         </form>
     </div>

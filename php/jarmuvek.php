@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jarmuvek</title>
-    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/jarmuvek.css">
+    <script defer src="../jarmuvek.js"></script>
 </head>
 <body>
 <header>
@@ -42,14 +42,13 @@
                         echo '<p class="card-text">' . $kocsi['leiras'] . '</p>';
                         echo '<p class="card-text">' . $kocsi['ar'] .' Ft'. '</p>';
                     echo '</div>';
-                    echo '<input class="berles-gomb" type="button" value="Bérlés" name="berles" id="' . $kocsi['jarmu_id'] . '" onclick="openModal()">';
+                    echo '<input class="berles-gomb" type="button" value="Bérlés" name="berles" id="' . $kocsi['jarmu_id'] . '" data-id="' . $kocsi['jarmu_id'] . '" data-gyarto="' . $kocsi['gyarto'] . '" data-típus="' . $kocsi['tipus'] . '" data-ev="' . $kocsi['gyartasi_ev'] . '" data-motor="' . $kocsi['motor'] . '" data-ar="' . $kocsi['ar'] . '" data-leiras="' . $kocsi['leiras'] . '" onclick="openModal(this)">';
                 echo '</div>';
             } 
             echo '<div id="modal" class="modal">';
                 echo '<div class="modal-content">';
                     echo '<span class="close" onclick="closeModal()">&times;</span>';
-                    
-
+                    echo '<div id="modal-info"></div>';
                 echo '</div>';
             echo '</div>';
             echo '<div id="overlay" class="overlay"></div>';
@@ -60,7 +59,8 @@
     ?>
 </div>
 
-<script src="./jarmuvek.js"></script>
+
+
 
 </body>
 </html>

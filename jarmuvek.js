@@ -1,24 +1,37 @@
-function openModal() {
-  document.getElementById("modal").style.display = "flex"; // A modális ablak megjelenítése
-  document.getElementById("overlay").style.display = "block"; // A homályosító réteg megjelenítése
-  document.body.style.overflow = "hidden"; // A görgetés letiltása, hogy a háttér ne görgessen
+// A modális ablak megnyitása
+function openModal(button) {
+  // Adatok lekérése a gomb adat attribútumaiból
+  var gyarto = button.getAttribute('data-gyarto');
+  var tipus = button.getAttribute('data-típus');
+  var ev = button.getAttribute('data-ev');
+  var motor = button.getAttribute('data-motor');
+  var ar = button.getAttribute('data-ar');
+  var leiras = button.getAttribute('data-leiras');
+
+  // A modal tartalmának frissítése
+  var modalContent = document.getElementById('modal-info');
+  modalContent.innerHTML = `
+      <h2>${gyarto} ${tipus}</h2>
+      <p><strong>Gyártási év:</strong> ${ev}</p>
+      <p><strong>Motor:</strong> ${motor}</p>
+      <p><strong>Ár:</strong> ${ar} Ft</p>
+      <p><strong>Leírás:</strong> ${leiras}</p>
+      <button type="submit" class="berles-button" name="berles">Bérlés</button> 
+  `;
+
+  // Modális ablak megjelenítése
+  document.getElementById('modal').style.display = 'flex';
+  document.getElementById('overlay').style.display = 'block';
   setTimeout(function() {
-    document.getElementById("modal").style.opacity = 1; // Áttűnés effektus hozzáadása
-    document.getElementById("overlay").style.opacity = 1;
-  }, 10); // Kis késleltetés az animáció elindulásához
+      document.getElementById('modal').style.opacity = 1;
+  }, 10);
 }
 
 // A modális ablak bezárása
 function closeModal() {
-  document.getElementById("modal").style.opacity = 0; // Az áttűnés eltüntetése
-  document.getElementById("overlay").style.opacity = 0;
+  document.getElementById('modal').style.opacity = 0;
+  document.getElementById('overlay').style.display = 'none';
   setTimeout(function() {
-    document.getElementById("modal").style.display = "none"; // A modális ablak eltüntetése
-    document.getElementById("overlay").style.display = "none"; // A homályosító réteg eltüntetése
-    document.body.style.overflow = "auto"; // A görgetés engedélyezése újra
-  }, 300); // Késleltetés, hogy az animáció befejeződjön, mielőtt eltűnik
+      document.getElementById('modal').style.display = 'none';
+  }, 300);
 }
-
-document.querySelector(".menu-toggle").addEventListener("click", function () {
-document.querySelector("header").classList.toggle("menu-opened");
-});
