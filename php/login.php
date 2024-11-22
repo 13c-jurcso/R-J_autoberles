@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db_connection.php';
+include './db_connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ellenőrizzük, hogy léteznek-e a szükséges adatok a POST tömbben

@@ -1,6 +1,6 @@
 <?php
 // Az adatbázis kapcsolatot a db_connection.php-ből importáljuk
-include 'db_connection.php';
+include './db_connection.php';
 
 function adatokLekerese($muvelet) {
     global $db; // Használjuk az importált $db kapcsolatot

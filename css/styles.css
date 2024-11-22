@@ -10,7 +10,7 @@ html, body {
 }
 
 body {
-    background-image: url('torzs.jpg');
+    background-image: url('../torzs.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

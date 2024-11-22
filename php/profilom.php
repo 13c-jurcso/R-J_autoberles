@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db_connection.php';
+include './db_connection.php';
 
 // Ha a felhasználó nincs bejelentkezve, irányítsuk át a bejelentkező oldalra
 if (!isset($_SESSION['felhasznalo_nev'])) {
@@ -29,8 +29,8 @@ if ($result->num_rows > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profilom</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/index.css">
 </head>
 <body>
 

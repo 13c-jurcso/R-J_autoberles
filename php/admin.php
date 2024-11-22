@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
     $kep = $_FILES['kep_url'];
-    $kepmappa ="kepek/";
+    $kepmappa ="../kepek/";
     $filenev = $kepmappa.basename($kep['name']);
 
     move_uploaded_file($kep["tmp_name"],$filenev);
@@ -54,7 +54,7 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vezérlőpult</title>
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
     <h1>Vezérlőpult</h1>

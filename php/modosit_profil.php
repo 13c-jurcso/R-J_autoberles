@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db_connection.php';
+include './db_connection.php';
 
 // Ha a felhasználó nincs bejelentkezve, irányítsuk át a bejelentkező oldalra
 if (!isset($_SESSION['felhasznalo_nev'])) {

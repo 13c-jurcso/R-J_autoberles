@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db_connection.php';
+include './db_connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $felhasznalo_nev = $db->real_escape_string($_POST['felhasznalo_nev']);
