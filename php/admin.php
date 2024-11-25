@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
     $kep = $_FILES['kep_url'];
-    $kepmappa ="/berles/kepek/";
+    $kepmappa ="./kepek/";
     $filenev = $kepmappa.basename($kep['name']);
 
     move_uploaded_file($kep["tmp_name"],$filenev);

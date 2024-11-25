@@ -65,6 +65,7 @@ if ($result->num_rows > 0) {
 
     <!-- Módosítás gomb -->
     <a href="modosit_profil.php"><button class="back-btn">Profil módosítása</button></a>
+    <button class="back-btn"></button>
 </div>
 
 <script>
