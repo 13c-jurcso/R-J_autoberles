@@ -66,13 +66,8 @@ if ($result->num_rows > 0) {
     <!-- Módosítás gomb -->
     <a href="modosit_profil.php"><button class="back-btn">Profil módosítása</button></a><br><br>
     <?php
-        include 'adatLekeres.php';
-        $felhasznalok_allapot_sql = "SELECT felhasznalo.nev, felhasznalo.admin FROM felhasznalo;";
-        $felhasznalok_allpot = adatokLekerese($felhasznalok_allapot_sql);
-        foreach ($felhasznalok_allpot as $f) {
-            if($f['admin'] == 1){
-                echo '<a href="admin.php"><button class="back-btn">Vezérlőpult</button></a>';
-            }
+        if($user['admin'] == 1){
+            echo '<a href="admin.php"><button class="back-btn">Vezérlőpult</button></a>';
         }
     ?>
 </div>
