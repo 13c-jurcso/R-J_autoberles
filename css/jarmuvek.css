@@ -214,3 +214,61 @@ nav ul li a:hover {
         display: flex;
     }
 }
+
+.berles-button {
+    background-color: coral; /* Zöld háttérszín */
+    border: none; /* Nincs keret */
+    color: white; /* Fehér szöveg */
+    padding: 12px 20px; /* Belső margók */
+    text-align: center; /* Szöveg középre igazítása */
+    text-decoration: none; /* Nincs aláhúzás */
+    display: inline-block; /* Sorközi blokk elem */
+    font-size: 16px; /* Betűméret */
+    border-radius: 8px; /* Lekerekített sarkok */
+    cursor: pointer; /* Mutatóvá válik az egér */
+    transition: background-color 0.3s, transform 0.2s; /* Simább animáció */
+  }
+  
+  .berles-button:hover {
+    background-color: orange; /* Sötétebb zöld a hover állapotban */
+    transform: scale(1.05); /* Kicsit nagyobb lesz hover alatt */
+  }
+  
+  .berles-button:active {
+    transform: scale(0.95); /* Kicsit kisebb lesz kattintáskor */
+  }
+  
+
+
+  .filter_button {
+    background-color: #007BFF; /* Kék háttérszín */
+    color: white; /* Fehér szöveg */
+    border: none; /* Nincs keret */
+    padding: 12px 30px; /* Nagyobb belső margók */
+    font-size: 16px; /* Közepes betűméret */
+    border-radius: 25px; /* Ovális alakhoz lekerekítés */
+    text-align: center; /* Szöveg középre igazítása */
+    text-transform: uppercase; /* Szöveg nagybetűs */
+    letter-spacing: 1px; /* Szóköz a betűk között */
+    display: inline-block; /* Sorközi blokk elem */
+    cursor: pointer; /* Mutatóvá válik az egér */
+    width: 100%; /* Teljes szélesség (hosszú gomb) */
+    max-width: 300px; /* Maximalizált szélesség */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Finom árnyék */
+    transition: background-color 0.3s, transform 0.2s; /* Simább animáció */
+    justify-items: center;
+  }
+  
+  .filter_button:hover {
+    background-color: #0056b3; /* Sötétebb kék hover állapotban */
+    transform: translateY(-2px); /* Kicsit "megmozdul" hover esetén */
+  }
+  
+  .filter_button:active {
+    transform: translateY(2px); /* Nyomott állapot */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Árnyék csökken */
+  }
+  
+  
+  
+  
