@@ -64,8 +64,17 @@ if ($result->num_rows > 0) {
     <p><strong>Hűségpontjaim:</strong> <?php echo htmlspecialchars($user['husegpontok']); ?></p>
 
     <!-- Módosítás gomb -->
-    <a href="modosit_profil.php"><button class="back-btn">Profil módosítása</button></a>
-    <button class="back-btn"></button>
+    <a href="modosit_profil.php"><button class="back-btn">Profil módosítása</button></a><br><br>
+    <?php
+        include 'adatLekeres.php';
+        $felhasznalok_allapot_sql = "SELECT felhasznalo.nev, felhasznalo.admin FROM felhasznalo;";
+        $felhasznalok_allpot = adatokLekerese($felhasznalok_allapot_sql);
+        foreach ($felhasznalok_allpot as $f) {
+            if($f['admin'] == 1){
+                echo '<a href="admin.php"><button class="back-btn">Vezérlőpult</button></a>';
+            }
+        }
+    ?>
 </div>
 
 <script>
