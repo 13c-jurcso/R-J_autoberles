@@ -5,7 +5,12 @@ body {
     padding: 0;
 }
 
-h1, h2 {
+h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 60px;
+}
+h2 {
     text-align: center;
     color: #333;
 }
@@ -90,3 +95,17 @@ button:hover {
     background-color: #c9302c;
 }
 
+.sikeres_hozzadas {
+    background-color: #28a745; /* Zöld háttérszín */
+    color: white; /* Fehér szövegszín */
+    padding: 15px 20px; /* Térköz a szöveg körül */
+    font-size: 16px; /* Szövegméret */
+    font-family: Arial, sans-serif; /* Szövegstílus */
+    text-align: center; /* Középre igazított szöveg */
+    position: fixed; /* Mindig látható pozíció */
+    top: 50;
+    width: 80%; /* Az oldal teljes szélességét lefedi */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Finom árnyék */
+  }
+  
+  

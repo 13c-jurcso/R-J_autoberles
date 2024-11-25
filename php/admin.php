@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $filenev);
 
     if ($modositas->execute()) {
-        echo '<div class="alert">';
+        echo '<div class="sikeres_hozzadas">Ez egy informatív üzenet!</div>';
     } else {
         echo "Hiba: " . $modositas->error;
     }
@@ -33,15 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
     $jarmu_id = $_POST['jarmu_id'];
 
-    $modositas = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
-    $modositas->bind_param("i", $jarmu_id);
+    $torles = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
+    $torles->bind_param("i", $jarmu_id);
 
-    if ($modositas->execute()) {
+    if ($torles->execute()) {
         echo "Jármű sikeresen törölve!";
     } else {
-        echo "Hiba: " . $modositas->error;
+        echo "Hiba: " . $torles->error;
     }
-    $modositas->close();
+    $torles->close();
 }
 
 // Jármű lista lekérése
@@ -55,10 +55,20 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vezérlőpult</title>
     <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/index.css">
 </head>
 <body>
+    <header>
+        <div class="menu-toggle">☰ Menu</div>
+        <nav>
+            <ul>
+                <li><a href="index.php">Főoldal</a></li>
+                <li><a href="husegpontok.php">Hűségpontok</a></li>
+                <li><a href="jarmuvek.php">Gépjárművek</a></li>
+            </ul>
+        </nav>
+    </header>
     <h1>Vezérlőpult</h1>
-
     <!-- Jármű hozzáadása -->
     <h2>Jármű hozzáadása</h2>
     <form method="POST" enctype="multipart/form-data">
