@@ -9,9 +9,10 @@ body {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
-  }
+    justify-content: center;
+}
 
-  .menu button {
+.menu button {
     padding: 10px 20px;
     border: 2px solid #ccc;
     border-radius: 5px;
@@ -20,24 +21,24 @@ body {
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease, color 0.3s ease;
-  }
+}
 
-  .menu button:hover {
+.menu button:hover {
     background-color: #ccc; /* Egérmutatóval szürke */
-  }
+}
 
-  .menu button.aktiv {
+.menu button.aktiv {
     background-color: #ccc; /* Kiválasztott állapotban szürke */
     color: white; /* A szöveg fehér lesz */
-  }
+}
 
-  .tartalmi-resz {
+.tartalmi-resz {
     display: none; /* Alapértelmezés szerint rejtve */
-  }
+}
 
-  .tartalmi-resz.aktiv {
+.tartalmi-resz.aktiv {
     display: block; /* Csak az aktív rész jelenjen meg */
-  }
+}
 
 h1 {
     text-align: center;
@@ -116,7 +117,7 @@ table tr:hover {
     background-color: #f1f1f1;
 }
 
-button {
+/* button {
     padding: 8px 12px;
     background-color: #d9534f;
     color: white;
@@ -127,7 +128,7 @@ button {
 
 button:hover {
     background-color: #c9302c;
-}
+} */
 
 .sikeres {
     background-color: #28a745;
