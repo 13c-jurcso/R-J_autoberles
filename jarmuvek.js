@@ -1,4 +1,4 @@
-// A modális ablak megnyitása
+// Részletek ablak megnyitása
 function openModal(button) {
   // Adatok lekérése a gomb adat attribútumaiból
   var gyarto = button.getAttribute('data-gyarto');
@@ -8,7 +8,7 @@ function openModal(button) {
   var ar = button.getAttribute('data-ar');
   var leiras = button.getAttribute('data-leiras');
 
-  // A modal tartalmának frissítése
+  // Részletek ablak frissítése
   var modalContent = document.getElementById('modal-info');
   modalContent.innerHTML = `
       <h2>${gyarto} ${tipus}</h2>
@@ -19,7 +19,7 @@ function openModal(button) {
       <button type="submit" class="berles-button" name="berles">Bérlés</button> 
   `;
 
-  // Modális ablak megjelenítése
+  // Részletek ablak megjelenítése
   document.getElementById('modal').style.display = 'flex';
   document.getElementById('overlay').style.display = 'block';
   setTimeout(function() {
@@ -27,7 +27,7 @@ function openModal(button) {
   }, 10);
 }
 
-// A modális ablak bezárása
+// A Részletek ablak bezárása
 function closeModal() {
   document.getElementById('modal').style.opacity = 0;
   document.getElementById('overlay').style.display = 'none';
@@ -35,4 +35,5 @@ function closeModal() {
       document.getElementById('modal').style.display = 'none';
   }, 300);
 }
+
 

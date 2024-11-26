@@ -5,6 +5,40 @@ body {
     padding: 0;
 }
 
+.menu {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .menu button {
+    padding: 10px 20px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .menu button:hover {
+    background-color: #ccc; /* Egérmutatóval szürke */
+  }
+
+  .menu button.aktiv {
+    background-color: #ccc; /* Kiválasztott állapotban szürke */
+    color: white; /* A szöveg fehér lesz */
+  }
+
+  .tartalmi-resz {
+    display: none; /* Alapértelmezés szerint rejtve */
+  }
+
+  .tartalmi-resz.aktiv {
+    display: block; /* Csak az aktív rész jelenjen meg */
+  }
+
 h1 {
     text-align: center;
     color: #333;
@@ -95,17 +129,32 @@ button:hover {
     background-color: #c9302c;
 }
 
-.sikeres_hozzadas {
-    background-color: #28a745; /* Zöld háttérszín */
+.sikeres {
+    background-color: #28a745;
     color: white; /* Fehér szövegszín */
     padding: 15px 20px; /* Térköz a szöveg körül */
     font-size: 16px; /* Szövegméret */
     font-family: Arial, sans-serif; /* Szövegstílus */
     text-align: center; /* Középre igazított szöveg */
-    position: fixed; /* Mindig látható pozíció */
-    top: 50;
-    width: 80%; /* Az oldal teljes szélességét lefedi */
+    width: 80%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Finom árnyék */
+    max-width: 600px;
+    margin: 20px auto;
+    border-radius: 4px;
   }
+
+.sikertelen {
+    background-color: red;
+    color: white; /* Fehér szövegszín */
+    padding: 15px 20px; /* Térköz a szöveg körül */
+    font-size: 16px; /* Szövegméret */
+    font-family: Arial, sans-serif; /* Szövegstílus */
+    text-align: center; /* Középre igazított szöveg */
+    width: 80%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Finom árnyék */
+    max-width: 600px;
+    margin: 20px auto;
+    border-radius: 4px;
+}
   
   
