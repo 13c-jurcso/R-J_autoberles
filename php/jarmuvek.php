@@ -1,11 +1,46 @@
+<?php
+// Kapcsolat az adatbázissal
+include './adatLekeres.php';
+
+// Ha a form elküldésre került
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $jarmu_id = $_POST['jarmu_id'];
+    $felhasznalo = $_POST['name'];
+    $email = $_POST['email'];
+    $telefon = $_POST['phone'];
+    $berles_tol = $_POST['rental_date'];
+    $berles_ig = $_POST['return_date'];
+
+    // Adatok mentése az adatbázisba
+    $conn = new mysqli("localhost", "root", "", "autoberles");
+    if ($conn->connect_error) {
+        die("Kapcsolódási hiba: " . $conn->connect_error);
+    }
+
+    $sql = "INSERT INTO berlesek (jarmu_id, felhasznalo, tol, ig, kifizetve) 
+            VALUES (?, ?, ?, ?, 0)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("isss", $jarmu_id, $felhasznalo, $berles_tol, $berles_ig);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('A bérlés sikeresen rögzítve!');</script>";
+    } else {
+        echo "<script>alert('Hiba történt a bérlés mentésekor: " . $stmt->error . "');</script>";
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarmuvek</title>
-    <link rel="stylesheet" href="../css/jarmuvek.css">
+    <title>Járművek</title>
     <script defer src="../jarmuvek.js"></script>
+    <link rel="stylesheet" href="../css/jarmuvek.css">
 </head>
 <body>
 <header>
@@ -34,36 +69,63 @@
 
 <div class="card-container">
     <?php
-        include './adatLekeres.php';
-        $kocsi_kartya_sql = "SELECT jarmuvek.jarmu_id, jarmuvek.gyarto, jarmuvek.tipus, jarmuvek.gyartasi_ev, jarmuvek.motor, jarmuvek.leiras, jarmuvek.ar, jarmuvek.kep_url FROM jarmuvek;";
-        $kocsiKartya = adatokLekerese($kocsi_kartya_sql);
-        if(is_array($kocsiKartya)){
-            foreach ($kocsiKartya as $kocsi) {
-                echo '<div class="card">';
-                    echo '<img src="' . $kocsi['kep_url'] . '" alt="' . $kocsi['gyarto'] . '" class="card-image">';
-                    echo '<div class="card-content">';
-                        echo '<h3 class="card-title">' . $kocsi['gyarto'] . '</h3>';
-                        echo '<p class="card-text">' . $kocsi['tipus'] . '</p>';
-                        echo '<p class="card-text">' . $kocsi['gyartasi_ev'] . '</p>';
-                        echo '<p class="card-text">' . $kocsi['motor'] . '</p>';
-                        echo '<p class="card-text">' . $kocsi['leiras'] . '</p>';
-                        echo '<p class="card-text">' . $kocsi['ar'] .' Ft'. '</p>';
-                    echo '</div>';
-                    echo '<input class="berles-gomb" type="button" value="Részletek" name="berles" id="' . $kocsi['jarmu_id'] . '" data-id="' . $kocsi['jarmu_id'] . '" data-gyarto="' . $kocsi['gyarto'] . '" data-típus="' . $kocsi['tipus'] . '" data-ev="' . $kocsi['gyartasi_ev'] . '" data-motor="' . $kocsi['motor'] . '" data-ar="' . $kocsi['ar'] . '" data-leiras="' . $kocsi['leiras'] . '" onclick="openModal(this)">';
-                echo '</div>';
-            } 
-            echo '<div id="modal" class="modal">';
-                echo '<div class="modal-content">';
-                    echo '<span class="close" onclick="closeModal()">&times;</span>';
-                    echo '<div id="modal-info"></div>';
-                echo '</div>';
+    $kocsi_kartya_sql = "SELECT jarmu_id, gyarto, tipus, gyartasi_ev, motor, leiras, ar, kep_url FROM jarmuvek;";
+    $kocsiKartya = adatokLekerese($kocsi_kartya_sql);
+    if (is_array($kocsiKartya)) {
+        foreach ($kocsiKartya as $kocsi) {
+            echo '<div class="card">';
+            echo '<img src="' . $kocsi['kep_url'] . '" alt="' . $kocsi['gyarto'] . '" class="card-image">';
+            echo '<div class="card-content">';
+            echo '<h3 class="card-title">' . $kocsi['gyarto'] . '</h3>';
+            echo '<p class="card-text">' . $kocsi['tipus'] . '</p>';
+            echo '<p class="card-text">' . $kocsi['gyartasi_ev'] . '</p>';
+            echo '<p class="card-text">' . $kocsi['motor'] . '</p>';
+            echo '<p class="card-text">' . $kocsi['leiras'] . '</p>';
+            echo '<p class="card-text">' . $kocsi['ar'] . ' Ft</p>';
             echo '</div>';
-            echo '<div id="overlay" class="overlay"></div>';
+            echo '<button class="berles-gomb" onclick="openModal(this)" 
+                    data-id="' . $kocsi['jarmu_id'] . '" 
+                    data-gyarto="' . $kocsi['gyarto'] . '" 
+                    data-tipus="' . $kocsi['tipus'] . '">Bérelés</button>';
+            echo '</div>';
         }
-        else{
-            return $kocsiKartya;
-        }
+    }
     ?>
 </div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Bérlés adatai</h3>
+        <form method="POST">
+            <input type="hidden" name="jarmu_id" id="jarmu_id">
+            <label for="name">Név:</label>
+            <input type="text" id="name" name="name" required><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+            <label for="phone">Telefonszám:</label>
+            <input type="tel" id="phone" name="phone" required><br>
+            <label for="rental_date">Bérlés kezdete:</label>
+            <input type="date" id="rental_date" name="rental_date" required><br>
+            <label for="return_date">Bérlés vége:</label>
+            <input type="date" id="return_date" name="return_date" required><br>
+            <button type="submit">Bérlés megerősítése</button>
+        </form>
+    </div>
+</div>
+
+<div id="overlay" class="overlay"></div>
+<script>
+    function openModal(button) {
+        document.getElementById('jarmu_id').value = button.getAttribute('data-id');
+        document.getElementById('modal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+</script>
 </body>
 </html>
