@@ -4,6 +4,7 @@ include "./adatLekeres.php";
 
 // Jármű lista lekérése
 $jarmuvek = $db->query("SELECT * FROM jarmuvek");
+$felhasznalok = $db->query("SELECT * FROM felhasznalo;");
 ?>
 
 <!DOCTYPE html>
@@ -44,54 +45,6 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
     <div id="resz1" class="tartalmi-resz">
         <!-- Jármű hozzáadása -->
         <h2>Jármű hozzáadása</h2>
-        <div>
-            <?php
-                // Jármű hozzáadása
-                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
-                    $felhasznalas_id = $_POST['felhasznalas_id'];
-                    $szerviz_id = $_POST['szerviz_id'];
-                    $gyarto = $_POST['gyarto'];
-                    $tipus = $_POST['tipus'];
-                    $motor = $_POST['motor'];
-                    $gyartasi_ev = $_POST['gyartasi_ev'];
-                    $leiras = $_POST['leiras'];
-                    $ar = $_POST['ar'];
-                    $kep = $_FILES['kep_url'];
-                    $kepmappa ="./kepek/";
-                    $filenev = $kepmappa.basename($kep['name']);
-                
-                    move_uploaded_file($kep["tmp_name"],$filenev);
-                
-                    $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $filenev);
-                
-                    if ($modositas->execute()) {
-                        echo '<div class="sikeres">Sikeres hozzáadás!</div>';
-                    } else {
-                        echo '<div class="sikertelen">Hiba a törlés során!</div>';
-                        var_dump($torles->error);
-                    }
-                    $modositas->close();
-                }
-
-                // Jármű törlése
-                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
-                    $jarmu_id = $_POST['jarmu_id'];
-
-                    $torles = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
-                    $torles->bind_param("i", $jarmu_id);
-
-                    if ($torles->execute()) {
-                        echo '<div class="sikeres">Sikeres törlés!</div>';
-                    } else {
-                        echo '<div class="sikertelen">Hiba a törlés során!</div>';
-                        var_dump($torles->error);
-                    }
-                    $torles->close();
-                }
-            ?>
-        </div>
         <form method="POST" enctype="multipart/form-data">
             <label for="gyarto">Gyártó:</label>
             <input type="text" name="gyarto" required><br>
@@ -181,41 +134,91 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
     <!-- Jogosúltságok aloldal -->
     <div id="resz2" class="tartalmi-resz">
         <h2>Jogosultság módosítása</h2>
+        <table border="1">
+            <tr>
+                <th>Felhasználó Név</th>
+                <th>Teljes Név</th>
+                <th>Email Cím</th>
+                <th>Jogosítvány ki.dátuma</th>
+                <th>Számlázási Cím</th>
+                <th>Hűségpontok</th>
+                <th>Admin</th>
+            </tr>
+            <?php if ($felhasznalok->num_rows > 0): ?>
+                <?php while ($row = $felhasznalok->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo $row['felhasznalo_nev']; ?></td>
+                        <td><?php echo $row['nev']; ?></td>
+                        <td><?php echo $row['emailcim']; ?></td>
+                        <td><?php echo $row['jogositvany_kiallitasDatum']; ?></td>
+                        <td><?php echo $row['szamlazasi_cim']; ?></td>
+                        <td><?php echo $row['husegpontok']; ?></td>
+                        <td><?php echo $row['admin']; ?></td>
+                        <td>
+                            <form method="POST" action="" style="display:inline-block;">
+                                <input type="hidden" name="felhasznalo_nev" value="<?php echo $row['felhasznalo_nev']; ?>">
+                                <button type="submit" name="felhasznalo_modositas">Modosítás</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="10">Nincs jármű az adatbázisban.</td>
+                </tr>
+            <?php endif; ?>
+        </table>
         
-        <form>
-            <label for="felhasznalo">Felhasználó név:</label>
-            <input type="text" name="felhasznalonev" required><br>
-            <button name="kereses">Keresés</button>
-            <?php
-                // Felhasználó lekérése
-                if (isset($_POST['kereses'])) {
-                    $felhasznalo = $_GET['felhasznalonev'];
-                    
-                    $felhasznalo_sql = "SELECT * FROM felhasznalo WHERE felhasznalo.felhasznalo_nev LIKE '{$felhasznalo}';";
-                    $felhasznalok = adatokLekerese($felhasznalo_sql);
-                    echo $felhasznalok;
-                    // if(is_array($felhasznalo)){
-                    //     echo '<table><tr><th><Teljes név</th><th>Email cím</th><th>Számlázási cím</th><th>Jogosúltsága</th></tr>';
-                    //     foreach ($felhasznalo as $f) {
-                    //         echo '<tr><td>' . $f['nev'] . '</td>';
-                    //         echo '<td>' . $f['emailcim'] . '</td>';
-                    //         echo '<td>' . $f['szamlazasi_cim'] . '</td>';
-                    //         echo '<td>' . $f['admin'] . '</td>';
-                    //     }
-                    //     echo '</table>';
-                    // }
-                    // else{
-                    //     echo 'Nincs ilyen felhasznaló';
-                    // }
-
+    </div>
+    <div>
+    <?php
+                // Jármű hozzáadása
+                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
+                    $felhasznalas_id = $_POST['felhasznalas_id'];
+                    $szerviz_id = $_POST['szerviz_id'];
+                    $gyarto = $_POST['gyarto'];
+                    $tipus = $_POST['tipus'];
+                    $motor = $_POST['motor'];
+                    $gyartasi_ev = $_POST['gyartasi_ev'];
+                    $leiras = $_POST['leiras'];
+                    $ar = $_POST['ar'];
+                    $kep = $_FILES['kep_url'];
+                    $kepmappa ="./kepek/";
+                    $filenev = $kepmappa.basename($kep['name']);
+                
+                    move_uploaded_file($kep["tmp_name"],$filenev);
+                
+                    $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url) 
+                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $filenev);
+                
+                    if ($modositas->execute()) {
+                        echo '<div class="sikeres" id="animDiv">Sikeres hozzáadás!</div>';
+                    } else {
+                        echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
+                        var_dump($torles->error);
+                    }
+                    $modositas->close();
                 }
-                else{
-                    echo 'faszkivan';
+
+                // Jármű törlése
+                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
+                    $jarmu_id = $_POST['jarmu_id'];
+
+                    $torles = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
+                    $torles->bind_param("i", $jarmu_id);
+
+                    if ($torles->execute()) {
+                        echo '<div class="sikeres" id="animDiv">Sikeres törlés!</div>';
+                    } else {
+                        echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
+                        var_dump($torles->error);
+                    }
+                    $torles->close();
                 }
             ?>
-        </form>
     </div>
-    
+
     <script>
         function mutatResz(reszAzonosito, gomb) {
             // Az összes tartalmi rész rejtése
@@ -235,6 +238,10 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
             // Az aktuális gombhoz hozzáadjuk az "aktiv" osztályt
             gomb.classList.add('aktiv');
         }
+
+        document.getElementById("animDiv").addEventListener("click", function() {
+            this.classList.add("hidden");
+        });
   </script>
 </body>
 </html>

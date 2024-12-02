@@ -49,7 +49,7 @@
                         echo '<p class="card-text">' . $kocsi['leiras'] . '</p>';
                         echo '<p class="card-text">' . $kocsi['ar'] .' Ft'. '</p>';
                     echo '</div>';
-                    echo '<input class="berles-gomb" type="button" value="Bérlés" name="berles" id="' . $kocsi['jarmu_id'] . '" data-id="' . $kocsi['jarmu_id'] . '" data-gyarto="' . $kocsi['gyarto'] . '" data-típus="' . $kocsi['tipus'] . '" data-ev="' . $kocsi['gyartasi_ev'] . '" data-motor="' . $kocsi['motor'] . '" data-ar="' . $kocsi['ar'] . '" data-leiras="' . $kocsi['leiras'] . '" onclick="openModal(this)">';
+                    echo '<input class="berles-gomb" type="button" value="Részletek" name="berles" id="' . $kocsi['jarmu_id'] . '" data-id="' . $kocsi['jarmu_id'] . '" data-gyarto="' . $kocsi['gyarto'] . '" data-típus="' . $kocsi['tipus'] . '" data-ev="' . $kocsi['gyartasi_ev'] . '" data-motor="' . $kocsi['motor'] . '" data-ar="' . $kocsi['ar'] . '" data-leiras="' . $kocsi['leiras'] . '" onclick="openModal(this)">';
                 echo '</div>';
             } 
             echo '<div id="modal" class="modal">';

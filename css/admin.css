@@ -145,4 +145,27 @@ table tr:hover {
     border-radius: 4px;
 }
   
-  
+#animDiv {
+    background-color: #28a745;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-family: Arial, sans-serif; /* Szövegstílus */
+    text-align: center; /* Középre igazított szöveg */
+    width: 80%;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Finom árnyék */
+    max-width: 600px;
+    margin: 20px auto;
+    border-radius: 4px;
+    transition: opacity 1s, transform 1s;
+}
+
+#animDiv.hidden {
+    opacity: 0;
+    transform: scale(0.5);
+    pointer-events: none;
+}
