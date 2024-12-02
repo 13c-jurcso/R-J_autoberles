@@ -134,89 +134,97 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
     <!-- Jogosúltságok aloldal -->
     <div id="resz2" class="tartalmi-resz">
         <h2>Jogosultság módosítása</h2>
-        <table border="1">
-            <tr>
-                <th>Felhasználó Név</th>
-                <th>Teljes Név</th>
-                <th>Email Cím</th>
-                <th>Jogosítvány ki.dátuma</th>
-                <th>Számlázási Cím</th>
-                <th>Hűségpontok</th>
-                <th>Admin</th>
-            </tr>
-            <?php if ($felhasznalok->num_rows > 0): ?>
-                <?php while ($row = $felhasznalok->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo $row['felhasznalo_nev']; ?></td>
-                        <td><?php echo $row['nev']; ?></td>
-                        <td><?php echo $row['emailcim']; ?></td>
-                        <td><?php echo $row['jogositvany_kiallitasDatum']; ?></td>
-                        <td><?php echo $row['szamlazasi_cim']; ?></td>
-                        <td><?php echo $row['husegpontok']; ?></td>
-                        <td><?php echo $row['admin']; ?></td>
-                        <td>
-                            <form method="POST" action="" style="display:inline-block;">
-                                <input type="hidden" name="felhasznalo_nev" value="<?php echo $row['felhasznalo_nev']; ?>">
-                                <button type="submit" name="felhasznalo_modositas">Modosítás</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="10">Nincs jármű az adatbázisban.</td>
-                </tr>
-            <?php endif; ?>
-        </table>
-        
+        <form method="POST"> 
+            <label>Regisztrált emberek:</label>
+            <select name="felhasznalo_nev">
+                <option>-- Kérem válasszon --</option>
+                <?php
+                    $felhasznalok_sql = "SELECT * FROM felhasznalo;";
+                    $felhasznalok = adatokLekerese($felhasznalok_sql);
+                    if(is_array($felhasznalok)){
+                        foreach ($felhasznalok as $f) {
+                            echo '<option value="'. $f['felhasznalo_nev'].'">' . $f['nev'] . '</option>'; 
+                        }
+                    }
+                    else{
+                        echo $felhasznalok;
+                    }
+                ?>
+            </select>
+            <label for="admin">Admin jogosultság:</label>
+            <select id="admin" name="admin">
+                <option>-- Kérem válasszon --</option>
+                <option value="1">Admin</option>
+                <option value="0">Normál felhasználó</option>
+            </select>
+            
+            <button type="submit" name="felhasznalo_modositas">Mentés</button>
+        </form>
     </div>
     <div>
-    <?php
-                // Jármű hozzáadása
-                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
-                    $felhasznalas_id = $_POST['felhasznalas_id'];
-                    $szerviz_id = $_POST['szerviz_id'];
-                    $gyarto = $_POST['gyarto'];
-                    $tipus = $_POST['tipus'];
-                    $motor = $_POST['motor'];
-                    $gyartasi_ev = $_POST['gyartasi_ev'];
-                    $leiras = $_POST['leiras'];
-                    $ar = $_POST['ar'];
-                    $kep = $_FILES['kep_url'];
-                    $kepmappa ="./kepek/";
-                    $filenev = $kepmappa.basename($kep['name']);
-                
-                    move_uploaded_file($kep["tmp_name"],$filenev);
-                
-                    $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url) 
-                                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $filenev);
-                
-                    if ($modositas->execute()) {
-                        echo '<div class="sikeres" id="animDiv">Sikeres hozzáadás!</div>';
-                    } else {
-                        echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
-                        var_dump($torles->error);
-                    }
-                    $modositas->close();
+        <?php
+            // Jármű hozzáadása
+            if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
+                $felhasznalas_id = $_POST['felhasznalas_id'];
+                $szerviz_id = $_POST['szerviz_id'];
+                $gyarto = $_POST['gyarto'];
+                $tipus = $_POST['tipus'];
+                $motor = $_POST['motor'];
+                $gyartasi_ev = $_POST['gyartasi_ev'];
+                $leiras = $_POST['leiras'];
+                $ar = $_POST['ar'];
+                $kep = $_FILES['kep_url'];
+                $kepmappa ="./kepek/";
+                $filenev = $kepmappa.basename($kep['name']);
+            
+                move_uploaded_file($kep["tmp_name"],$filenev);
+            
+                $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $filenev);
+            
+                if ($modositas->execute()) {
+                    echo '<div class="sikeres" id="animDiv">Sikeres hozzáadás!</div>';
+                } else {
+                    echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
+                    var_dump($torles->error);
                 }
+                $modositas->close();
+            }
 
-                // Jármű törlése
-                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
-                    $jarmu_id = $_POST['jarmu_id'];
+            // Jármű törlése
+            if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
+                $jarmu_id = $_POST['jarmu_id'];
 
-                    $torles = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
-                    $torles->bind_param("i", $jarmu_id);
+                $torles = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
+                $torles->bind_param("i", $jarmu_id);
 
-                    if ($torles->execute()) {
-                        echo '<div class="sikeres" id="animDiv">Sikeres törlés!</div>';
-                    } else {
-                        echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
-                        var_dump($torles->error);
-                    }
-                    $torles->close();
+                if ($torles->execute()) {
+                    echo '<div class="sikeres" id="animDiv">Sikeres törlés!</div>';
+                } else {
+                    echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
+                    var_dump($torles->error);
                 }
-            ?>
+                $torles->close();
+            }
+
+            //Felhasználó jogosultságának módosítása:
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
+                $felhasznalo_nev = $_POST['felhasznalo_nev'];
+                $admin = $_POST['admin'];
+            
+                // Adatbázis frissítése
+                $query = "UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?";
+                $stmt = $db->prepare($query);
+                $stmt->bind_param("is", $felhasznalo_nev, $admin);
+            
+                if ($stmt->execute()) {
+                    echo '<div id="animDiv">Jogosultság sikeresen módosítva.</div>';
+                } else {
+                    echo '<div id="animDiv">Hiba!.</div>';
+                }
+            }
+        ?>
     </div>
 
     <script>
