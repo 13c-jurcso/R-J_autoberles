@@ -211,12 +211,11 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             //Felhasználó jogosultságának módosítása:
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
                 $felhasznalo_nev = $_POST['felhasznalo_nev'];
-                $admin = $_POST['admin'];
+                $admin = (int)$_POST['admin'];
             
                 // Adatbázis frissítése
-                $query = "UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?";
-                $stmt = $db->prepare($query);
-                $stmt->bind_param("is", $felhasznalo_nev, $admin);
+                $stmt = $db->prepare("UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?");
+                $stmt->bind_param("is", $admin, $felhasznalo_nev);
             
                 if ($stmt->execute()) {
                     echo '<div id="animDiv">Jogosultság sikeresen módosítva.</div>';
