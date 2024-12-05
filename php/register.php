@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("ssssss", $felhasznalo_nev, $nev, $emailcim, $jogositvany_kiallitasDatum, $szamlazasi_cim, $hashed_jelszo);
         if ($stmt->execute()) {
             echo "Sikeres regisztráció!";
-            header("Location: login.php");
+            header("Location: index.php"); // Átirányítás a főoldalra
             exit();
         } else {
             echo "Hiba történt a regisztráció során: " . $stmt->error;

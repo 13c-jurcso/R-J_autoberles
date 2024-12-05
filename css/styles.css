@@ -240,6 +240,7 @@ nav ul li a:hover {
     height: 350px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
+    position: relative;
 }
 .modal-content-register {
     background-color: #fff;
@@ -250,22 +251,23 @@ nav ul li a:hover {
     height: 650px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
+    position: relative;
 }
 
-/* Bezárás gomb */
+/* A záró gomb */
 .close {
-    color: #c01e1e;
+    color: #aaa;
     font-size: 28px;
     font-weight: bold;
     position: absolute;
-    top: 10px;
-    right: 20px;
+    top: 5px;
+    right: 15px;
     cursor: pointer;
 }
 
 .close:hover,
 .close:focus {
-    color: #000;
+    color: black;
     text-decoration: none;
     cursor: pointer;
 }
