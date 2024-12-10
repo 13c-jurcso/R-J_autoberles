@@ -170,11 +170,12 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
 
     <!--Bérlé<sek-->
     <div id="resz3" class="tartalmi-resz">
+        <h2>Bérlések</h2>
         <?php
             $berlesek_listazasa_sql = "SELECT berlesek.berles_id, jarmuvek.gyarto, jarmuvek.tipus, felhasznalo.nev, berlesek.tol, berlesek.ig FROM berlesek 
                                        INNER JOIN jarmuvek ON berlesek.jarmu_id=jarmuvek.jarmu_id INNER JOIN felhasznalo ON felhasznalo.felhasznalo_nev=berlesek.felhasznalo;";
             $berlesek_listazasa = adatokLekerese($berlesek_listazasa_sql);
-            echo '<table><tr><th>Bérlés sorszáma</th><th>Kibérelt jármű gyártója</th><th>Kibérelt jármű típusa</th><th>Bérlő neve</th><th>Átvétel időpontja</th><th>Leadás dátuma</th></tr>';
+            echo '<table><tr><th>Bérlés sorszáma</th><th>Kibérelt jármű gyártója</th><th>Kibérelt jármű típusa</th><th>Bérlő neve</th><th>Átvétel időpontja</th><th>Leadás dátuma</th><th>Művelet</th></tr>';
             if(is_array($berlesek_listazasa)){
                 foreach ($berlesek_listazasa as $b) {
                     echo '<tr><td>' . $b['berles_id'] . '</td>';
@@ -182,9 +183,17 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                     echo '<td>' . $b['tipus'] . '</td>';
                     echo '<td>' . $b['nev'] . '</td>';
                     echo '<td>' . $b['tol'] . '</td>';
-                    echo '<td>' . $b['ig'] . '</td></tr>';
+                    echo '<td>' . $b['ig'] . '</td>';
+                    echo '<td><form method="POST">
+                                <input type="hidden" name="berles_id" value="' . $b['berles_id'] . '">
+                                <button href="#myModal" name="delete_berles" class="torles_button" data-toggle="modal">Törlés</button>
+                          </form></td></tr>';
                 }
             }
+            else{
+                echo '<tr><td colspan="10">Nincs bérlés rögzítve az adatbázisban.</td></tr>';
+            }
+
             echo '</table>';
         ?>
     </div>
@@ -235,6 +244,9 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                 $torles->close();
             }
 
+            // Bérlés törlése
+            if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['']))
+
             //Felhasználó jogosultságának módosítása:
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
                 $felhasznalo_nev = $_POST['felhasznalo_nev'];
@@ -252,6 +264,31 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             }
         ?>
     </div>
+
+    <!-- Modális ablak -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="material-icons">&#xE5CD;</i>
+                    </div>
+                    <h4 class="modal-title w-100">Figyelem! </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <h3>Biztos benne, högy törölni kívánja az elemet?</h3>
+                    <p>Ez a művelet nem visszavonható.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-danger">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
 
     <script>
         function mutatResz(reszAzonosito, gomb) {
@@ -276,6 +313,17 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
         document.getElementById("animDiv").addEventListener("click", function() {
             this.classList.add("hidden");
         });
+
+        function openModal(button) {
+            document.getElementById('berles_id').value = button.getAttribute('data-id');
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
   </script>
 </body>
 </html>
