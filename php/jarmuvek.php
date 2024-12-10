@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo '<button class="berles-gomb" onclick="openModal(this)" 
                     data-id="' . $kocsi['jarmu_id'] . '" 
                     data-gyarto="' . $kocsi['gyarto'] . '" 
-                    data-tipus="' . $kocsi['tipus'] . '">Bérelés</button>';
+                    data-tipus="' . $kocsi['tipus'] . '">Részletek</button>';
             echo '</div>';
         }
     }

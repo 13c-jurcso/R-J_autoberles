@@ -43,14 +43,14 @@ body {
 h1 {
     text-align: center;
     color: #333;
-    margin-top: 60px;
+    margin-top: 60px !important;
 }
 h2 {
     text-align: center;
     color: #333;
 }
 
-form {
+.form {
     width: 80%;
     max-width: 600px;
     margin: 20px auto;
@@ -61,14 +61,14 @@ form {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-form label {
+.form label {
     display: block;
     margin-bottom: 8px;
     color: #555;
     font-weight: bold;
 }
 
-form input, form button, form select {
+.form input, form button, form select {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -78,14 +78,14 @@ form input, form button, form select {
     font-size: 14px;
 }
 
-form button {
+.form button {
     background-color: #007bff;
     color: #fff;
     cursor: pointer;
     font-weight: bold;
 }
 
-form button:hover {
+.form button:hover {
     background-color: #0056b3;
 }
 
@@ -168,4 +168,19 @@ table tr:hover {
     opacity: 0;
     transform: scale(0.5);
     pointer-events: none;
+}
+
+.torles_button {
+    background-color: #ff4d4d;  /* Piros háttér */
+    color: white;  /* Fehér szöveg */
+    border: none;  /* Nincs keret */
+    border-radius: 5px;  /* Lekerekített sarkok */
+    padding: 10px 20px;  /* Belső margó */
+    font-size: 16px;  /* Betűméret */
+    cursor: pointer;  /* Kéz ikonná változik */
+    transition: background-color 0.3s ease;  /* Animáció a háttérszín változására */
+}
+
+.torles_button:hover {
+    background-color: #a10a0a;  /* Sötétebb piros a hover hatásra */
 }

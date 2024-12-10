@@ -40,13 +40,18 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
             </svg>
         </button>
+        <button id="berlesek" onclick="mutatResz('resz3')">Bérlések <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-all" viewBox="0 0 16 16">
+            <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0"/>
+            <path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708"/>
+            </svg>
+        </button>
     </div>
 
     <!-- Járművek szerkeztése aloldal -->
     <div id="resz1" class="tartalmi-resz">
         <!-- Jármű hozzáadása -->
         <h2>Jármű hozzáadása</h2>
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" class="form">
             <label for="gyarto">Gyártó:</label>
             <input type="text" name="gyarto" required><br>
             
@@ -117,9 +122,9 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                         <td><?php echo $row['leiras']; ?></td>
                         <td><?php echo $row['ar']; ?></td>
                         <td>
-                            <form method="POST" action="" style="display:inline-block;">
+                            <form method="POST" action="">
                                 <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
-                                <button type="submit" name="delete_vehicle">Törlés</button>
+                                <button type="submit" name="delete_vehicle" class="torles_button">Törlés</button>
                             </form>
                         </td>
                     </tr>
@@ -135,7 +140,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
     <!-- Jogosúltságok aloldal -->
     <div id="resz2" class="tartalmi-resz">
         <h2>Jogosultság módosítása</h2>
-        <form method="POST"> 
+        <form method="POST" class="form"> 
             <label>Regisztrált emberek:</label>
             <select name="felhasznalo_nev">
                 <option>-- Kérem válasszon --</option>
@@ -161,6 +166,27 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             
             <button type="submit" name="felhasznalo_modositas">Mentés</button>
         </form>
+    </div>
+
+    <!--Bérlé<sek-->
+    <div id="resz3" class="tartalmi-resz">
+        <?php
+            $berlesek_listazasa_sql = "SELECT berlesek.berles_id, jarmuvek.gyarto, jarmuvek.tipus, felhasznalo.nev, berlesek.tol, berlesek.ig FROM berlesek 
+                                       INNER JOIN jarmuvek ON berlesek.jarmu_id=jarmuvek.jarmu_id INNER JOIN felhasznalo ON felhasznalo.felhasznalo_nev=berlesek.felhasznalo;";
+            $berlesek_listazasa = adatokLekerese($berlesek_listazasa_sql);
+            echo '<table><tr><th>Bérlés sorszáma</th><th>Kibérelt jármű gyártója</th><th>Kibérelt jármű típusa</th><th>Bérlő neve</th><th>Átvétel időpontja</th><th>Leadás dátuma</th></tr>';
+            if(is_array($berlesek_listazasa)){
+                foreach ($berlesek_listazasa as $b) {
+                    echo '<tr><td>' . $b['berles_id'] . '</td>';
+                    echo '<td>' . $b['gyarto'] . '</td>';
+                    echo '<td>' . $b['tipus'] . '</td>';
+                    echo '<td>' . $b['nev'] . '</td>';
+                    echo '<td>' . $b['tol'] . '</td>';
+                    echo '<td>' . $b['ig'] . '</td></tr>';
+                }
+            }
+            echo '</table>';
+        ?>
     </div>
     <div>
         <?php
