@@ -1,0 +1,14 @@
+.container{
+    background-color: rgba(0, 0, 0, 0.8); /* Félátlátszó háttér */
+    margin-left: 20%;
+    margin-right: 20%;
+    position: absolute;
+    top: 15%;
+    padding: 10px;
+    
+}
+li{
+    font-size: large;
+    margin-top: 10px;
+    
+}

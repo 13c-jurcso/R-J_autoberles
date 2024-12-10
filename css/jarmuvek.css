@@ -331,6 +331,7 @@ nav ul li a:hover {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
+    justify-content: center;
 }
 
 /* Icon next to input */
@@ -344,7 +345,7 @@ input[type="text"],
 input[type="email"],
 input[type="tel"],
 input[type="date"] {
-    width: 100%;
+    width: 80%;
     padding: 12px 20px;
     margin: 0;
     border: 1px solid #ccc;
