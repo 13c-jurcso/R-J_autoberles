@@ -2,6 +2,35 @@
 // Kapcsolat az adatbázissal
 include './adatLekeres.php';
 
+// Dátumok lekérése
+$atvetel = isset($_GET['atvetel']) ? $_GET['atvetel'] : null;
+$leadas = isset($_GET['leadas']) ? $_GET['leadas'] : null;
+
+// Időintervallum alapú szűrés
+if ($atvetel && $leadas) {
+    $sql = "
+        SELECT * FROM jarmuvek
+        WHERE jarmu_id NOT IN (
+            SELECT jarmu_id
+            FROM berlesek
+            WHERE NOT (
+                (tol > ? AND tol >= ?) OR (ig < ? AND ig <= ?)
+            )
+        )
+    ";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("ssss", $atvetel, $leadas, $atvetel, $leadas);
+} else {
+    // Ha nincs szűrő, az összes járművet listázzuk
+    $sql = "SELECT * FROM jarmuvek";
+    $stmt = $db->prepare($sql);
+}
+
+// Lekérdezés végrehajtása
+$stmt->execute();
+$result = $stmt->get_result();
+$jarmuvek = $result->fetch_all(MYSQLI_ASSOC);
+
 // Ha a form elküldésre került
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jarmu_id = $_POST['jarmu_id'];
@@ -62,37 +91,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </nav>
 </header>
 <div class="szures_div">
-    <button class="filter" id="szures_gomb">Szűrés <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
-        <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"/>
-        </svg>
-    </button>
+    <form method="GET" action="jarmuvek.php">
+        <label for="atvetel">Átvétel dátuma:</label>
+        <input type="date" id="atvetel" name="atvetel" value="<?= htmlspecialchars($atvetel) ?>" required>
+
+        <label for="leadas">Leadás dátuma:</label>
+        <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>" required>
+
+        <button type="submit" class="btn btn-primary">Szűrés</button>
+    </form>
+</div>
+<div class="card-container">
+    <?php if (!empty($jarmuvek)): ?>
+        <?php foreach ($jarmuvek as $kocsi): ?>
+            <div class="card">
+                <img src="<?= htmlspecialchars($kocsi['kep_url']) ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) ?>" class="card-image">
+                <div class="card-content">
+                    <h3 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) ?></h3>
+                    <p class="card-text"><?= htmlspecialchars($kocsi['tipus']) ?></p>
+                    <p class="card-text"><?= htmlspecialchars($kocsi['gyartasi_ev']) ?></p>
+                    <p class="card-text"><?= htmlspecialchars($kocsi['motor']) ?></p>
+                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p>
+                    <p class="card-text"><?= htmlspecialchars($kocsi['ar']) ?> Ft</p>
+                </div>
+                <button class="berles-gomb" onclick="openModal(this)" 
+                        data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>" 
+                        data-gyarto="<?= htmlspecialchars($kocsi['gyarto']) ?>" 
+                        data-tipus="<?= htmlspecialchars($kocsi['tipus']) ?>">Részletek</button>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p>Nincs elérhető jármű a megadott időszakban.</p>
+    <?php endif; ?>
 </div>
 
-<div class="card-container">
-    <?php
-    $kocsi_kartya_sql = "SELECT jarmu_id, gyarto, tipus, gyartasi_ev, motor, leiras, ar, kep_url FROM jarmuvek;";
-    $kocsiKartya = adatokLekerese($kocsi_kartya_sql);
-    if (is_array($kocsiKartya)) {
-        foreach ($kocsiKartya as $kocsi) {
-            echo '<div class="card">';
-            echo '<img src="' . $kocsi['kep_url'] . '" alt="' . $kocsi['gyarto'] . '" class="card-image">';
-            echo '<div class="card-content">';
-            echo '<h3 class="card-title">' . $kocsi['gyarto'] . '</h3>';
-            echo '<p class="card-text">' . $kocsi['tipus'] . '</p>';
-            echo '<p class="card-text">' . $kocsi['gyartasi_ev'] . '</p>';
-            echo '<p class="card-text">' . $kocsi['motor'] . '</p>';
-            echo '<p class="card-text">' . $kocsi['leiras'] . '</p>';
-            echo '<p class="card-text">' . $kocsi['ar'] . ' Ft</p>';
-            echo '</div>';
-            echo '<button class="berles-gomb" onclick="openModal(this)" 
-                    data-id="' . $kocsi['jarmu_id'] . '" 
-                    data-gyarto="' . $kocsi['gyarto'] . '" 
-                    data-tipus="' . $kocsi['tipus'] . '">Részletek</button>';
-            echo '</div>';
-        }
-    }
-    ?>
-</div>
 
 <div id="modal" class="modal">
     <div class="modal-content">

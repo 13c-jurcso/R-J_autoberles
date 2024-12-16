@@ -37,16 +37,16 @@ include './db_connection.php';
 <div id="torzs">
     <h1>R&J autókölcsönző. Indulás!</h1>
     <div id="kezdo_input">
-        <form action="jarmuvek.php" method="get">
+    <form action="jarmuvek.php" method="get">
             <select name="hely" id="hely">
                 <option value="Veszprém">Veszprém</option>
                 <option value="Budapest">Budapest</option>
                 <option value="Debrecen">Debrecen</option>
             </select>
             <label id="datuma">Átvétel dátuma</label>
-            <input type="datetime-local" name="atvetel" required>
+            <input type="date" name="atvetel" required>
             <label id="datuma">Leadás dátuma</label>
-            <input type="datetime-local" name="leadas" required>
+            <input type="date" name="leadas" required>
             <input type="submit" value="Járművek megtekintése">
         </form>
     </div>
