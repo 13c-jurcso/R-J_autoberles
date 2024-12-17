@@ -124,7 +124,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                         <td>
                             <form method="POST" action="">
                                 <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
-                                <button type="submit" name="delete_vehicle" class="torles_button">Törlés</button>
+                                <input type="button" class="torles_button" onclick="openModal()" value="Törlés">
                             </form>
                         </td>
                     </tr>
@@ -186,7 +186,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                     echo '<td>' . $b['ig'] . '</td>';
                     echo '<td><form method="POST">
                                 <input type="hidden" name="berles_id" value="' . $b['berles_id'] . '">
-                                <button href="#myModal" name="delete_berles" class="torles_button" data-toggle="modal">Törlés</button>
+                                <input name="delete_berles" class="torles_button" data-toggle="modal" type="button" value="Törlés">
                           </form></td></tr>';
                 }
             }
@@ -197,6 +197,34 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             echo '</table>';
         ?>
     </div>
+
+    <!-- Modális ablak -->
+    <div id="csoo" class="modal">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="red" style="margin-top: 12px" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </div>
+                    <h4 class="modal-title w-100">Figyelem!</h4>
+                    <span class="close" onclick="closeModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <h3>Biztos benne, högy törölni kívánja az elemet?</h3>
+                    <p>Ez a művelet nem visszavonható.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Mégse</button>
+                    <form method="POST">
+                        <button type="submit" class="btn btn-danger" name="delete_vehicle">Törlés</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div>
         <?php
             // Jármű hozzáadása
@@ -265,28 +293,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
         ?>
     </div>
 
-    <!-- Modális ablak -->
-    <div id="myModal" class="modal fade">
-        <div class="modal-dialog modal-confirm">
-            <div class="modal-content">
-                <div class="modal-header flex-column">
-                    <div class="icon-box">
-                        <i class="material-icons">&#xE5CD;</i>
-                    </div>
-                    <h4 class="modal-title w-100">Figyelem! </h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <h3>Biztos benne, högy törölni kívánja az elemet?</h3>
-                    <p>Ez a művelet nem visszavonható.</p>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Mégse</button>
-                    <button type="button" class="btn btn-danger">Törlés</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <div id="overlay" class="overlay"></div>
 
@@ -314,14 +321,15 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             this.classList.add("hidden");
         });
 
-        function openModal(button) {
-            document.getElementById('berles_id').value = button.getAttribute('data-id');
-            document.getElementById('modal').style.display = 'block';
+        function openModal() {
+            // document.getElementById('berles_id').value = button.getAttribute('data-id');
+            document.getElementById('csoo').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
+            console.log("asd");
         }
 
         function closeModal() {
-            document.getElementById('modal').style.display = 'none';
+            document.getElementById('csoo').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
   </script>

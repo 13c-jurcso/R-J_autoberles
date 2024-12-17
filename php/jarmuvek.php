@@ -92,6 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </header>
 <div class="szures_div">
     <form method="GET" action="jarmuvek.php">
+        <h2>Elérhető járművek</h2>
+        <hr>
         <label for="atvetel">Átvétel dátuma:</label>
         <input type="date" id="atvetel" name="atvetel" value="<?= htmlspecialchars($atvetel) ?>" required>
 
