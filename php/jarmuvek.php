@@ -5,28 +5,49 @@ include './adatLekeres.php';
 // Dátumok lekérése
 $atvetel = isset($_GET['atvetel']) ? $_GET['atvetel'] : null;
 $leadas = isset($_GET['leadas']) ? $_GET['leadas'] : null;
+$kategoria = isset($_GET['kategoria']) ? $_GET['kategoria'] : null;
+$min_ar = isset($_GET['min_ar']) ? (int)$_GET['min_ar'] : null;
+$max_ar = isset($_GET['max_ar']) ? (int)$_GET['max_ar'] : null;
 
-// Időintervallum alapú szűrés
+// SQL alap lekérdezés
+$sql = "SELECT * FROM jarmuvek WHERE 1=1";
+$params = [];
+$types = "";
+
+// Dátum alapú szűrés
 if ($atvetel && $leadas) {
-    $sql = "
-        SELECT * FROM jarmuvek
-        WHERE jarmu_id NOT IN (
-            SELECT jarmu_id
-            FROM berlesek
-            WHERE NOT (
-                (tol > ? AND tol >= ?) OR (ig < ? AND ig <= ?)
-            )
-        )
-    ";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param("ssss", $atvetel, $leadas, $atvetel, $leadas);
-} else {
-    // Ha nincs szűrő, az összes járművet listázzuk
-    $sql = "SELECT * FROM jarmuvek";
-    $stmt = $db->prepare($sql);
+    $sql .= " AND jarmu_id NOT IN (
+        SELECT jarmu_id FROM berlesek
+        WHERE NOT ((tol > ? AND tol >= ?) OR (ig < ? AND ig <= ?))
+    )";
+    array_push($params, $atvetel, $leadas, $atvetel, $leadas);
+    $types .= "ssss";
+}
+
+// Kategória szűrés
+if ($kategoria) {
+    $sql .= " AND felhasznalas_id = ?";
+    array_push($params, $kategoria);
+    $types .= "s";
+}
+
+// Ár szűrés
+if ($min_ar) {
+    $sql .= " AND ar >= ?";
+    array_push($params, $min_ar);
+    $types .= "i";
+}
+if ($max_ar) {
+    $sql .= " AND ar <= ?";
+    array_push($params, $max_ar);
+    $types .= "i";
 }
 
 // Lekérdezés végrehajtása
+$stmt = $db->prepare($sql);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
 $stmt->execute();
 $result = $stmt->get_result();
 $jarmuvek = $result->fetch_all(MYSQLI_ASSOC);
@@ -74,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <header>
-    <div class="menu-toggle">☰ Menu</div>
+    <div class="menu-toggle">&#9776; Menu</div>
     <nav>
         <ul>
             <li><a href="index.php">R&J</a></li>
@@ -100,6 +121,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="leadas">Leadás dátuma:</label>
         <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>" required>
 
+        <label for="kategoria">Kategória:</label>
+        <select id="kategoria" name="kategoria">
+            <option value="">-- Válassz kategóriát --</option>
+            <option value="1">Városi</option>
+            <option value="2">Családi</option>
+            <option value="3">Haszon</option>
+            <option value="4">Élmény</option>
+            <option value="5">Lakó</option>
+        </select>
+
+        <label for="min_ar">Minimum ár:</label>
+        <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000">
+
+        <label for="max_ar">Maximum ár:</label>
+        <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000">
+
         <button type="submit" class="btn btn-primary">Szűrés</button>
     </form>
 </div>
@@ -110,11 +147,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="<?= htmlspecialchars($kocsi['kep_url']) ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) ?>" class="card-image">
                 <div class="card-content">
                     <h3 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) ?></h3>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['tipus']) ?></p>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['gyartasi_ev']) ?></p>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['motor']) ?></p>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['ar']) ?> Ft</p>
+                    <p class="card-text">Üzemanyag: <?= htmlspecialchars($kocsi['motor']) ?></p>
+                    <p class="card-text">Kategória: <?= htmlspecialchars($kocsi['kategoria']) ?></p>
+                    <p class="card-text">Ár: <?= htmlspecialchars($kocsi['ar']) ?> Ft</p>
+                    <p class="card-text">További adatok: <?= htmlspecialchars($kocsi['leiras']) ?></p>
                 </div>
                 <button class="berles-gomb" onclick="openModal(this)" 
                         data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>" 
@@ -123,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endforeach; ?>
     <?php else: ?>
-        <p>Nincs elérhető jármű a megadott időszakban.</p>
+        <p>Nincs elérhető jármű a megadott feltételek szerint.</p>
     <?php endif; ?>
 </div>
 
