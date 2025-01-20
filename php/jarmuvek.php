@@ -121,8 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="leadas">Leadás dátuma:</label>
         <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>" required>
 
-        <label for="kategoria">Kategória:</label>
-        <select id="kategoria" name="kategoria">
+        <label for="kategoria">Kategória:     </label>
+        <select id="kategoria" name="kategoria"required>
             <option value="">-- Válassz kategóriát --</option>
             <option value="1">Városi</option>
             <option value="2">Családi</option>
@@ -132,10 +132,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </select>
 
         <label for="min_ar">Minimum ár:</label>
-        <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000">
+        <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000"required>
 
         <label for="max_ar">Maximum ár:</label>
-        <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000">
+        <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000"required>
 
         <button type="submit" class="btn btn-primary">Szűrés</button>
     </form>
@@ -148,14 +148,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="card-content">
                     <h3 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) ?></h3>
                     <p class="card-text">Üzemanyag: <?= htmlspecialchars($kocsi['motor']) ?></p>
-                    <p class="card-text">Kategória: <?= htmlspecialchars($kocsi['kategoria']) ?></p>
                     <p class="card-text">Ár: <?= htmlspecialchars($kocsi['ar']) ?> Ft</p>
                     <p class="card-text">További adatok: <?= htmlspecialchars($kocsi['leiras']) ?></p>
                 </div>
+                
                 <button class="berles-gomb" onclick="openModal(this)" 
                         data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>" 
                         data-gyarto="<?= htmlspecialchars($kocsi['gyarto']) ?>" 
                         data-tipus="<?= htmlspecialchars($kocsi['tipus']) ?>">Részletek</button>
+        
             </div>
         <?php endforeach; ?>
     <?php else: ?>
