@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2024. Dec 16. 21:45
--- Kiszolgáló verziója: 10.4.27-MariaDB
--- PHP verzió: 8.2.0
+-- Létrehozás ideje: 2025. Jan 27. 20:25
+-- Kiszolgáló verziója: 10.4.32-MariaDB
+-- PHP verzió: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -194,10 +194,10 @@ INSERT INTO `szervizek` (`id`, `muszaki_vizs_lejarat`) VALUES
 --
 
 CREATE TABLE `velemenyek` (
-  `id` int(11) NOT NULL,
-  `felhasznalo_nev` varchar(255) DEFAULT NULL,
-  `jarmu_id` int(11) DEFAULT NULL,
-  `velemeny` text DEFAULT NULL
+  `velemeny_id` int(11) NOT NULL,
+  `felhasznalo_nev` varchar(255) NOT NULL,
+  `uzenet` text NOT NULL,
+  `datum` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
@@ -242,9 +242,7 @@ ALTER TABLE `szervizek`
 -- A tábla indexei `velemenyek`
 --
 ALTER TABLE `velemenyek`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_velemeny_felhasznalo` (`felhasznalo_nev`),
-  ADD KEY `fk_velemeny_jarmu` (`jarmu_id`);
+  ADD PRIMARY KEY (`velemeny_id`);
 
 --
 -- A kiírt táblák AUTO_INCREMENT értéke
@@ -263,6 +261,12 @@ ALTER TABLE `jarmuvek`
   MODIFY `jarmu_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
+-- AUTO_INCREMENT a táblához `velemenyek`
+--
+ALTER TABLE `velemenyek`
+  MODIFY `velemeny_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- Megkötések a kiírt táblákhoz
 --
 
@@ -279,13 +283,6 @@ ALTER TABLE `berlesek`
 ALTER TABLE `jarmuvek`
   ADD CONSTRAINT `fk_felhasznalas_id` FOREIGN KEY (`felhasznalas_id`) REFERENCES `felhasznalas` (`felhasznalas_id`),
   ADD CONSTRAINT `fk_szerviz_id` FOREIGN KEY (`szerviz_id`) REFERENCES `szervizek` (`id`);
-
---
--- Megkötések a táblához `velemenyek`
---
-ALTER TABLE `velemenyek`
-  ADD CONSTRAINT `fk_velemeny_felhasznalo` FOREIGN KEY (`felhasznalo_nev`) REFERENCES `felhasznalo` (`felhasznalo_nev`),
-  ADD CONSTRAINT `fk_velemeny_jarmu` FOREIGN KEY (`jarmu_id`) REFERENCES `jarmuvek` (`jarmu_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

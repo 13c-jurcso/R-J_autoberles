@@ -55,6 +55,26 @@
         button:hover {
             background-color: #45a049;
         }
+        .guestbook {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+.review {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.review p {
+    margin: 0;
+}
+.review small {
+    display: block;
+    color: #888;
+    margin-top: 5px;
+}
+
     </style>
 </head>
 <body>
@@ -100,6 +120,70 @@
             <button type="submit">Küldés</button>
         </form>
     </div>              
+    <h2>Vendégkönyv</h2>
+
+<!-- Vélemények megjelenítése -->
+<div class="guestbook">
+    <?php
+    // Csatlakozás az adatbázishoz
+    $conn = new mysqli("localhost", "root", "", "autoberles");
+
+    // Hibaellenőrzés
+    if ($conn->connect_error) {
+        die("Csatlakozási hiba: " . $conn->connect_error);
+    }
+
+    // Vélemények lekérdezése
+    $query = "SELECT felhasznalo_nev, uzenet, datum FROM velemenyek ORDER BY datum DESC";
+    $result = $conn->query($query);
+
+    if ($result->num_rows > 0):
+        while ($row = $result->fetch_assoc()):
+    ?>
+            <div class="review">
+                <p><strong><?= htmlspecialchars($row['felhasznalo_nev']) ?>:</strong> <?= nl2br(htmlspecialchars($row['uzenet'])) ?></p>
+                <small><?= htmlspecialchars($row['datum']) ?></small>
+            </div>
+    <?php
+        endwhile;
+    else:
+    ?>
+        <p>Még nincs vélemény.</p>
+    <?php endif; ?>
+</div>
+
+<!-- Vélemény beküldő űrlap -->
+<h3>Írja meg véleményét</h3>
+<form action="kapcsolat.php" method="post">
+    <label for="username">Felhasználónév</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="message">Üzenet</label>
+    <textarea id="message" name="message" rows="5" required></textarea>
+
+    <button type="submit" name="submit_review">Küldés</button>
+</form>
+
+<?php
+// Vélemény mentése az adatbázisba
+if (isset($_POST['submit_review'])) {
+    $username = $conn->real_escape_string($_POST['username']);
+    $message = $conn->real_escape_string($_POST['message']);
+
+    $insertQuery = "INSERT INTO velemenyek (felhasznalo_nev, uzenet) VALUES ('$username', '$message')";
+    if ($conn->query($insertQuery)) {
+        echo "<p>Köszönjük a véleményt!</p>";
+    } else {
+        echo "<p>Hiba történt: " . $conn->error . "</p>";
+    }
+
+    // Oldal frissítése az új vélemények megjelenítéséhez
+    header("Location: kapcsolat.php");
+    exit;
+}
+
+$conn->close();
+?>
 
     <script>
         document.querySelector(".menu-toggle").addEventListener("click", function () {
