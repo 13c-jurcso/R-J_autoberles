@@ -94,7 +94,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             <button type="submit" name="add_vehicle">Hozzáadás</button>
         </form>
 
-        <!-- Jármű törlése -->
+        <!-- Jármű törlése és módosítás -->
         <h2>Járművek Törlése</h2>
         <table border="1">
             <tr>
@@ -107,6 +107,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                 <th>Gyártási év</th>
                 <th>Leírás</th>
                 <th>Ár</th>
+                <th></th>
                 <th>Művelet</th>
             </tr>
             <?php if ($jarmuvek->num_rows > 0): ?>
@@ -121,6 +122,12 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                         <td><?php echo $row['gyartasi_ev']; ?></td>
                         <td><?php echo $row['leiras']; ?></td>
                         <td><?php echo $row['ar']; ?></td>
+                        <td>
+                            <form action="" method="post">
+                            <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
+                            <input type="button" class="modositas_button" onclick="modositasOpen()" value="Módosítás">
+                            </form>
+                        </td>
                         <td>
                             <form method="POST" action="">
                                 <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
@@ -198,7 +205,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
         ?>
     </div>
 
-    <!-- Modális ablak -->
+    <!-- Törlésre figyelmeztető modális ablak -->
     <div id="csoo" class="modal">
         <div class="modal-dialog modal-confirm">
             <div class="modal-content">
@@ -224,6 +231,26 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             </div>
         </div>
     </div>
+
+    <!-- Módosítás modális ablaka -->
+    <div id="modositas" class="modal">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2 class="modal-title w-100">Módosítás</h2>
+                </div>
+                <div class="modal-body">
+                    <form action="" class="form">
+                        <?php
+                            
+                        ?>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div>
         <?php
@@ -328,8 +355,15 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             console.log("asd");
         }
 
+        function modositasOpen(){
+            // document.getElementById('jarmu_id').value = button.getAttribute('data-id');
+            document.getElementById('modositas').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
         function closeModal() {
             document.getElementById('csoo').style.display = 'none';
+            document.getElementById('modositas').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
         }
   </script>
