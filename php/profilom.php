@@ -40,6 +40,7 @@ $berlesek_result = $db->query($berlesek_sql);
     <title>Profilom</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/index.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
 
@@ -74,7 +75,7 @@ $berlesek_result = $db->query($berlesek_sql);
 
     <h3>Bérelt autóim</h3>
     <?php if ($berlesek_result->num_rows > 0): ?>
-        <table>
+        <table class="table table-success table-striped">
             <thead>
                 <tr>
                     <th>Gyártó</th>
