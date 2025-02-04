@@ -1,28 +1,53 @@
-document.addEventListener('DOMContentLoaded', function () {
-  // Fizetési felület megnyitása
-  function openPaymentForm(berles_id) {
-      console.log("Fizetési felület megnyitása, bérlés ID:", berles_id);
-      document.getElementById('payment_berles_id').value = berles_id;
-      document.getElementById('payment-modal').style.display = "block";
-      document.getElementById('overlay').style.display = "block";
-  }
-
-  // Fizetési felület bezárása
-  function closeModal() {
-      document.getElementById('payment-modal').style.display = "none";
-      document.getElementById('overlay').style.display = "none";
-  }
-
-  // Globálissá tesszük a függvényeket, hogy a PHP kód is hozzáférjen
-  window.openPaymentForm = openPaymentForm;
-  window.closeModal = closeModal;
-
-  // Bezárás gomb eseménykezelője
-  document.querySelectorAll('.close').forEach(function (closeButton) {
-      closeButton.addEventListener('click', closeModal);
+document.addEventListener("DOMContentLoaded", function () {
+    // Részletek ablak megnyitása
+    function openModal(button) {
+      // Adatok lekérése a gomb adat attribútumaiból
+      var gyarto = button.getAttribute('data-gyarto');
+      var tipus = button.getAttribute('data-típus');
+      var ev = button.getAttribute('data-ev');
+      var motor = button.getAttribute('data-motor');
+      var ar = button.getAttribute('data-ar');
+      var leiras = button.getAttribute('data-leiras');
+  
+      // Részletek ablak frissítése
+      var modalContent = document.getElementById('modal-info');
+      if (modalContent) {
+        modalContent.innerHTML = `
+          <h2>${gyarto} ${tipus}</h2>
+          <p><strong>Gyártási év:</strong> ${ev}</p>
+          <p><strong>Motor:</strong> ${motor}</p>
+          <p><strong>Ár:</strong> ${ar} Ft</p>
+          <p><strong>Leírás:</strong> ${leiras}</p>
+          <button type="submit" class="berles-button" name="berles">Bérlés</button> 
+        `;
+      }
+  
+      // A jármű id beállítása a rejtett input mezőbe
+      document.getElementById("jarmu_id").value = button.getAttribute("data-id");
+  
+      // Részletek ablak megjelenítése
+      document.getElementById('modal').style.display = 'flex';
+      document.getElementById('overlay').style.display = 'block';
+  
+      setTimeout(function() {
+        document.getElementById('modal').style.opacity = 1;
+      }, 10);
+    }
+  
+    // A Részletek ablak bezárása
+    function closeModal() {
+      document.getElementById('modal').style.opacity = 0;
+      document.getElementById('overlay').style.display = 'none';
+      setTimeout(function() {
+        document.getElementById('modal').style.display = 'none';
+      }, 300);
+    }
+  
+    // Az események összekapcsolása
+    document.querySelectorAll('.berles-gomb').forEach(function(button) {
+      button.addEventListener('click', function() {
+        openModal(button);
+      });
+    });
   });
-
-  // Overlay eseménykezelője
-  document.getElementById('overlay').addEventListener('click', closeModal);
-});
-console.log("Fizetési felület megnyitása, bérlés ID:", berles_id);
+  

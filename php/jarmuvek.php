@@ -52,7 +52,8 @@ $stmt->execute();
 $result = $stmt->get_result();
 $jarmuvek = $result->fetch_all(MYSQLI_ASSOC);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['jarmu_id'])) {
+// Ha a form elküldésre került
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jarmu_id = $_POST['jarmu_id'];
     $felhasznalo = $_POST['name'];
     $email = $_POST['email'];
@@ -66,19 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['jarmu_id'])) {
         die("Kapcsolódási hiba: " . $conn->connect_error);
     }
 
-    // Bérlés mentése, kifizetve = 0 (nem fizetve)
     $sql = "INSERT INTO berlesek (jarmu_id, felhasznalo, tol, ig, kifizetve) 
             VALUES (?, ?, ?, ?, 0)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("isss", $jarmu_id, $felhasznalo, $berles_tol, $berles_ig);
 
     if ($stmt->execute()) {
-        // Bérlés sikeresen mentve, megjelenítjük a fizetési felületet
-        $berles_id = $stmt->insert_id; // Az új bérlés azonosítója
-        echo "<script>
-                document.getElementById('payment_jarmu_id').value = '$berles_id';
-                document.getElementById('payment-modal').style.display = 'block';
-              </script>";
+        echo "<script>alert('A bérlés sikeresen rögzítve!');</script>";
     } else {
         echo "<script>alert('Hiba történt a bérlés mentésekor: " . $stmt->error . "');</script>";
     }
@@ -86,7 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['jarmu_id'])) {
     $stmt->close();
     $conn->close();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -95,59 +89,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['jarmu_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Járművek</title>
-    
+    <script defer src="../jarmuvek.js"></script>
     <link rel="stylesheet" href="../css/jarmuvek.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-        /* Modális ablak stílusai */
-.modal {
-    display: none; /* Alapértelmezetten elrejtve */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    position: relative;
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-}
-
-/* Overlay stílusai */
-.overlay {
-    display: none; /* Alapértelmezetten elrejtve */
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-    </style>
 </head>
 <body>
 <header>
@@ -278,32 +222,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['jarmu_id'])) {
                 <input type="date" id="return_date" name="return_date" required>
             </div>
 
-            <button type="submit">Bérlés megerősítése</button>
-        </form>
-    </div>
-</div>
-<!-- Fizetési felület -->
-<div id="payment-modal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h3>Fizetés</h3>
-        <form method="POST" action="fizetes_feldolgozas.php">
-        <input type="hidden" name="berles_id" id="payment_jarmu_id">
-            <input type="text" name="name" id="payment_name" placeholder="Név" required>
-            <input type="text" name="card_number" id="card_number" placeholder="Kártyaszám" required>
-            <input type="month" name="expiry_date" id="expiry_date" placeholder="Lejárat" required>
-            <input type="number" name="cvv" id="cvv" placeholder="CVV" required>
-            <button type="submit" name="action" value="fizetes">Fizetés</button>
+            <button type="submit" >Fizetés</button>
+            <!-- <a href="fizetes_feldolgozas.php" class="button">Bérlés megerősítése</a> -->
         </form>
     </div>
 </div>
 
-<!-- Overlay -->
-<div id="overlay" class="overlay"></div>
-<script defer src="../jarmuvek.js"></script>
-
 
 <div id="overlay" class="overlay"></div>
+<script>
+    function openModal(button) {
+        document.getElementById('jarmu_id').value = button.getAttribute('data-id');
+        document.getElementById('modal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
 
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+</script>
 </body>
 </html>
