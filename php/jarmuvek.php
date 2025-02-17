@@ -1,4 +1,16 @@
 <?php
+// Munkamenet indítása
+session_start();
+
+// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
+if (!isset($_SESSION['felhasznalo_nev'])) {
+    // Ha nincs bejelentkezve, átirányítjuk a bejelentkezési oldalra
+    echo '<script type="text/javascript">',
+         'alert("Kérem jelentkezzen be, hogy tovább tudjon lépni!");',
+         'window.location.href = "index.php";',
+         '</script>';
+    exit();
+}
 // Kapcsolat az adatbázissal
 include './adatLekeres.php';
 
@@ -89,28 +101,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Járművek</title>
+    <script defer src="../index.js"></script>
     <script defer src="../jarmuvek.js"></script>
     <link rel="stylesheet" href="../css/jarmuvek.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
 <header>
-    <div class="menu-toggle">&#9776; Menu</div>
-    <nav>
-        <ul>
-            <li><a href="index.php">R&J</a></li>
-            <li><a href="kapcsolat.php">Kapcsolat</a></li>
-            <li><a href="husegpontok.php">Hűségpontok</a></li>
-            <li><a href="jarmuvek.php">Gépjárművek</a></li>
-            <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+        <div class="menu-toggle">☰ Menu</div>
+        <nav>
+            <ul>
+                <li><a href="index.php">R&J</a></li>
+                <li><a href="kapcsolat.php">Kapcsolat</a></li>
+                <li><a href="husegpontok.php">Hűségpontok</a></li>
+                <li><a href="jarmuvek.php">Gépjárművek</a></li>
+                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+                <li><a href="profilom.php">Profilom</a></li>
                 <li><a href="logout.php">Kijelentkezés</a></li>
             <?php else: ?>
-                <li><a href="register.php">Regisztráció</a></li>
-                <li><a href="login.php">Bejelentkezés</a></li>
+                <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
+                <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
             <?php endif; ?>
-        </ul>
-    </nav>
-</header>
+            </ul>
+        </nav>
+    </header>
 <div class="szures_div">
     <form method="GET" action="jarmuvek.php">
         <h2>Elérhető járművek</h2>
@@ -227,7 +241,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 </div>
+<!-- Bejelentkezés Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content-login">
+        <span id="closeLoginModal" class="close" onclick="closeModal()">&times;</span>
+        <h2>Bejelentkezés</h2>
+        <form action="login.php" method="post">
+            <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required><br>
+            <input type="password" name="jelszo" placeholder="Jelszó" required><br>
+            <input type="submit" value="Bejelentkezés">
+        </form>
+    </div>
+</div>
 
+<!-- Regisztráció Modal -->
+<div id="registerModal" class="modal">
+    <div class="modal-content-register">
+        <span id="closeRegisterModal" class="close" onclick="closeModal()">&times;</span>
+        <h2>Regisztráció</h2>
+        <form action="register.php" method="post">
+            <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required><br>
+            <input type="text" name="nev" placeholder="Teljes név" required><br>
+            <input type="email" name="emailcim" placeholder="Email" required><br>
+            <input type="password" name="jelszo" placeholder="Jelszó" required><br>
+            <input type="password" name="jelszo_ujra" placeholder="Jelszó újra" required><br>
+            <input type="date" name="jogositvany_kiallitasDatum" placeholder="Jogosítvány érvénnysségi dátuma" required><br>
+            <input type="text" name="szamlazasi_cim" placeholder="Számlázási cím" required><br>
+            <input type="submit" value="Regisztráció">
+        </form>
+    </div>
+</div>
 
 <div id="overlay" class="overlay"></div>
 <script>

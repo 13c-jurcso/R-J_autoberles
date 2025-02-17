@@ -8,9 +8,15 @@ html, body {
     color: #ffffff;
     overflow-x: hidden; /* Az oldal vízszintes görgetése megakadályozva */
 }
-
+#torzs{
+    padding-top: 25%;
+    background-image:url(../torzs.jpg);
+    min-height: 900px;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    margin-top: -10px;
+}
 body {
-    background-image: url('../torzs.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

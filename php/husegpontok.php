@@ -1,32 +1,45 @@
+<?php
+session_start();
+
+// Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
+if (!isset($_SESSION['felhasznalo_nev'])) {
+    // Ha nincs bejelentkezve, beállítjuk a figyelmeztetést és átirányítjuk az index.php-ra
+    $_SESSION['warning_alert'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Husegpontok</title>
-    <link rel="stylesheet" href="../css/husegpontok.css">
+    <link rel="stylesheet" href="../css/index.css"> 
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/index.css">
-
+    <link rel="stylesheet" href="../css/husegpontok.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script defer src="../index.js"></script>
 </head>
 <body>
 <header>
-    <div class="menu-toggle">☰ Menu</div>
-    <nav>
-        <ul>
-            <li><a href="index.php">R&J</a></li>
-            <li><a href="kapcsolat.php">Kapcsolat</a></li>
-            <li><a href="husegpontok.php">Hűségpontok</a></li>
-            <li><a href="jarmuvek.php">Gépjárművek</a></li>
-            <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+        <div class="menu-toggle">☰ Menu</div>
+        <nav>
+            <ul>
+                <li><a href="index.php">R&J</a></li>
+                <li><a href="kapcsolat.php">Kapcsolat</a></li>
+                <li><a href="husegpontok.php">Hűségpontok</a></li>
+                <li><a href="jarmuvek.php">Gépjárművek</a></li>
+                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+                <li><a href="profilom.php">Profilom</a></li>
                 <li><a href="logout.php">Kijelentkezés</a></li>
             <?php else: ?>
-                <li><a href="register.php">Regisztráció</a></li>
-                <li><a href="login.php">Bejelentkezés</a></li>
+                <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
+                <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
             <?php endif; ?>
-        </ul>
-    </nav>
-</header>
+            </ul>
+        </nav>
+    </header>
 <div class="container">
     <h2>Hűségpontok</h2>
     <p>A hűségpontok rendszere lehetőséget biztosít arra, hogy vásárlásaid után értékes jutalmakat szerezz anélkül, hogy bármilyen külön regisztrációra lenne szükség. Az egész folyamat rendkívül egyszerű és kényelmes: mindössze annyi szükséges, hogy a vásárlásaid során a rendszer automatikusan rögzítse a szükséges adatokat, és a pontok maguktól gyűlnek, hogy később kihasználhasd őket.</p>
@@ -45,12 +58,11 @@
     <p>A hűségpontok rendszere tehát egy kényelmes és egyszerű módja annak, hogy hűségedet jutalmakkal viszonozzuk, anélkül, hogy bárminemű adminisztrációval kellene foglalkoznod. Vásárolj bátran, és gyűjtsd a pontokat, hogy a következő vásárlásod még kellemesebb élmény legyen!</p>
 </div>
 
-
 <script>
     document.querySelector(".menu-toggle").addEventListener("click", function () {
         document.querySelector("header").classList.toggle("menu-opened");
     });
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

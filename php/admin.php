@@ -45,6 +45,8 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             <path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708"/>
             </svg>
         </button>
+        
+        
     </div>
 
     <!-- Járművek szerkeztése aloldal -->
@@ -292,7 +294,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
             }
         ?>
     </div>
-
+    
     
 
     <div id="overlay" class="overlay"></div>
