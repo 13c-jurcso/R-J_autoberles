@@ -16,25 +16,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $gyartasi_ev = $_POST['gyartasi_ev'];
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
-    $kep = $_FILES['kep_url'];
-    $kepmappa ="./kepek/";
-    $filenev = $kepmappa.basename($kep['name']);
 
-    move_uploaded_file($kep["tmp_name"],$filenev);
+    $kepmappa = "./kepek/";
+    $kepek = []; // Ez egy tömb, amely a képek elérési útvonalait tartalmazza.
 
-    $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $filenev);
+    // Több kép feltöltése
+    foreach ($_FILES['kep_url']['name'] as $key => $kep_name) {
+        $fileTmpPath = $_FILES['kep_url']['tmp_name'][$key];
+        $fileName = basename($kep_name);
+        $filePath = $kepmappa . $fileName;
 
-    if ($modositas->execute()) {
-        // $uzenet = '<div class="sikeres" id="animDiv">Sikeres hozzáadás!</div>';
-        session_start();
-        $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Sikeres hozzáadás!</div>';
-    } else {
-        echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
-        var_dump($torles->error);
+        if (move_uploaded_file($fileTmpPath, $filePath)) {
+            $kepek[] = $filePath; // A sikeresen feltöltött képek elérési útvonalát hozzáadjuk a tömbhöz.
+        }
     }
-    $modositas->close();
+
+    // Ha legalább egy kép sikeresen feltöltésre került, azokat elmenthetjük
+    if (count($kepek) > 0) {
+        // Képek tárolása az adatbázisban (JSON formátumban tároljuk)
+        $kepek_json = json_encode($kepek);
+
+        // Jármű adatainak beszúrása
+        $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $kepek_json);
+
+        if ($modositas->execute()) {
+            session_start();
+            $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Sikeres hozzáadás!</div>';
+        } else {
+            echo '<div class="sikertelen" id="animDiv">Hiba a hozzáadás során!</div>';
+            var_dump($modositas->error);
+        }
+        $modositas->close();
+    } else {
+        echo '<div class="sikertelen" id="animDiv">Nem sikerült képeket feltölteni.</div>';
+    }
 }
 ?>
 
@@ -104,7 +121,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     </div>
 
     <div id="hozzaad_jarmuvek" class="tartalmi-resz">
-        <!-- Jármű hozzáadása -->
         <h2>Jármű hozzáadása</h2>
         <form method="POST" enctype="multipart/form-data" class="form">
             <label for="gyarto">Gyártó:</label>
@@ -119,17 +135,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
             <label for="felhasznalas_id">Felhasználási mód:</label>
             <select name="felhasznalas_id">
                 <?php
-                        $felhasznalas_sql = "SELECT felhasznalas_id, felhasznalas.nev FROM felhasznalas;";
-                        $felhasznalas = adatokLekerese($felhasznalas_sql);
-                        if(is_array($felhasznalas)){
-                            foreach ($felhasznalas as $f) {
-                                echo '<option value="'. $f['felhasznalas_id'].'">' . $f['nev'] . '</option>'; 
-                            }
+                    $felhasznalas_sql = "SELECT felhasznalas_id, felhasznalas.nev FROM felhasznalas;";
+                    $felhasznalas = adatokLekerese($felhasznalas_sql);
+                    if (is_array($felhasznalas)) {
+                        foreach ($felhasznalas as $f) {
+                            echo '<option value="'. $f['felhasznalas_id'].'">' . $f['nev'] . '</option>'; 
                         }
-                        else{
-                            echo $felhasznalas;
-                        }
-                    ?>
+                    } else {
+                        echo $felhasznalas;
+                    }
+                ?>
             </select>
 
             <label for="szerviz_id">Szerviz ID:</label>
@@ -143,8 +158,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
 
             <label for="ar">Ár:</label>
             <input type="number" name="ar" required><br>
-            <label for="kep_url">Kép:</label>
-            <input type="file" name="kep_url" accept="image/*" required><br>
+
+            <label for="kep_url">Képek:</label>
+            <input type="file" name="kep_url[]" accept="image/*" multiple required><br>
 
             <button type="submit" name="add_vehicle">Hozzáadás</button>
         </form>

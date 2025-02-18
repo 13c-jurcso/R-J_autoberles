@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Részletek ablak megnyitása
+    document.querySelector(".menu-toggle").addEventListener("click", function () {
+      document.querySelector("header").classList.toggle("menu-opened");
+  });
     function openModal(button) {
       // Adatok lekérése a gomb adat attribútumaiból
       var gyarto = button.getAttribute('data-gyarto');

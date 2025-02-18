@@ -89,22 +89,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo "<script>alert('Hiba történt a bérlés mentésekor: " . $stmt->error . "');</script>";
     }
-
     $stmt->close();
     $conn->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Járművek</title>
-    <script defer src="../index.js"></script>
     <script defer src="../jarmuvek.js"></script>
     <link rel="stylesheet" href="../css/jarmuvek.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <header>
@@ -113,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <ul>
                 <li><a href="index.php">R&J</a></li>
                 <li><a href="kapcsolat.php">Kapcsolat</a></li>
+                <li><a href="forum.php">Fórum</a></li>
                 <li><a href="husegpontok.php">Hűségpontok</a></li>
                 <li><a href="jarmuvek.php">Gépjárművek</a></li>
                 <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
@@ -155,26 +153,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 </div>
 <div class="card-container">
+    
     <?php if (!empty($jarmuvek)): ?>
         <?php foreach ($jarmuvek as $kocsi): ?>
+            <?php
+            $carImages = json_decode($kocsi['kep_url']);
+            $firstImage = !empty($carImages) ? $carImages[0] : 'default.jpg';
+            ?>
             <div class="card">
-                <img src="<?= htmlspecialchars($kocsi['kep_url']) ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) ?>" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) ?></h3>
-                    <p class="card-text">Üzemanyag: <?= htmlspecialchars($kocsi['motor']) ?></p>
-                    <p class="card-text">Ár: <?= htmlspecialchars($kocsi['ar']) ?> Ft</p>
-                    <p class="card-text">További adatok: <?= htmlspecialchars($kocsi['leiras']) ?></p>
-                </div>
-                
-                <button class="berles-gomb" onclick="openModal(this)" 
+                <img src="<?= $firstImage ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?>" class="card-img">
+                <div class="card-body">
+                    <h5 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?></h5>
+                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p>
+                    <p class="card-text">Ár: <?= number_format($kocsi['ar'], 0, '.', ' ') ?> Ft/nap</p>
+                    <button class="berles-gomb" onclick="openModal(this)" 
                         data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>" 
                         data-gyarto="<?= htmlspecialchars($kocsi['gyarto']) ?>" 
                         data-tipus="<?= htmlspecialchars($kocsi['tipus']) ?>">Részletek</button>
-        
+                </div>
             </div>
         <?php endforeach; ?>
     <?php else: ?>
-        <p>Nincs elérhető jármű a megadott feltételek szerint.</p>
+        <p>Jelenleg nincs elérhető jármű.</p>
     <?php endif; ?>
 </div>
 
@@ -236,41 +236,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="date" id="return_date" name="return_date" required>
             </div>
 
-            <button type="submit" >Fizetés</button>
+            <button type="submit" >Fizetés azonnal</button>
+            <button type="submit">Fizetés a helyszínen</button>
+
             <!-- <a href="fizetes_feldolgozas.php" class="button">Bérlés megerősítése</a> -->
         </form>
     </div>
 </div>
-<!-- Bejelentkezés Modal -->
-<div id="loginModal" class="modal">
-    <div class="modal-content-login">
-        <span id="closeLoginModal" class="close" onclick="closeModal()">&times;</span>
-        <h2>Bejelentkezés</h2>
-        <form action="login.php" method="post">
-            <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required><br>
-            <input type="password" name="jelszo" placeholder="Jelszó" required><br>
-            <input type="submit" value="Bejelentkezés">
-        </form>
-    </div>
-</div>
 
-<!-- Regisztráció Modal -->
-<div id="registerModal" class="modal">
-    <div class="modal-content-register">
-        <span id="closeRegisterModal" class="close" onclick="closeModal()">&times;</span>
-        <h2>Regisztráció</h2>
-        <form action="register.php" method="post">
-            <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required><br>
-            <input type="text" name="nev" placeholder="Teljes név" required><br>
-            <input type="email" name="emailcim" placeholder="Email" required><br>
-            <input type="password" name="jelszo" placeholder="Jelszó" required><br>
-            <input type="password" name="jelszo_ujra" placeholder="Jelszó újra" required><br>
-            <input type="date" name="jogositvany_kiallitasDatum" placeholder="Jogosítvány érvénnysségi dátuma" required><br>
-            <input type="text" name="szamlazasi_cim" placeholder="Számlázási cím" required><br>
-            <input type="submit" value="Regisztráció">
-        </form>
-    </div>
-</div>
 
 <div id="overlay" class="overlay"></div>
 <script>

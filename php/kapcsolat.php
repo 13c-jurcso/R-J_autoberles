@@ -63,6 +63,7 @@ $conn->close();
             <ul>
                 <li><a href="index.php">R&J</a></li>
                 <li><a href="kapcsolat.php">Kapcsolat</a></li>
+                <li><a href="forum.php">Fórum</a></li>
                 <li><a href="husegpontok.php">Hűségpontok</a></li>
                 <li><a href="jarmuvek.php">Gépjárművek</a></li>
                 <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
@@ -99,38 +100,6 @@ $conn->close();
 
             <button type="submit">Küldés</button>
 
-            <hr>
-            <h1>Vendégkönyv</h1>
-            <?php
-            if ($result->num_rows > 0):
-                while ($row = $result->fetch_assoc()):
-            ?>
-                    <div class="review">
-                        <p><strong><?= htmlspecialchars($row['felhasznalo_nev']) ?>:</strong> <?= nl2br(htmlspecialchars($row['uzenet'])) ?></p>
-                        <small><?= htmlspecialchars($row['datum']) ?></small>
-                    </div>
-                <?php
-                endwhile;
-            else:
-                ?>
-                <p>Még nincs vélemény.</p>
-            <?php endif; ?>
-
-
-
-            <form action="kapcsolat.php" method="post">
-                <h3>Írja meg véleményét</h3>
-                <label for="message">Üzenet</label>
-                <textarea id="message" name="message" rows="5" required></textarea>
-                <button type="submit" name="submit_review">Küldés</button>
-            </form>
-
-
-            <?php
-            if (isset($uzenet)) {
-                echo $uzenet;
-            }
-            ?>
 
         </form>
 
