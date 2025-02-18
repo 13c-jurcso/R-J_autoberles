@@ -1,6 +1,5 @@
 <?php
 session_start();
-include './db_connection.php';
 ?>
 
 <!DOCTYPE html>
@@ -9,35 +8,36 @@ include './db_connection.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap CSS link -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>R&J Autókölcsönző</title>
     <link rel="stylesheet" href="../css/styles.css">
+    
     <script defer src="../index.js"></script>
 </head>
 <body>
 <header>
-        <div class="menu-toggle">☰ Menu</div>
-        <nav>
-            <ul>
-                <li><a href="index.php">R&J</a></li>
-                <li><a href="kapcsolat.php">Kapcsolat</a></li>
-                <li><a href="husegpontok.php">Hűségpontok</a></li>
-                <li><a href="jarmuvek.php">Gépjárművek</a></li>
-                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+    <div class="menu-toggle">☰ Menu</div>
+    <nav>
+        <ul>
+            <li><a href="index.php">R&J</a></li>
+            <li><a href="kapcsolat.php">Kapcsolat</a></li>
+            <li><a href="husegpontok.php">Hűségpontok</a></li>
+            <li><a href="jarmuvek.php">Gépjárművek</a></li>
+            <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
                 <li><a href="profilom.php">Profilom</a></li>
                 <li><a href="logout.php">Kijelentkezés</a></li>
             <?php else: ?>
                 <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
                 <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
             <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
+        </ul>
+    </nav>
+</header>
 
 <div id="torzs">
     <h1>R&J autókölcsönző. Indulás!</h1>
     <div id="kezdo_input">
-    <form action="jarmuvek.php" method="get">
+        <form action="jarmuvek.php" method="get">
             <select name="hely" id="hely">
                 <option value="Veszprém">Veszprém</option>
                 <option value="Budapest">Budapest</option>
@@ -82,5 +82,21 @@ include './db_connection.php';
         </form>
     </div>
 </div>
+
+<!-- Lebegő figyelmeztető alert üzenet -->
+<?php if (isset($_SESSION['warning_alert'])): ?>
+    <div class="alert alert-warning d-flex align-items-center alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x w-75" role="alert">
+        <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Warning:">
+            <use xlink:href="#exclamation-triangle-fill"></use>
+        </svg>
+        <div>
+            <?php echo $_SESSION['warning_alert']; ?>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php unset($_SESSION['warning_alert']); ?> <!-- Töröljük az alertet a session-ból, hogy ne jelenjen meg újra -->
+<?php endif; ?>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

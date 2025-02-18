@@ -36,30 +36,31 @@ $berlesek_result = $db->query($berlesek_sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profilom</title>
-    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
 
 <!-- Navbar -->
 <header>
-    <div class="menu-toggle">☰ Menu</div>
-    <nav>
-        <ul>
-            <li><a href="index.php">R&J</a></li>
-            <li><a href="kapcsolat.php">Kapcsolat</a></li>
-            <li><a href="husegpontok.php">Hűségpontok</a></li>
-            <li><a href="jarmuvek.php">Gépjárművek</a></li>
-            <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+        <div class="menu-toggle">☰ Menu</div>
+        <nav>
+            <ul>
+                <li><a href="index.php">R&J</a></li>
+                <li><a href="kapcsolat.php">Kapcsolat</a></li>
+                <li><a href="husegpontok.php">Hűségpontok</a></li>
+                <li><a href="jarmuvek.php">Gépjárművek</a></li>
+                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+                <li><a href="profilom.php">Profilom</a></li>
                 <li><a href="logout.php">Kijelentkezés</a></li>
             <?php else: ?>
-                <li><a href="register.php">Regisztráció</a></li>
-                <li><a href="login.php">Bejelentkezés</a></li>
+                <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
+                <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
             <?php endif; ?>
-        </ul>
-    </nav>
-</header>
+            </ul>
+        </nav>
+    </header>
 
 <!-- Profil oldal tartalma -->
 <div class="container">
@@ -117,8 +118,6 @@ $berlesek_result = $db->query($berlesek_sql);
     <?php endif; ?>
 
 </div>
-
-
 
 <script>
     document.querySelector(".menu-toggle").addEventListener("click", function () {
