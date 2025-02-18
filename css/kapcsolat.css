@@ -11,19 +11,23 @@ a:hover{
     color: white;
 }
 .container {
-    max-width: 800px;
-    margin: 20px auto;
+    margin-top:  6rem;
+    margin: 150px auto;
     background: white;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
+.mt-5{margin-top:6rem!important}
 
 h1, h2, h3 {
     text-align: center;
     color: #333;
 }
-
+hr{
+    border: 10px solid;
+  border-radius: 5px
+}
 .contact-info {
     background: #eee;
     padding: 15px;

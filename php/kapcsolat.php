@@ -50,9 +50,9 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kapcsolat</title>
     <link rel="stylesheet" href="../css/index.css">
-    <link rel="stylesheet" href="../css/kapcsolat.css">
     <link rel="stylesheet" href="../css/styles.css">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/kapcsolat.css">
+    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="../index.js"></script>
 </head>
 
@@ -75,7 +75,7 @@ $conn->close();
             </ul>
         </nav>
     </header>
-    <div class="container">
+    <div class="container mt-5" >
         <h1>Kapcsolat</h1>
         <p>Vegye fel velünk a kapcsolatot az alábbi elérhetőségek egyikén, vagy használja a kapcsolatfelvételi űrlapot.</p>
 
@@ -99,7 +99,7 @@ $conn->close();
 
             <button type="submit">Küldés</button>
 
-
+            <hr>
             <h1>Vendégkönyv</h1>
             <?php
             if ($result->num_rows > 0):
