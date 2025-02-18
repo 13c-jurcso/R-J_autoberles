@@ -88,19 +88,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #0056b3;
         }
         .back-btn {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 10px;
             text-align: center;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
+            align-items: center;
+            appearance: none;
+            background-color: #aceeb8;
+            border-radius: 4px;
+            border-width: 0;
+            box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#1b8a30 0 -3px 0 inset;
+            box-sizing: border-box;
+            color: #36395A;
             cursor: pointer;
+            display: inline-flex;
+            /* font-family: "JetBrains Mono",monospace; */
+            height: 48px;
+            justify-content: center;
+            line-height: 1;
+            list-style: none;
+            overflow: hidden;
+            padding-left: 16px;
+            padding-right: 16px;
+            position: relative;
+            text-align: left;
+            text-decoration: none;
+            transition: box-shadow .15s,transform .15s;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+            will-change: box-shadow,transform;
+            font-size: 18px;
         }
+
+        .back-btn:focus {
+            box-shadow: #1b8a30 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #1b8a30 0 -3px 0 inset;
+        }
+
         .back-btn:hover {
-            background-color: #218838;
+            box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #1b8a30 0 -3px 0 inset;
+            transform: translateY(-2px);
+        }
+
+        .back-btn:active {
+            box-shadow: #1b8a30 0 3px 7px inset;
+            transform: translateY(2px);
         }
     </style>
 </head>
@@ -122,9 +152,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="date" id="jogositvany_kiallitasDatum" name="jogositvany_kiallitasDatum" value="<?php echo htmlspecialchars($user['jogositvany_kiallitasDatum']); ?>" required>
 
         <input type="submit" value="Frissítés">
+
+        <!-- Vissza gomb -->
+        <a href="profilom.php"><button class="back-btn">Vissza a profilomhoz</button></a>
     </form>
-    <!-- Vissza gomb -->
-    <a href="profilom.php"><button class="back-btn">Vissza a profilomhoz</button></a>
+    
 </div>
 
 </body>

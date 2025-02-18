@@ -125,13 +125,13 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                         <td>
                             <form action="" method="post">
                             <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
-                            <input type="button" class="modositas_button" onclick="modositasOpen()" value="Módosítás">
+                            <input type="button" class="modositas_button" value="Módosítás">
                             </form>
                         </td>
                         <td>
                             <form method="POST" action="">
                                 <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
-                                <input type="button" class="torles_button" onclick="openModal()" value="Törlés">
+                                <input type="button" class="torles_button" value="Törlés" name="delete_vehicle">
                             </form>
                         </td>
                     </tr>
@@ -193,7 +193,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                     echo '<td>' . $b['ig'] . '</td>';
                     echo '<td><form method="POST">
                                 <input type="hidden" name="berles_id" value="' . $b['berles_id'] . '">
-                                <input name="delete_berles" class="torles_button" data-toggle="modal" type="button" value="Törlés">
+                                <input name="delete_berles" class="torles_button" type="submit" value="Törlés">
                           </form></td></tr>';
                 }
             }
@@ -205,8 +205,10 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
         ?>
     </div>
 
+    <!-- EGYNLORE KIVESZEM, HOGY MUKODJON -->
+
     <!-- Törlésre figyelmeztető modális ablak -->
-    <div id="csoo" class="modal">
+    <!-- <div id="csoo" class="modal">
         <div class="modal-dialog modal-confirm">
             <div class="modal-content">
                 <div class="modal-header flex-column">
@@ -230,10 +232,10 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Módosítás modális ablaka -->
-    <div id="modositas" class="modal">
+    <!-- <div id="modositas" class="modal">
         <div class="modal-dialog modal-confirm">
             <div class="modal-content">
                 <div class="modal-header flex-column">
@@ -242,14 +244,12 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                 </div>
                 <div class="modal-body">
                     <form action="" class="form">
-                        <?php
-                            
-                        ?>
+                
                     </form>
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
     <div>
@@ -299,8 +299,40 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
                 $torles->close();
             }
 
+            //Felhasználó jogosultságának módosítása:
+            // if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
+            //     $felhasznalo_nev = $_POST['felhasznalo_nev'];
+            //     $admin = $_POST['admin'];
+            //     $admin = (int)$_POST['admin'];
+            
+            //     // Adatbázis frissítése
+            //     $query = "UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?";
+            //     $stmt = $db->prepare($query);
+            //     $stmt->bind_param("is", $felhasznalo_nev, $admin);
+            //     $stmt = $db->prepare("UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?");
+            //     $stmt->bind_param("is", $admin, $felhasznalo_nev);
+            
+            //     if ($stmt->execute()) {
+            //         echo '<div id="animDiv">Jogosultság sikeresen módosítva.</div>';
+            //     }
+            //     else{
+            //         echo 'valami nem jo';
+            //     }
+            // }
+
             // Bérlés törlése
-            if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['']))
+            if($_SERVER['REQUEST_METHOD'] == "DELETE" && isset($_POST['delete_berles'])){
+                $berles_id = $_POST['berles_id'];
+
+                //berles törlése
+                $stmt = $db->prepare("DELETE FROM berlesek WHERE berlesek.berles_id = ?");
+                $stmt->bind_param("i", [$berles_id]);
+                var_dump($berles_id);
+                if($stmt->execute()){
+                    echo 'Siker';
+                }
+
+            }
 
             //Felhasználó jogosultságának módosítása:
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {

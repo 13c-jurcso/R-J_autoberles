@@ -23,12 +23,10 @@ if ($result->num_rows > 0) {
 }
 
 // SQL lekérdezés a felhasználó bérléseinek lekérdezésére a járművekkel együtt
-$berlesek_sql = "
-    SELECT b.berles_id, b.tol, b.ig, b.kifizetve, j.gyarto, j.tipus, j.motor, j.ar 
-    FROM berlesek AS b
-    JOIN jarmuvek AS j ON b.jarmu_id = j.jarmu_id
-    WHERE b.felhasznalo = '$felhasznalo_nev'
-";
+$berlesek_sql = "SELECT b.berles_id, b.tol, b.ig, b.kifizetve, j.gyarto, j.ar, j.tipus, j.motor, 
+                (DATEDIFF(b.ig, b.tol) + 1) * j.ar AS osszeg 
+                FROM berlesek AS b JOIN jarmuvek AS j ON b.jarmu_id = j.jarmu_id 
+                WHERE b.felhasznalo = '$felhasznalo_nev';";
 $berlesek_result = $db->query($berlesek_sql);
 ?>
 
@@ -65,15 +63,26 @@ $berlesek_result = $db->query($berlesek_sql);
 
 <!-- Profil oldal tartalma -->
 <div class="container">
-    <h2>Profilom</h2>
-    <p><strong>Felhasználónév:</strong> <?php echo htmlspecialchars($user['felhasznalo_nev']); ?></p>
-    <p><strong>Név:</strong> <?php echo htmlspecialchars($user['nev']); ?></p>
-    <p><strong>Email:</strong> <?php echo htmlspecialchars($user['emailcim']); ?></p>
-    <p><strong>Számlázási cím:</strong> <?php echo htmlspecialchars($user['szamlazasi_cim']); ?></p>
-    <p><strong>Jogosítvány kiállítás dátuma:</strong> <?php echo htmlspecialchars($user['jogositvany_kiallitasDatum']); ?></p>
-    <p><strong>Hűségpontjaim:</strong> <?php echo htmlspecialchars($user['husegpontok']); ?></p>
-
-    <h3>Bérelt autóim</h3>
+    <form>
+        <h2>Profilom</h2>
+        <p><strong>Felhasználónév:</strong> <?php echo htmlspecialchars($user['felhasznalo_nev']); ?></p>
+        <p><strong>Név:</strong> <?php echo htmlspecialchars($user['nev']); ?></p>
+        <p><strong>Email:</strong> <?php echo htmlspecialchars($user['emailcim']); ?></p>
+        <p><strong>Számlázási cím:</strong> <?php echo htmlspecialchars($user['szamlazasi_cim']); ?></p>
+        <p><strong>Jogosítvány kiállítás dátuma:</strong> <?php echo htmlspecialchars($user['jogositvany_kiallitasDatum']); ?></p>
+        <p><strong>Hűségpontjaim:</strong> <?php echo htmlspecialchars($user['husegpontok']); ?></p>
+    </form>
+</div>
+<div style="text-align: center">
+    <?php
+        if ($user['admin'] == 1) {
+            echo '<a href="admin.php"><button class="back-btn">Vezérlőpult</button></a>';
+        }
+    ?>
+    <a href="modosit_profil.php"><button class="back-btn">Profil módosítása</button></a>
+</div>
+<div class="tablazat">
+    <h3 style="text-align: center">Bérelt autóim</h3>
     <?php if ($berlesek_result->num_rows > 0): ?>
         <table class="table table-success table-striped">
             <thead>
@@ -81,9 +90,10 @@ $berlesek_result = $db->query($berlesek_sql);
                     <th>Gyártó</th>
                     <th>Típus</th>
                     <th>Motor</th>
-                    <th>Ár (Ft)</th>
+                    <th>Napi Ár (Ft)</th>
                     <th>Bérlés kezdete</th>
                     <th>Bérlés vége</th>
+                    <th>Teljes Összeg (Ft)</th>
                     <th>Kifizetve</th>
                 </tr>
             </thead>
@@ -96,6 +106,7 @@ $berlesek_result = $db->query($berlesek_sql);
                         <td><?php echo htmlspecialchars(number_format($berles['ar'], 0, ',', ' ')); ?></td>
                         <td><?php echo htmlspecialchars($berles['tol']); ?></td>
                         <td><?php echo htmlspecialchars($berles['ig']); ?></td>
+                        <td><?php echo htmlspecialchars(number_format($berles['osszeg'], 0, ',', ' ')); ?></td>
                         <td><?php echo $berles['kifizetve'] ? 'Igen' : 'Nem'; ?></td>
                     </tr>
                 <?php endwhile; ?>
@@ -105,14 +116,9 @@ $berlesek_result = $db->query($berlesek_sql);
         <p>Nincs bérelt autó.</p>
     <?php endif; ?>
 
-    <!-- Módosítás gomb -->
-    <a href="modosit_profil.php"><button class="back-btn">Profil módosítása</button></a><br><br>
-    <?php
-        if ($user['admin'] == 1) {
-            echo '<a href="admin.php"><button class="back-btn">Vezérlőpult</button></a>';
-        }
-    ?>
 </div>
+
+
 
 <script>
     document.querySelector(".menu-toggle").addEventListener("click", function () {
