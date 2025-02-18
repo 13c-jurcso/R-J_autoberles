@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Jan 27. 20:25
+-- Létrehozás ideje: 2025. Feb 18. 09:52
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -101,6 +101,7 @@ CREATE TABLE `felhasznalo` (
 INSERT INTO `felhasznalo` (`felhasznalo_nev`, `nev`, `emailcim`, `jogositvany_kiallitasDatum`, `szamlazasi_cim`, `husegpontok`, `jelszo`, `admin`) VALUES
 ('admin', 'admin', 'admin@admin.com', '2024-11-21 00:00:00', 'dsdsdx', 500, '$2y$10$eA4teVtYs8mUFgNVW/fi7Om.pWa9QzTVQ0SKsnzdy4hgDujq8V/m.', 1),
 ('jani', 'Jurcso Janos', 'dsdads@dsd.dsd', '2019-01-09 00:00:00', 'teszt varos teszt utca 1', 0, '$2y$10$B22AtfhKqS3TpOhUkR9yFedcJPm0zUUr4FLTJCCwR5xmj1NELJbD6', NULL),
+('jani(admin)', 'Jurcso Janos', 'jurcso.janos@gmail.com', '2024-02-03 00:00:00', 'Veszprem', NULL, '$2y$10$gBMCX78fyZC2AnBU35BbYeDBU5oIsEe5LcqQG4dJr8eiyXxwHKY8y', NULL),
 ('user1', 'Kiss János', 'janos.kiss@example.com', '2018-08-12 00:00:00', 'Budapest, 1011', 150, NULL, NULL),
 ('user2', 'Nagy Anna', 'anna.nagy@example.com', '2020-05-30 00:00:00', 'Budapest, 1022', 90.5, NULL, NULL),
 ('user3', 'Tóth Péter', 'peter.toth@example.com', '2015-03-18 00:00:00', 'Debrecen, 4029', 120, NULL, NULL),
@@ -201,6 +202,16 @@ CREATE TABLE `velemenyek` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
+-- A tábla adatainak kiíratása `velemenyek`
+--
+
+INSERT INTO `velemenyek` (`velemeny_id`, `felhasznalo_nev`, `uzenet`, `datum`) VALUES
+(35, 'admin', 'valami', '2025-01-28 10:55:48'),
+(36, 'admin', 'nagyon tetszett minden', '2025-01-28 10:56:02'),
+(37, 'Rolika', 'Minden fasza volt', '2025-01-28 10:56:13'),
+(38, 'jani(admin)', 'nagyon köszönjük', '2025-02-18 09:46:39');
+
+--
 -- Indexek a kiírt táblákhoz
 --
 
@@ -252,7 +263,7 @@ ALTER TABLE `velemenyek`
 -- AUTO_INCREMENT a táblához `berlesek`
 --
 ALTER TABLE `berlesek`
-  MODIFY `berles_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `berles_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT a táblához `jarmuvek`
@@ -264,7 +275,7 @@ ALTER TABLE `jarmuvek`
 -- AUTO_INCREMENT a táblához `velemenyek`
 --
 ALTER TABLE `velemenyek`
-  MODIFY `velemeny_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `velemeny_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- Megkötések a kiírt táblákhoz
