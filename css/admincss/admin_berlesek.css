@@ -1,0 +1,166 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 30px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+nav {
+    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 60px !important;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+.aloldalak {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.aloldalak button {
+    padding: 10px 20px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.aloldalak button:hover {
+    background-color: #ccc;
+    /* Egérmutatóval szürke */
+}
+
+.aloldalak button.aktiv {
+    background-color: #ccc;
+    /* Kiválasztott állapotban szürke */
+    color: white;
+    /* A szöveg fehér lesz */
+}
+
+.table-container {
+    width: 90%;
+    /* Fix szélesség */
+    max-height: 400px;
+    /* Fix magasság */
+    margin: 20px auto;
+    overflow-y: auto;
+    /* Görgethető, ha túl sok adat van */
+    border: 1px solid #ddd;
+}
+
+table {
+    width: 100%; /* Táblázat teljes szélességben */
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #cac6c6;
+}
+
+.torles_button {
+    background-color: #ff4d4d;
+    /* Piros háttér */
+    color: white;
+    /* Fehér szöveg */
+    border: none;
+    /* Nincs keret */
+    border-radius: 5px;
+    /* Lekerekített sarkok */
+    padding: 10px 20px;
+    /* Belső margó */
+    font-size: 16px;
+    /* Betűméret */
+    cursor: pointer;
+    /* Kéz ikonná változik */
+    transition: background-color 0.3s ease;
+    /* Animáció a háttérszín változására */
+}
+
+.torles_button:hover {
+    background-color: #a10a0a;
+    /* Sötétebb piros a hover hatásra */
+}
+
+.sikeres {
+    background-color: #28a745;
+    color: white; /* Fehér szövegszín */
+    padding: 15px 20px; /* Térköz a szöveg körül */
+    font-size: 16px; /* Szövegméret */
+    font-family: Arial, sans-serif; /* Szövegstílus */
+    text-align: center; /* Középre igazított szöveg */
+    width: 80%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Finom árnyék */
+    max-width: 600px;
+    margin: 20px auto;
+    border-radius: 4px;
+}

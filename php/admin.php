@@ -96,13 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
                     d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4" />
             </svg>
         </button>
-        <button id="berlesek" onclick="mutatResz('resz3')">Bérlések <svg xmlns="http://www.w3.org/2000/svg" width="16"
+        <a href="./admin_berlesek.php"><button id="berlesek">Bérlések <svg xmlns="http://www.w3.org/2000/svg" width="16"
                 height="16" fill="currentColor" class="bi bi-check2-all" viewBox="0 0 16 16">
                 <path
                     d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0" />
                 <path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708" />
             </svg>
-        </button>
+        </button></a>
     </div>
     <div>
         <!-- Üzenetek -->
@@ -248,35 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
         </form>
     </div>
 
-    <!--Bérlé<sek-->
-    <div id="resz3" class="tartalmi-resz">
-        <h2>Bérlések</h2>
-        <?php
-            $berlesek_listazasa_sql = "SELECT berlesek.berles_id, jarmuvek.gyarto, jarmuvek.tipus, felhasznalo.nev, berlesek.tol, berlesek.ig FROM berlesek 
-                                       INNER JOIN jarmuvek ON berlesek.jarmu_id=jarmuvek.jarmu_id INNER JOIN felhasznalo ON felhasznalo.felhasznalo_nev=berlesek.felhasznalo;";
-            $berlesek_listazasa = adatokLekerese($berlesek_listazasa_sql);
-            echo '<table><tr><th>Bérlés sorszáma</th><th>Kibérelt jármű gyártója</th><th>Kibérelt jármű típusa</th><th>Bérlő neve</th><th>Átvétel időpontja</th><th>Leadás dátuma</th><th>Művelet</th></tr>';
-            if(is_array($berlesek_listazasa)){
-                foreach ($berlesek_listazasa as $b) {
-                    echo '<tr><td>' . $b['berles_id'] . '</td>';
-                    echo '<td>' . $b['gyarto'] . '</td>';
-                    echo '<td>' . $b['tipus'] . '</td>';
-                    echo '<td>' . $b['nev'] . '</td>';
-                    echo '<td>' . $b['tol'] . '</td>';
-                    echo '<td>' . $b['ig'] . '</td>';
-                    echo '<td><form method="POST">
-                                <input type="hidden" name="berles_id" value="' . $b['berles_id'] . '">
-                                <input name="delete_berles" class="torles_button" type="submit" value="Törlés">
-                          </form></td></tr>';
-                }
-            }
-            else{
-                echo '<tr><td colspan="10">Nincs bérlés rögzítve az adatbázisban.</td></tr>';
-            }
-
-            echo '</table>';
-        ?>
-    </div>
+    
 
     <!-- EGYNLORE KIVESZEM, HOGY MUKODJON -->
 
@@ -366,19 +338,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
             //     }
             // }
 
-            // Bérlés törlése
-            if($_SERVER['REQUEST_METHOD'] == "DELETE" && isset($_POST['delete_berles'])){
-                $berles_id = $_POST['berles_id'];
-
-                //berles törlése
-                $stmt = $db->prepare("DELETE FROM berlesek WHERE berlesek.berles_id = ?");
-                $stmt->bind_param("i", [$berles_id]);
-                var_dump($berles_id);
-                if($stmt->execute()){
-                    echo 'Siker';
-                }
-
-            }
+            
 
             //Felhasználó jogosultságának módosítása:
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
