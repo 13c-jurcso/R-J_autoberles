@@ -1,8 +1,24 @@
+document.addEventListener('DOMContentLoaded', function() {
+  // Ha vannak szűrési dátumok
+  const atvetel = new URLSearchParams(window.location.search).get('atvetel');
+  const leadas = new URLSearchParams(window.location.search).get('leadas');
+
+  if (atvetel) {
+      document.getElementById('rental_date').value = atvetel; // Bérlés kezdete
+  }
+
+  if (leadas) {
+      document.getElementById('return_date').value = leadas; // Bérlés vége
+  }
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     // Részletek ablak megnyitása
     document.querySelector(".menu-toggle").addEventListener("click", function () {
       document.querySelector("header").classList.toggle("menu-opened");
+      
   });
+  
     function openModal(button) {
       // Adatok lekérése a gomb adat attribútumaiból
       var gyarto = button.getAttribute('data-gyarto');

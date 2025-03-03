@@ -64,7 +64,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $jarmuvek = $result->fetch_all(MYSQLI_ASSOC);
 
-// Ha a form elküldésre került
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jarmu_id = $_POST['jarmu_id'];
     $felhasznalo = $_POST['name'];
@@ -73,24 +72,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $berles_tol = $_POST['rental_date'];
     $berles_ig = $_POST['return_date'];
 
-    // Adatok mentése az adatbázisba
+    // Megkapjuk a fizetési módot (0 = helyszínen, 1 = azonnal)
+    $fizetes_mod = isset($_POST['fizetes_mod']) ? (int)$_POST['fizetes_mod'] : 0;
+
+    // Adatbázis kapcsolat
     $conn = new mysqli("localhost", "root", "", "autoberles");
     if ($conn->connect_error) {
         die("Kapcsolódási hiba: " . $conn->connect_error);
     }
 
+    // Bérlés adatainak mentése
     $sql = "INSERT INTO berlesek (jarmu_id, felhasznalo, tol, ig, kifizetve) 
-            VALUES (?, ?, ?, ?, 0)";
+            VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isss", $jarmu_id, $felhasznalo, $berles_tol, $berles_ig);
+    $stmt->bind_param("isssi", $jarmu_id, $felhasznalo, $berles_tol, $berles_ig, $fizetes_mod);
 
     if ($stmt->execute()) {
         echo "<script>alert('A bérlés sikeresen rögzítve!');</script>";
     } else {
         echo "<script>alert('Hiba történt a bérlés mentésekor: " . $stmt->error . "');</script>";
     }
+
     $stmt->close();
     $conn->close();
+
 }
 ?>
 <!DOCTYPE html>
@@ -124,33 +129,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </nav>
     </header>
 <div class="szures_div">
-    <form method="GET" action="jarmuvek.php">
-        <h2>Elérhető járművek</h2>
-        <hr>
-        <label for="atvetel">Átvétel dátuma:</label>
-        <input type="date" id="atvetel" name="atvetel" value="<?= htmlspecialchars($atvetel) ?>" required>
+<form method="GET" action="jarmuvek.php">
+    <h2>Elérhető járművek</h2>
+    <hr>
+    <label for="atvetel">Átvétel dátuma:</label>
+    <input type="date" id="atvetel" name="atvetel" value="<?= htmlspecialchars($atvetel) ?>" >
 
-        <label for="leadas">Leadás dátuma:</label>
-        <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>" required>
+    <label for="leadas">Leadás dátuma:</label>
+    <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>" >
 
-        <label for="kategoria">Kategória:     </label>
-        <select id="kategoria" name="kategoria"required>
-            <option value="">-- Válassz kategóriát --</option>
-            <option value="1">Városi</option>
-            <option value="2">Családi</option>
-            <option value="3">Haszon</option>
-            <option value="4">Élmény</option>
-            <option value="5">Lakó</option>
-        </select>
+    <label for="kategoria">Kategória: </label>
+    <select id="kategoria" name="kategoria">
+        <option value="">-- Válassz kategóriát --</option>
+        <option value="1">Városi</option>
+        <option value="2">Családi</option>
+        <option value="3">Haszon</option>
+        <option value="4">Élmény</option>
+        <option value="5">Lakó</option>
+    </select>
 
-        <label for="min_ar">Minimum ár:</label>
-        <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000"required>
+    <label for="min_ar">Minimum ár:</label>
+    <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000">
 
-        <label for="max_ar">Maximum ár:</label>
-        <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000"required>
+    <label for="max_ar">Maximum ár:</label>
+    <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000">
 
-        <button type="submit" class="btn btn-primary">Szűrés</button>
-    </form>
+    <button type="submit" class="btn btn-primary">Szűrés</button>
+</form>
+
 </div>
 <div class="card-container">
     
@@ -236,9 +242,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="date" id="return_date" name="return_date" required>
             </div>
 
-            <button type="submit" >Fizetés azonnal</button>
-            <button type="submit">Fizetés a helyszínen</button>
-
+            <button type="submit" name="fizetes_mod" value="1">Fizetés azonnal</button>
+            <button type="submit" name="fizetes_mod" value="0">Fizetés a helyszínen</button>    
             <!-- <a href="fizetes_feldolgozas.php" class="button">Bérlés megerősítése</a> -->
         </form>
     </div>

@@ -69,11 +69,11 @@ $resultReviews = $conn->query($queryReviews);
                     <div class="carousel-inner">
                         <?php foreach ($carImages as $index => $image): ?>
                             <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-                            <img src="<?= htmlspecialchars($image) ?>" class="d-block w-100" alt="Car Image">
-
+                                <img src="<?= htmlspecialchars($image) ?>" class="d-block w-100" alt="Car Image">
                             </div>
                         <?php endforeach; ?>
                     </div>
+
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
@@ -92,6 +92,7 @@ $resultReviews = $conn->query($queryReviews);
         <p><strong>Év:</strong> <?= htmlspecialchars($car['gyartasi_ev']) ?></p>
         <p><strong>Leírás:</strong> <?= nl2br(htmlspecialchars($car['leiras'])) ?></p>
         <p><strong>Ár:</strong> <?= number_format($car['ar'], 0, '.', ' ') ?> Ft</p>
+        <hr>
 
         <h3>Vélemények</h3>
         <div class="reviews">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Feb 19. 07:50
+-- Létrehozás ideje: 2025. Már 03. 21:56
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -31,8 +31,8 @@ CREATE TABLE `berlesek` (
   `berles_id` int(11) NOT NULL,
   `jarmu_id` int(11) DEFAULT NULL,
   `felhasznalo` varchar(255) DEFAULT NULL,
-  `tol` datetime DEFAULT NULL,
-  `ig` datetime DEFAULT NULL,
+  `tol` date DEFAULT NULL,
+  `ig` date DEFAULT NULL,
   `kifizetve` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
@@ -41,19 +41,22 @@ CREATE TABLE `berlesek` (
 --
 
 INSERT INTO `berlesek` (`berles_id`, `jarmu_id`, `felhasznalo`, `tol`, `ig`, `kifizetve`) VALUES
-(23, 6, 'admin', '2025-03-04 00:00:00', '2025-04-26 00:00:00', 0),
-(24, 6, 'admin', '2025-03-04 00:00:00', '2025-04-26 00:00:00', 0),
-(25, 7, 'admin', '2025-02-23 00:00:00', '2025-02-24 00:00:00', 0),
-(26, 7, 'admin', '2025-02-23 00:00:00', '2025-02-24 00:00:00', 0),
-(27, 6, 'admin', '2025-02-03 00:00:00', '2025-02-07 00:00:00', NULL),
-(28, 8, 'admin', '2025-02-03 00:00:00', '2025-02-08 00:00:00', 0),
-(29, 8, 'admin', '2025-02-03 00:00:00', '2025-02-08 00:00:00', 0),
-(30, 9, 'admin', '2025-02-04 00:00:00', '2025-02-09 00:00:00', 0),
-(43, 11, 'admin', '2025-02-17 00:00:00', '2025-03-01 00:00:00', 0),
-(44, 11, 'admin', '2025-02-17 00:00:00', '2025-03-01 00:00:00', 0),
-(45, 11, 'admin', '2025-02-17 00:00:00', '2025-03-01 00:00:00', 0),
-(46, 11, 'admin', '2025-02-17 00:00:00', '2025-03-01 00:00:00', 0),
-(47, 8, 'admin', '2025-02-13 00:00:00', '2025-02-14 00:00:00', 0);
+(23, 6, 'admin', '2025-03-04', '2025-04-26', 0),
+(24, 6, 'admin', '2025-03-04', '2025-04-26', 0),
+(25, 7, 'admin', '2025-02-23', '2025-02-24', 0),
+(26, 7, 'admin', '2025-02-23', '2025-02-24', 0),
+(27, 6, 'admin', '2025-02-03', '2025-02-07', NULL),
+(28, 8, 'admin', '2025-02-03', '2025-02-08', 0),
+(29, 8, 'admin', '2025-02-03', '2025-02-08', 0),
+(30, 9, 'admin', '2025-02-04', '2025-02-09', 0),
+(43, 11, 'admin', '2025-02-17', '2025-03-01', 0),
+(44, 11, 'admin', '2025-02-17', '2025-03-01', 0),
+(45, 11, 'admin', '2025-02-17', '2025-03-01', 0),
+(46, 11, 'admin', '2025-02-17', '2025-03-01', 0),
+(47, 8, 'admin', '2025-02-13', '2025-02-14', 0),
+(48, 9, 'admin', '2025-03-03', '2025-03-06', 0),
+(49, 8, 'admin', '2025-03-03', '2025-03-06', 0),
+(50, 8, 'admin', '2025-03-03', '2025-03-06', 1);
 
 -- --------------------------------------------------------
 
@@ -192,7 +195,8 @@ INSERT INTO `velemenyek` (`velemeny_id`, `felhasznalo_nev`, `uzenet`, `datum`, `
 (7, 'janos', 'Ennek örülök', '2025-02-18 17:14:39', NULL, 7),
 (8, 'admin', 'ijdisdlasjdlskjd', '2025-02-18 19:28:18', NULL, 56),
 (9, 'admin', 'ijdisdlasjdlskjd', '2025-02-18 19:28:28', NULL, 56),
-(10, 'admin', 'ijdisdlasjdlskjd', '2025-02-18 19:29:59', NULL, 56);
+(10, 'admin', 'ijdisdlasjdlskjd', '2025-02-18 19:29:59', NULL, 56),
+(11, 'admin', 'nagyon jódnsjkdjsadhddddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddddd dddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddddddddddd', '2025-03-03 21:55:41', NULL, 8);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -246,7 +250,7 @@ ALTER TABLE `velemenyek`
 -- AUTO_INCREMENT a táblához `berlesek`
 --
 ALTER TABLE `berlesek`
-  MODIFY `berles_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `berles_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT a táblához `jarmuvek`
@@ -258,7 +262,7 @@ ALTER TABLE `jarmuvek`
 -- AUTO_INCREMENT a táblához `velemenyek`
 --
 ALTER TABLE `velemenyek`
-  MODIFY `velemeny_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `velemeny_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Megkötések a kiírt táblákhoz

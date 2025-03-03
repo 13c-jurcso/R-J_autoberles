@@ -8,7 +8,7 @@
 /* Body stílusok */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background: linear-gradient(135deg, #f6f6f6, #141414);  /* Lila és kék színátmenet */
     color: #333;
 }
 .mt-5{margin-top:6rem!important}
@@ -29,14 +29,24 @@ h1 {
     margin-bottom: 20px;
     text-align: center;
 }
+/* Carousel képek megjelenítése */
+.carousel-inner img {
+    width: 100%;             /* Szélesség 100% */
+    height: 400px;           /* Magasság 400px */
+    object-fit: contain;     /* A kép arányainak megőrzése */
+    object-position: center; /* Kép középre igazítása */
+}
 
-/* Autó kép */
+
+
+
+/* Autó kép
 img.img-fluid {
     width: 100%;
     max-height: 400px;
     object-fit: cover;
     margin-bottom: 20px;
-}
+} */
 
 /* Autó részletek */
 p {
@@ -47,6 +57,7 @@ p {
 
 strong {
     color: #5c6bc0;
+    text-align: left;
 }
 
 /* Vélemények szekció */
@@ -69,17 +80,22 @@ h3 {
     border-left: 5px solid #5c6bc0;
     border-radius: 5px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    
 }
 
 .review strong {
     font-size: 1.1rem;
     color: #333;
+    text-align: left;
 }
 
 .review p {
     font-size: 1rem;
     color: #555;
     margin: 10px 0;
+    text-align: left;
+    
 }
 
 .review small {
@@ -90,6 +106,7 @@ h3 {
 /* Ha nincs vélemény */
 .reviews p {
     color: #d32f2f;
+    
 }
 
 /* Vélemény form */
@@ -127,8 +144,8 @@ form button:hover {
 }
 
 /* Ha nincs autó */
-.container p {
-    text-align: center;
+.container {
+    text-align: left;
     font-size: 1.25rem;
     color: #d32f2f;
 }
