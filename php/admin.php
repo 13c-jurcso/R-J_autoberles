@@ -63,9 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vezérlőpult</title>
     <link rel="stylesheet" href="../css/admin.css">
-    <link rel="stylesheet" href="../css/index.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="../css/index.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
 <body>
@@ -82,20 +81,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     <h1>Vezérlőpult</h1>
 
     <div class="menu">
-        <button id="jarmuvek" onclick="mutatResz('resz1')">Járművek <svg xmlns="http://www.w3.org/2000/svg" width="16"
+        <a href="./admin.php"><button id="jarmuvek" onclick="mutatResz('resz1')">Járművek <svg xmlns="http://www.w3.org/2000/svg" width="16"
                 height="16" fill="currentColor" class="bi bi-car-front-fill" viewBox="0 0 16 16">
                 <path
                     d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679q.05.242.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.8.8 0 0 0 .381-.404l.792-1.848ZM3 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2m10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2M6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2zM2.906 5.189a.51.51 0 0 0 .497.731c.91-.073 3.35-.17 4.597-.17s3.688.097 4.597.17a.51.51 0 0 0 .497-.731l-.956-1.913A.5.5 0 0 0 11.691 3H4.309a.5.5 0 0 0-.447.276L2.906 5.19Z" />
             </svg>
-        </button>
-        <button id="jogosultsag" onclick="mutatResz('resz2')">Jogosultságok <svg xmlns="http://www.w3.org/2000/svg"
+        </button></a>
+        <a href="./admin_jogosultsag.php"><button id="jogosultsag" onclick="mutatResz('resz2')">Jogosultságok <svg xmlns="http://www.w3.org/2000/svg"
                 width="16" height="16" fill="currentColor" class="bi bi-person-fill-down" viewBox="0 0 16 16">
                 <path
                     d="M12.5 9a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7m.354 5.854 1.5-1.5a.5.5 0 0 0-.708-.708l-.646.647V10.5a.5.5 0 0 0-1 0v2.793l-.646-.647a.5.5 0 0 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
                 <path
                     d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4" />
             </svg>
-        </button>
+        </button></a>
         <a href="./admin_berlesek.php"><button id="berlesek">Bérlések <svg xmlns="http://www.w3.org/2000/svg" width="16"
                 height="16" fill="currentColor" class="bi bi-check2-all" viewBox="0 0 16 16">
                 <path
@@ -112,12 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
                 echo $_SESSION['uzenet'];
             }
         ?>
-    </div>
-
-    <!-- Járművek szerkeztése aloldal -->
-    <div id="resz1" class="menu tartalmi-resz">
-        <button id="jarmuvek_hozzaad" onclick="mutatResz('hozzaad_jarmuvek')">Hozzáadás</button>
-        <button id="jarmuvek_torles" onclick="mutatResz('torles_jarmuvek')">Törlés</button>
     </div>
 
     <div id="hozzaad_jarmuvek" class="tartalmi-resz">
@@ -217,39 +210,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
         </table>
     </div>
 
-    <!-- Jogosúltságok aloldal -->
-    <div id="resz2" class="tartalmi-resz">
-        <h2>Jogosultság módosítása</h2>
-        <form method="POST" class="form">
-            <label>Regisztrált emberek:</label>
-            <select name="felhasznalo_nev">
-                <option>-- Kérem válasszon --</option>
-                <?php
-                    $felhasznalok_sql = "SELECT * FROM felhasznalo;";
-                    $felhasznalok = adatokLekerese($felhasznalok_sql);
-                    if(is_array($felhasznalok)){
-                        foreach ($felhasznalok as $f) {
-                            echo '<option value="'. $f['felhasznalo_nev'].'">' . $f['nev'] . '</option>'; 
-                        }
-                    }
-                    else{
-                        echo $felhasznalok;
-                    }
-                ?>
-            </select>
-            <label for="admin">Admin jogosultság:</label>
-            <select id="admin" name="admin">
-                <option>-- Kérem válasszon --</option>
-                <option value="1">Admin</option>
-                <option value="0">Normál felhasználó</option>
-            </select>
-
-            <button type="submit" name="felhasznalo_modositas">Mentés</button>
-        </form>
-    </div>
-
-    
-
     <!-- EGYNLORE KIVESZEM, HOGY MUKODJON -->
 
     <!-- Törlésre figyelmeztető modális ablak -->
@@ -299,8 +259,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
 
     <div>
         <?php
-            
-
             // Jármű törlése
             if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
                 $jarmu_id = $_POST['jarmu_id'];
@@ -317,44 +275,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
                 $torles->close();
             }
 
-            //Felhasználó jogosultságának módosítása:
-            // if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
-            //     $felhasznalo_nev = $_POST['felhasznalo_nev'];
-            //     $admin = $_POST['admin'];
-            //     $admin = (int)$_POST['admin'];
-            
-            //     // Adatbázis frissítése
-            //     $query = "UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?";
-            //     $stmt = $db->prepare($query);
-            //     $stmt->bind_param("is", $felhasznalo_nev, $admin);
-            //     $stmt = $db->prepare("UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?");
-            //     $stmt->bind_param("is", $admin, $felhasznalo_nev);
-            
-            //     if ($stmt->execute()) {
-            //         echo '<div id="animDiv">Jogosultság sikeresen módosítva.</div>';
-            //     }
-            //     else{
-            //         echo 'valami nem jo';
-            //     }
-            // }
-
-            
-
-            //Felhasználó jogosultságának módosítása:
-            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
-                $felhasznalo_nev = $_POST['felhasznalo_nev'];
-                $admin = (int)$_POST['admin'];
-            
-                // Adatbázis frissítése
-                $stmt = $db->prepare("UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?");
-                $stmt->bind_param("is", $admin, $felhasznalo_nev);
-            
-                if ($stmt->execute()) {
-                    echo '<div id="animDiv">Jogosultság sikeresen módosítva.</div>';
-                } else {
-                    echo '<div id="animDiv">Hiba!.</div>';
-                }
-            }
         ?>
     </div>
 
@@ -386,24 +306,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
         this.classList.add("hidden");
     });
 
-    function openModal() {
-        // document.getElementById('berles_id').value = button.getAttribute('data-id');
-        document.getElementById('csoo').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-        console.log("asd");
-    }
-
-    function modositasOpen() {
-        // document.getElementById('jarmu_id').value = button.getAttribute('data-id');
-        document.getElementById('modositas').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeModal() {
-        document.getElementById('csoo').style.display = 'none';
-        document.getElementById('modositas').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
     </script>
 </body>
 
