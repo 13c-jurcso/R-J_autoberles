@@ -57,36 +57,28 @@ $resultReviews = $conn->query($queryReviews);
         <?php if (isset($car)): ?>
         <h1><?= htmlspecialchars($car['gyarto']) ?> <?= htmlspecialchars($car['tipus']) ?></h1>
         
-        <!-- Képgaléria -->
         <div class="car-gallery">
-            <?php if (!empty($carImages)): ?>
-                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                        <?php foreach ($carImages as $index => $image): ?>
-                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<?= $index ?>" <?= $index === 0 ? 'class="active"' : '' ?> aria-current="true" aria-label="Slide <?= $index + 1 ?>"></button>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="carousel-inner">
-                        <?php foreach ($carImages as $index => $image): ?>
-                            <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
-                                <img src="<?= htmlspecialchars($image) ?>" class="d-block w-100" alt="Car Image">
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-            <?php else: ?>
-                <p>Nem található kép ehhez az autóhoz.</p>
-            <?php endif; ?>
+    <?php if (!empty($carImages)): ?>
+        <!-- Csak az első kép megjelenítése nagyobb méretben -->
+        <div class="main-image">
+            <img src="<?= htmlspecialchars($carImages[0]) ?>" class="main-car-image" alt="Main Car Image" onclick="openGallery(0)">
         </div>
+
+        <!-- Modális galéria a többi képpel -->
+        <div id="galleryModal" class="gallery-modal">
+            <span class="close-gallery" onclick="closeGallery()">×</span>
+            <div class="gallery-content">
+                <?php foreach ($carImages as $index => $image): ?>
+                    <img src="<?= htmlspecialchars($image) ?>" class="gallery-image" data-index="<?= $index ?>">
+                <?php endforeach; ?>
+            </div>
+            <button class="gallery-prev" onclick="changeImage(-1)">❮</button>
+            <button class="gallery-next" onclick="changeImage(1)">❯</button>
+        </div>
+    <?php else: ?>
+        <p>Nem található kép ehhez az autóhoz.</p>
+    <?php endif; ?>
+</div>
 
         <p><strong>Motor:</strong> <?= htmlspecialchars($car['motor']) ?></p>
         <p><strong>Év:</strong> <?= htmlspecialchars($car['gyartasi_ev']) ?></p>
@@ -119,7 +111,43 @@ $resultReviews = $conn->query($queryReviews);
         <p>Ez az autó nem található.</p>
         <?php endif; ?>
     </div>
+    <script>
+    let currentIndex = 0;
+    const images = document.querySelectorAll('.gallery-image');
 
+    function openGallery(index) {
+        const modal = document.getElementById('galleryModal');
+        modal.style.display = 'flex';
+        showImage(index);
+    }
+
+    function closeGallery() {
+        const modal = document.getElementById('galleryModal');
+        modal.style.display = 'none';
+    }
+
+    function showImage(index) {
+        images.forEach(img => img.classList.remove('active'));
+        currentIndex = index;
+        images[currentIndex].classList.add('active');
+    }
+
+    function changeImage(direction) {
+        currentIndex += direction;
+        if (currentIndex < 0) {
+            currentIndex = images.length - 1;
+        } else if (currentIndex >= images.length) {
+            currentIndex = 0;
+        }
+        showImage(currentIndex);
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeGallery();
+        }
+    });
+</script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap 5 JS -->
 </body>
 </html>

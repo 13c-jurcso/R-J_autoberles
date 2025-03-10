@@ -1,14 +1,12 @@
 <?php
-// Munkamenet indítása
 session_start();
 
 // Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (!isset($_SESSION['felhasznalo_nev'])) {
-    // Ha nincs bejelentkezve, átirányítjuk a bejelentkezési oldalra
     echo '<script type="text/javascript">',
-    'alert("Kérem jelentkezzen be, hogy tovább tudjon lépni!");',
-    'window.location.href = "index.php";',
-    '</script>';
+         'alert("Kérem jelentkezzen be, hogy tovább tudjon lépni!");',
+         'window.location.href = "index.php";',
+         '</script>';
     exit();
 }
 
@@ -18,33 +16,33 @@ if ($conn->connect_error) {
     die("Csatlakozási hiba: " . $conn->connect_error);
 }
 
+// Vélemények lekérdezése
 $query = "SELECT felhasznalo_nev, uzenet, datum FROM velemenyek ORDER BY datum DESC";
 $result = $conn->query($query);
 
-if (isset($_POST['submit_review'])) {
-    // Felhasználónév kiolvasása a session-ből
+// Form submission handling
+if (isset($_POST['submit'])) {
     $username = $_SESSION['felhasznalo_nev'];
-    // Üzenet biztonságos kezelése
     $message = $conn->real_escape_string($_POST['message']);
+    
+    $insertQuery = "INSERT INTO velemenyek (felhasznalo_nev, uzenet, jarmu_id) VALUES (?, ?, 0)";
+    $stmt = $conn->prepare($insertQuery);
+    $stmt->bind_param("ss", $username, $message);
 
-    // Beszúrás az adatbázisba
-    $insertQuery = "INSERT INTO velemenyek (felhasznalo_nev, uzenet) VALUES ('$username', '$message')";
-    if ($conn->query($insertQuery)) {
-        $uzenet = "<p>Köszönjük a véleményt!</p>";
+    if ($stmt->execute()) {
+        echo "<script>alert('Köszönjük a véleményt!');</script>";
     } else {
-        $uzenet = "<p>Hiba történt: " . $conn->error . "</p>";
+        echo "<script>alert('Hiba történt: " . $stmt->error . "');</script>";
     }
-
-    // Átirányítás, hogy ne legyen újraküldés a formnak
-    header("Location: kapcsolat.php");
-    exit();
+    
+    $stmt->close();
 }
 
 $conn->close();
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
+<!DOCTYPE html>
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,7 +53,6 @@ $conn->close();
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="../index.js"></script>
 </head>
-
 <body>
     <header>
         <div class="menu-toggle">☰ Menu</div>
@@ -76,7 +73,7 @@ $conn->close();
             </ul>
         </nav>
     </header>
-    <div class="container mt-5" >
+    <div class="container mt-5">
         <h1>Kapcsolat</h1>
         <p>Vegye fel velünk a kapcsolatot az alábbi elérhetőségek egyikén, vagy használja a kapcsolatfelvételi űrlapot.</p>
 
@@ -88,9 +85,9 @@ $conn->close();
         </div>
 
         <h1>Kapcsolatfelvételi űrlap</h1>
-        <form action="#" method="post">
+        <form action="kapcsolat.php" method="post">
             <label for="name">Név</label>
-            <input type="text" id="name" name="name" required>
+            <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($_SESSION['felhasznalo_nev']); ?>" readonly>
 
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
@@ -98,24 +95,17 @@ $conn->close();
             <label for="message">Üzenet</label>
             <textarea id="message" name="message" rows="5" required></textarea>
 
-            <button type="submit">Küldés</button>
-
-
+            <button type="submit" name="submit">Küldés</button>
         </form>
-
     </div>
 
-
-    <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
     <script>
         document.querySelector(".menu-toggle").addEventListener("click", function() {
             document.querySelector("header").classList.toggle("menu-opened");
         });
     </script>
 </body>
-
 </html>
