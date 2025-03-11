@@ -109,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mail->Password = 'wnbd fotg aszs yseh';    // Alkalmazás-specifikus jelszó
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
+            $mail->CharSet = "UTF-8";
 
             // Küldő és címzett
             $mail->setFrom('13c-jurcso@ipari.vein.hu', 'R&J Autókölcsönző');

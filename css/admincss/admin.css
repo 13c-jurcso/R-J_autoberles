@@ -32,9 +32,9 @@ body {
     color: white; /* A szöveg fehér lesz */
 }
 
-.tartalmi-resz {
-    display: none; /* Alapértelmezés szerint rejtve */
-}
+/* .tartalmi-resz {
+    display: none; Alapértelmezés szerint rejtve
+} */
 
 .tartalmi-resz.aktiv {
     display: block; /* Csak az aktív rész jelenjen meg */
