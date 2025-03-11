@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Már 03. 21:56
+-- Létrehozás ideje: 2025. Már 11. 10:46
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -20,6 +20,22 @@ SET time_zone = "+00:00";
 --
 -- Adatbázis: `autoberles`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `akciok`
+--
+
+CREATE TABLE `akciok` (
+  `akcio_id` int(11) NOT NULL,
+  `jarmu_id` int(11) NOT NULL,
+  `kedvezmeny_szazalek` decimal(5,2) NOT NULL,
+  `kezdete` date NOT NULL,
+  `vege` date NOT NULL,
+  `leiras` varchar(255) DEFAULT NULL,
+  `is_black_friday` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 -- --------------------------------------------------------
 
@@ -56,7 +72,11 @@ INSERT INTO `berlesek` (`berles_id`, `jarmu_id`, `felhasznalo`, `tol`, `ig`, `ki
 (47, 8, 'admin', '2025-02-13', '2025-02-14', 0),
 (48, 9, 'admin', '2025-03-03', '2025-03-06', 0),
 (49, 8, 'admin', '2025-03-03', '2025-03-06', 0),
-(50, 8, 'admin', '2025-03-03', '2025-03-06', 1);
+(50, 8, 'admin', '2025-03-03', '2025-03-06', 1),
+(51, 11, 'admin', '2025-03-04', '2025-03-07', 1),
+(52, 8, 'admin', '2025-03-04', '2025-03-15', 0),
+(54, 27, 'admin', '2025-03-04', '2025-03-15', 1),
+(60, 8, 'Janos', '2025-03-15', '2025-03-30', 1);
 
 -- --------------------------------------------------------
 
@@ -94,21 +114,21 @@ CREATE TABLE `felhasznalo` (
   `szamlazasi_cim` varchar(255) DEFAULT NULL,
   `husegpontok` double DEFAULT NULL,
   `jelszo` varchar(255) DEFAULT NULL,
-  `admin` tinyint(1) DEFAULT NULL
+  `admin` tinyint(1) DEFAULT NULL,
+  `Telefonszám` varchar(16) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `felhasznalo`
 --
 
-INSERT INTO `felhasznalo` (`felhasznalo_nev`, `nev`, `emailcim`, `jogositvany_kiallitasDatum`, `szamlazasi_cim`, `husegpontok`, `jelszo`, `admin`) VALUES
-('admin', 'admin', 'admin@admin.com', '2024-11-21 00:00:00', 'dsdsdx', 500, '$2y$10$eA4teVtYs8mUFgNVW/fi7Om.pWa9QzTVQ0SKsnzdy4hgDujq8V/m.', 1),
-('jani', 'Jurcso Janos', 'dsdads@dsd.dsd', '2019-01-09 00:00:00', 'teszt varos teszt utca 1', 0, '$2y$10$B22AtfhKqS3TpOhUkR9yFedcJPm0zUUr4FLTJCCwR5xmj1NELJbD6', NULL),
-('janos', 'Jurcso Janos', 'jurocos-f@dsd.dsd', '2025-02-16 00:00:00', 'fghjkléáű', NULL, '$2y$10$FthE/e7PoblVdu.rSLeiFOe9nmuQ.KBBfni5rgI3V69wVwnH6LUVe', NULL),
-('user1', 'Kiss János', 'janos.kiss@example.com', '2018-08-12 00:00:00', 'Budapest, 1011', 150, NULL, NULL),
-('user2', 'Nagy Anna', 'anna.nagy@example.com', '2020-05-30 00:00:00', 'Budapest, 1022', 90.5, NULL, NULL),
-('user3', 'Tóth Péter', 'peter.toth@example.com', '2015-03-18 00:00:00', 'Debrecen, 4029', 120, NULL, NULL),
-('user4', 'Szabó Zsófia', 'zsofia.szabo@example.com', '2017-07-25 00:00:00', 'Szeged, 6722', 60, NULL, NULL);
+INSERT INTO `felhasznalo` (`felhasznalo_nev`, `nev`, `emailcim`, `jogositvany_kiallitasDatum`, `szamlazasi_cim`, `husegpontok`, `jelszo`, `admin`, `Telefonszám`) VALUES
+('admin', 'admin', 'admin@admin.com', '2024-11-21 00:00:00', 'dsdsdx', 500, '$2y$10$eA4teVtYs8mUFgNVW/fi7Om.pWa9QzTVQ0SKsnzdy4hgDujq8V/m.', 1, ''),
+('Janos', 'Jurcsó János', 'jurcso.ocsi@gmail.com', '2023-12-22 00:00:00', 'Balatonkenese Urbánus utca 3/1', NULL, '$2y$10$CHWVcQZEdPKTpEEk5sAMEeRSuxEK9WxADiObEullZTQ076fx5O0.W', NULL, ''),
+('user1', 'Kiss János', 'janos.kiss@example.com', '2018-08-12 00:00:00', 'Budapest, 1011', 150, NULL, NULL, ''),
+('user2', 'Nagy Anna', 'anna.nagy@example.com', '2020-05-30 00:00:00', 'Budapest, 1022', 90.5, NULL, NULL, ''),
+('user3', 'Tóth Péter', 'peter.toth@example.com', '2015-03-18 00:00:00', 'Debrecen, 4029', 120, NULL, NULL, ''),
+('user4', 'Szabó Zsófia', 'zsofia.szabo@example.com', '2017-07-25 00:00:00', 'Szeged, 6722', 60, NULL, NULL, '');
 
 -- --------------------------------------------------------
 
@@ -194,13 +214,26 @@ INSERT INTO `velemenyek` (`velemeny_id`, `felhasznalo_nev`, `uzenet`, `datum`, `
 (6, 'admin', 'ez egy kiváló autó', '2025-02-18 17:14:05', NULL, 7),
 (7, 'janos', 'Ennek örülök', '2025-02-18 17:14:39', NULL, 7),
 (8, 'admin', 'ijdisdlasjdlskjd', '2025-02-18 19:28:18', NULL, 56),
-(9, 'admin', 'ijdisdlasjdlskjd', '2025-02-18 19:28:28', NULL, 56),
+(9, 'admin', 'ijdisdlasjdlskjd', '2025-02-18 19:28:28', 'Köszönöm a véleméynt', 56),
 (10, 'admin', 'ijdisdlasjdlskjd', '2025-02-18 19:29:59', NULL, 56),
-(11, 'admin', 'nagyon jódnsjkdjsadhddddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddddd dddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddddddddddd', '2025-03-03 21:55:41', NULL, 8);
+(11, 'admin', 'nagyon jódnsjkdjsadhddddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddddd dddddddddddddddddddddddddddddd ddddddddddddddddddddddddddddddddddddddddddddd', '2025-03-03 21:55:41', NULL, 8),
+(12, 'admin', 'adsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa sdadassssssssssssssssssssssssssssssssssssssssssss dsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa dasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasas adsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa sdadassssssssssssssssssssssssssssssssssssssssssss dsaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa dasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasasas ', '2025-03-04 10:07:05', NULL, 56),
+(13, 'Janos', 'Nagyon jó minden', '2025-03-11 09:15:58', NULL, 0),
+(14, 'admin', 'edfghj', '2025-03-11 09:49:41', NULL, 0),
+(15, 'Janos', 'hello', '2025-03-11 10:20:00', 'Köszönöm', 56),
+(16, 'Janos', 'válasz', '2025-03-11 10:22:22', 'Köszönöm', 56),
+(17, 'Janos', 'ififi', '2025-03-11 10:25:32', 'sadfghjsaddfsadFSHGSFAD', 56);
 
 --
 -- Indexek a kiírt táblákhoz
 --
+
+--
+-- A tábla indexei `akciok`
+--
+ALTER TABLE `akciok`
+  ADD PRIMARY KEY (`akcio_id`),
+  ADD KEY `jarmu_id` (`jarmu_id`);
 
 --
 -- A tábla indexei `berlesek`
@@ -247,10 +280,16 @@ ALTER TABLE `velemenyek`
 --
 
 --
+-- AUTO_INCREMENT a táblához `akciok`
+--
+ALTER TABLE `akciok`
+  MODIFY `akcio_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT a táblához `berlesek`
 --
 ALTER TABLE `berlesek`
-  MODIFY `berles_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `berles_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT a táblához `jarmuvek`
@@ -262,11 +301,17 @@ ALTER TABLE `jarmuvek`
 -- AUTO_INCREMENT a táblához `velemenyek`
 --
 ALTER TABLE `velemenyek`
-  MODIFY `velemeny_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `velemeny_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- Megkötések a kiírt táblákhoz
 --
+
+--
+-- Megkötések a táblához `akciok`
+--
+ALTER TABLE `akciok`
+  ADD CONSTRAINT `akciok_ibfk_1` FOREIGN KEY (`jarmu_id`) REFERENCES `jarmuvek` (`jarmu_id`);
 
 --
 -- Megkötések a táblához `berlesek`
