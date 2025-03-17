@@ -275,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="<?= $firstImage ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?>" class="card-img">
                 <div class="card-body">
                     <h5 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?></h5>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p Bookmarks
+                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p Bookmarks>
                     <p class="card-text">
                         Ár: <?= number_format($akcios_ar, 0, '.', ' ') ?> Ft/nap
                         <?php if ($kedvezmeny > 0): ?>
