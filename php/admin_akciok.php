@@ -1,8 +1,68 @@
 <?php
 include "./db_connection.php";
 include "./adatLekeres.php";
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'src/PHPMailer.php';
+require 'src/SMTP.php';
+require 'src/Exception.php';
 
 session_start();
+
+// Felhasználók e-mail címeinek lekérdezése
+function sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday) {
+    global $db;
+    $users_sql = "SELECT emailcim, nev FROM felhasznalo";
+    $users = adatokLekerese($users_sql);
+
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = '13c-jurcso@ipari.vein.hu';
+        $mail->Password = 'wnbd fotg aszs yseh';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        $mail->CharSet = "UTF-8";
+
+        $mail->setFrom('13c-jurcso@ipari.vein.hu', 'R&J Autókölcsönző');
+        foreach ($users as $user) {
+            $mail->addAddress($user['emailcim'], $user['nev']);
+        }
+
+        $mail->isHTML(true);
+        $mail->Subject = $is_black_friday ? 'Black Friday Akció - R&J Autókölcsönző' : 'Új Akció - R&J Autókölcsönző';
+        $mail->Body = "
+        <html>
+        <head>
+            <title>Új akció</title>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; }
+                h2 { color: " . ($is_black_friday ? "#FFD700" : "#2c3e50") . "; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <h2>Kedves Ügyfelünk!</h2>
+                <p>Új akciót hirdettünk meg:</p>
+                <p><strong>Jármű:</strong> $jarmu_nev</p>
+                <p><strong>Kedvezmény:</strong> $kedvezmeny_szazalek%</p>
+                <p><strong>Kezdete:</strong> $kezdete</p>
+                <p><strong>Vége:</strong> $vege</p>
+                <p><strong>Leírás:</strong> $leiras</p>
+                " . ($is_black_friday ? "<p style='color: red;'>Ez egy Black Friday különleges ajánlat!</p>" : "") . "
+                <p>Foglaljon most a jarmuvek.php oldalon!</p>
+            </div>
+        </body>
+        </html>";
+
+        $mail->send();
+    } catch (Exception $e) {
+        $_SESSION['uzenet'] .= '<div class="sikertelen" id="animDiv">Hiba az e-mail küldésekor: ' . $mail->ErrorInfo . '</div>';
+    }
+}
 
 // Akció hozzáadása
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_akcio'])) {
@@ -18,6 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_akcio'])) {
 
     if ($stmt->execute()) {
         $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Akció sikeresen hozzáadva!</div>';
+        $jarmu_sql = "SELECT gyarto, tipus FROM jarmuvek WHERE jarmu_id = ?";
+        $jarmu_stmt = $db->prepare($jarmu_sql);
+        $jarmu_stmt->bind_param("i", $jarmu_id);
+        $jarmu_stmt->execute();
+        $jarmu = $jarmu_stmt->get_result()->fetch_assoc();
+        $jarmu_nev = $jarmu['gyarto'] . ' ' . $jarmu['tipus'];
+        sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday);
     } else {
         $_SESSION['uzenet'] = '<div class="sikertelen" id="animDiv">Hiba az akció hozzáadása során!</div>';
     }
@@ -27,8 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_akcio'])) {
 // Black Friday akció hozzáadása
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_black_friday'])) {
     $jarmu_id = $_POST['jarmu_id'];
-    $kedvezmeny_szazalek = 50; // Alapértelmezett nagy kedvezmény Black Friday-re
-    $kezdete = date('Y-11-28'); // Példa: Black Friday 2025-ben
+    $kedvezmeny_szazalek = 50;
+    $kezdete = date('Y-11-28');
     $vege = date('Y-11-30');
     $leiras = "Black Friday különleges ajánlat!";
     $is_black_friday = 1;
@@ -38,6 +105,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_black_friday'])) 
 
     if ($stmt->execute()) {
         $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Black Friday akció sikeresen hozzáadva!</div>';
+        $jarmu_sql = "SELECT gyarto, tipus FROM jarmuvek WHERE jarmu_id = ?";
+        $jarmu_stmt = $db->prepare($jarmu_sql);
+        $jarmu_stmt->bind_param("i", $jarmu_id);
+        $jarmu_stmt->execute();
+        $jarmu = $jarmu_stmt->get_result()->fetch_assoc();
+        $jarmu_nev = $jarmu['gyarto'] . ' ' . $jarmu['tipus'];
+        sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday);
     } else {
         $_SESSION['uzenet'] = '<div class="sikertelen" id="animDiv">Hiba a Black Friday akció hozzáadása során!</div>';
     }

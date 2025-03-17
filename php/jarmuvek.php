@@ -1,8 +1,9 @@
 <?php
- use PHPMailer\PHPMailer\PHPMailer;
- use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 session_start();
 
+// Bejelentkezés ellenőrzése
 if (!isset($_SESSION['felhasznalo_nev'])) {
     echo '<script type="text/javascript">',
          'alert("Kérem jelentkezzen be, hogy tovább tudjon lépni!");',
@@ -11,20 +12,26 @@ if (!isset($_SESSION['felhasznalo_nev'])) {
     exit();
 }
 
+// Adatbázis kapcsolat (csak az adatLekeres.php-ból származó $db-t használjuk)
 include './adatLekeres.php';
 
+// Járművek lekérdezése
 $atvetel = isset($_GET['atvetel']) ? $_GET['atvetel'] : null;
 $leadas = isset($_GET['leadas']) ? $_GET['leadas'] : null;
 $kategoria = isset($_GET['kategoria']) ? $_GET['kategoria'] : null;
 $min_ar = isset($_GET['min_ar']) ? (int)$_GET['min_ar'] : null;
 $max_ar = isset($_GET['max_ar']) ? (int)$_GET['max_ar'] : null;
 
-$sql = "SELECT * FROM jarmuvek WHERE 1=1";
+$sql = "SELECT j.*, a.kedvezmeny_szazalek, a.kezdete, a.vege 
+        FROM jarmuvek j 
+        LEFT JOIN akciok a ON j.jarmu_id = a.jarmu_id 
+        AND a.kezdete <= CURDATE() AND a.vege >= CURDATE() 
+        WHERE 1=1";
 $params = [];
 $types = "";
 
 if ($atvetel && $leadas) {
-    $sql .= " AND jarmu_id NOT IN (
+    $sql .= " AND j.jarmu_id NOT IN (
         SELECT jarmu_id FROM berlesek
         WHERE NOT ((tol > ? AND tol >= ?) OR (ig < ? AND ig <= ?))
     )";
@@ -33,18 +40,18 @@ if ($atvetel && $leadas) {
 }
 
 if ($kategoria) {
-    $sql .= " AND felhasznalas_id = ?";
+    $sql .= " AND j.felhasznalas_id = ?";
     array_push($params, $kategoria);
     $types .= "s";
 }
 
 if ($min_ar) {
-    $sql .= " AND ar >= ?";
+    $sql .= " AND j.ar >= ?";
     array_push($params, $min_ar);
     $types .= "i";
 }
 if ($max_ar) {
-    $sql .= " AND ar <= ?";
+    $sql .= " AND j.ar <= ?";
     array_push($params, $max_ar);
     $types .= "i";
 }
@@ -57,18 +64,15 @@ $stmt->execute();
 $result = $stmt->get_result();
 $jarmuvek = $result->fetch_all(MYSQLI_ASSOC);
 
-$conn = new mysqli("localhost", "root", "", "autoberles");
-if ($conn->connect_error) {
-    die("Kapcsolódási hiba: " . $conn->connect_error);
-}
-
-$user_query = "SELECT nev, emailcim FROM felhasznalo WHERE felhasznalo_nev = ?";
-$user_stmt = $conn->prepare($user_query);
+// Felhasználó adatainak lekérdezése
+$user_query = "SELECT nev, emailcim, husegpontok FROM felhasznalo WHERE felhasznalo_nev = ?";
+$user_stmt = $db->prepare($user_query);
 $user_stmt->bind_param("s", $_SESSION['felhasznalo_nev']);
 $user_stmt->execute();
 $user_result = $user_stmt->get_result();
 $user_data = $user_result->fetch_assoc();
 
+// Bérlés feldolgozása
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jarmu_id = $_POST['jarmu_id'];
     $felhasznalo = $_SESSION['felhasznalo_nev'];
@@ -78,44 +82,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $berles_ig = $_POST['return_date'];
     $fizetes_mod = isset($_POST['fizetes_mod']) ? (int)$_POST['fizetes_mod'] : 0;
 
+    // Bérlés rögzítése
     $sql = "INSERT INTO berlesek (jarmu_id, felhasznalo, tol, ig, kifizetve) 
             VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
+    $stmt = $db->prepare($sql);
     $stmt->bind_param("isssi", $jarmu_id, $felhasznalo, $berles_tol, $berles_ig, $fizetes_mod);
 
     if ($stmt->execute()) {
-        $vehicle_query = "SELECT gyarto, tipus, ar FROM jarmuvek WHERE jarmu_id = ?";
-        $vehicle_stmt = $conn->prepare($vehicle_query);
+        // Jármű és akció adatainak lekérdezése
+        $vehicle_query = "SELECT gyarto, tipus, ar, 
+                          IFNULL(a.kedvezmeny_szazalek, 0) as kedvezmeny_szazalek 
+                          FROM jarmuvek j 
+                          LEFT JOIN akciok a ON j.jarmu_id = a.jarmu_id 
+                          AND a.kezdete <= CURDATE() AND a.vege >= CURDATE() 
+                          WHERE j.jarmu_id = ?";
+        $vehicle_stmt = $db->prepare($vehicle_query);
         $vehicle_stmt->bind_param("i", $jarmu_id);
         $vehicle_stmt->execute();
         $vehicle_result = $vehicle_stmt->get_result();
         $vehicle_data = $vehicle_result->fetch_assoc();
 
-        // PHPMailer betöltése
+        // Akciós ár kiszámítása
+        $original_ar = $vehicle_data['ar'];
+        $kedvezmeny = $vehicle_data['kedvezmeny_szazalek'];
+        $akcios_ar = $kedvezmeny > 0 ? $original_ar * (1 - $kedvezmeny / 100) : $original_ar;
+
+        // Hűségpontok kiszámítása
+        $berles_napok = (strtotime($berles_ig) - strtotime($berles_tol)) / (60 * 60 * 24);
+        if ($berles_napok <= 0) {
+            $berles_napok = 1; // Minimum 1 nap
+        }
+        $total_cost = $akcios_ar * $berles_napok;
+        $husegpontok = floor($total_cost * 0.1); // 10% hűségpont
+
+        // Hibakeresés
+        error_log("Bérlés: jarmu_id=$jarmu_id, napok=$berles_napok, total_cost=$total_cost, husegpontok=$husegpontok, felhasznalo=$felhasznalo");
+
+        // Hűségpontok frissítése
+        $update_pontok = "UPDATE felhasznalo SET husegpontok = husegpontok + ? WHERE felhasznalo_nev = ?";
+        $pont_stmt = $db->prepare($update_pontok);
+        $pont_stmt->bind_param("is", $husegpontok, $felhasznalo);
+        if (!$pont_stmt->execute()) {
+            error_log("Hiba a hűségpontok frissítésekor: " . $pont_stmt->error);
+            echo "<script>alert('Hiba a hűségpontok mentésekor: " . $pont_stmt->error . "');</script>";
+            $stmt->close();
+            $db->close();
+            exit();
+        }
+        error_log("Hűségpontok sikeresen frissítve: $husegpontok pont hozzáadva $felhasznalo számára");
+        $pont_stmt->close();
+
+        // PHPMailer inicializálása
         require 'src/PHPMailer.php';
         require 'src/SMTP.php';
         require 'src/Exception.php';
 
-       
-
         $mail = new PHPMailer(true);
 
         try {
-            // Szerver beállítások
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = '13c-jurcso@ipari.vein.hu'; // Cseréld ki a saját Gmail címedre
-            $mail->Password = 'wnbd fotg aszs yseh';    // Alkalmazás-specifikus jelszó
+            $mail->Username = '13c-jurcso@ipari.vein.hu';
+            $mail->Password = 'wnbd fotg aszs yseh';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
             $mail->CharSet = "UTF-8";
 
-            // Küldő és címzett
             $mail->setFrom('13c-jurcso@ipari.vein.hu', 'R&J Autókölcsönző');
             $mail->addAddress($email, $user_data['nev']);
 
-            // Email tartalom
             $mail->isHTML(true);
             $mail->Subject = 'Sikeres bérlés - R&J Autókölcsönző';
             $mail->Body = "
@@ -133,16 +169,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <body>
                 <div class='container'>
                     <h2>Kedves " . htmlspecialchars($user_data['nev']) . "!</h2>
-                    <p>Örömmel értesítjük, hogy bérlése sikeresen rögzítésre került az R&J Autókölcsönző rendszerében.</p>
+                    <p>Örömmel értesítjük, hogy bérlése sikeresen rögzítésre került.</p>
                     <div class='details'>
                         <h3>Bérlés részletei</h3>
                         <p><strong>Jármű:</strong> " . htmlspecialchars($vehicle_data['gyarto'] . " " . $vehicle_data['tipus']) . "</p>
                         <p><strong>Bérlés kezdete:</strong> " . htmlspecialchars($berles_tol) . "</p>
                         <p><strong>Bérlés vége:</strong> " . htmlspecialchars($berles_ig) . "</p>
-                        <p><strong>Napi ár:</strong> " . number_format($vehicle_data['ar'], 0, '.', ' ') . " Ft</p>
+                        <p><strong>Napi ár:</strong> " . number_format($akcios_ar, 0, '.', ' ') . " Ft" . ($kedvezmeny > 0 ? " (eredeti: " . number_format($original_ar, 0, '.', ' ') . " Ft)" : "") . "</p>
+                        <p><strong>Teljes költség:</strong> " . number_format($total_cost, 0, '.', ' ') . " Ft</p>
                         <p><strong>Fizetési mód:</strong> " . ($fizetes_mod ? "Azonnal" : "Helyszínen") . "</p>
+                        <p><strong>Kapott hűségpontok:</strong> " . $husegpontok . "</p>
                     </div>
-                    <p>Köszönjük, hogy minket választott! Kérdés esetén keressen minket az info@nemletezokft.hu címen.</p>
+                    <p>Köszönjük, hogy minket választott!</p>
                     <div class='footer'>
                         <p>R&J Autókölcsönző © 2025</p>
                     </div>
@@ -160,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt->close();
-    $conn->close();
+    $db->close();
 }
 ?>
 
@@ -205,7 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>">
 
         <label for="kategoria">Kategória: </label>
-        <select id="kategoria" eld="rental_date" name="kategoria">
+        <select id="kategoria" name="kategoria">
             <option value="">-- Válassz kategóriát --</option>
             <option value="1">Városi</option>
             <option value="2">Családi</option>
@@ -229,13 +267,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php
             $carImages = json_decode($kocsi['kep_url']);
             $firstImage = !empty($carImages) ? $carImages[0] : 'default.jpg';
+            $original_ar = $kocsi['ar'];
+            $kedvezmeny = $kocsi['kedvezmeny_szazalek'] ?? 0;
+            $akcios_ar = $kedvezmeny > 0 ? $original_ar * (1 - $kedvezmeny / 100) : $original_ar;
             ?>
             <div class="card">
                 <img src="<?= $firstImage ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?>" class="card-img">
                 <div class="card-body">
                     <h5 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?></h5>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p>
-                    <p class="card-text">Ár: <?= number_format($kocsi['ar'], 0, '.', ' ') ?> Ft/nap</p>
+                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p Bookmarks
+                    <p class="card-text">
+                        Ár: <?= number_format($akcios_ar, 0, '.', ' ') ?> Ft/nap
+                        <?php if ($kedvezmeny > 0): ?>
+                            <span style="text-decoration: line-through; color: red;">
+                                (eredeti: <?= number_format($original_ar, 0, '.', ' ') ?> Ft)
+                            </span>
+                        <?php endif; ?>
+                    </p>
                     <button class="berles-gomb" onclick="openModal(this)" 
                         data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>" 
                         data-gyarto="<?= htmlspecialchars($kocsi['gyarto']) ?>" 
@@ -254,7 +302,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h3>Bérlés adatai</h3>
         <form method="POST">
             <input type="hidden" name="jarmu_id" id="jarmu_id">
-
             <div class="input-group">
                 <span class="input-group-text">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
