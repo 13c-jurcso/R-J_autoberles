@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Már 11. 10:46
+-- Létrehozás ideje: 2025. Már 17. 21:01
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -36,6 +36,14 @@ CREATE TABLE `akciok` (
   `leiras` varchar(255) DEFAULT NULL,
   `is_black_friday` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+
+--
+-- A tábla adatainak kiíratása `akciok`
+--
+
+INSERT INTO `akciok` (`akcio_id`, `jarmu_id`, `kedvezmeny_szazalek`, `kezdete`, `vege`, `leiras`, `is_black_friday`) VALUES
+(5, 6, 50.00, '2025-03-17', '2025-03-19', 'gyors', 0),
+(6, 7, 50.00, '2025-11-28', '2025-11-30', 'Black Friday különleges ajánlat!', 1);
 
 -- --------------------------------------------------------
 
@@ -76,7 +84,14 @@ INSERT INTO `berlesek` (`berles_id`, `jarmu_id`, `felhasznalo`, `tol`, `ig`, `ki
 (51, 11, 'admin', '2025-03-04', '2025-03-07', 1),
 (52, 8, 'admin', '2025-03-04', '2025-03-15', 0),
 (54, 27, 'admin', '2025-03-04', '2025-03-15', 1),
-(60, 8, 'Janos', '2025-03-15', '2025-03-30', 1);
+(60, 8, 'Janos', '2025-03-15', '2025-03-30', 1),
+(61, 6, 'Janos', '2025-03-17', '2025-03-20', 1),
+(62, 7, 'Janos', '2025-03-15', '2025-03-23', 1),
+(63, 6, 'Janos', '2025-03-28', '2025-03-31', 1),
+(64, 6, 'Janos', '2025-03-17', '2025-03-21', 1),
+(65, 6, 'Janos', '2025-04-25', '2025-04-28', 1),
+(66, 8, 'admin', '2025-03-17', '2025-03-17', 1),
+(67, 8, 'admin', '2025-03-17', '2025-03-17', 1);
 
 -- --------------------------------------------------------
 
@@ -112,23 +127,19 @@ CREATE TABLE `felhasznalo` (
   `emailcim` varchar(255) DEFAULT NULL,
   `jogositvany_kiallitasDatum` datetime DEFAULT NULL,
   `szamlazasi_cim` varchar(255) DEFAULT NULL,
-  `husegpontok` double DEFAULT NULL,
   `jelszo` varchar(255) DEFAULT NULL,
   `admin` tinyint(1) DEFAULT NULL,
-  `Telefonszám` varchar(16) NOT NULL
+  `Telefonszám` varchar(16) NOT NULL,
+  `husegpontok` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 
 --
 -- A tábla adatainak kiíratása `felhasznalo`
 --
 
-INSERT INTO `felhasznalo` (`felhasznalo_nev`, `nev`, `emailcim`, `jogositvany_kiallitasDatum`, `szamlazasi_cim`, `husegpontok`, `jelszo`, `admin`, `Telefonszám`) VALUES
-('admin', 'admin', 'admin@admin.com', '2024-11-21 00:00:00', 'dsdsdx', 500, '$2y$10$eA4teVtYs8mUFgNVW/fi7Om.pWa9QzTVQ0SKsnzdy4hgDujq8V/m.', 1, ''),
-('Janos', 'Jurcsó János', 'jurcso.ocsi@gmail.com', '2023-12-22 00:00:00', 'Balatonkenese Urbánus utca 3/1', NULL, '$2y$10$CHWVcQZEdPKTpEEk5sAMEeRSuxEK9WxADiObEullZTQ076fx5O0.W', NULL, ''),
-('user1', 'Kiss János', 'janos.kiss@example.com', '2018-08-12 00:00:00', 'Budapest, 1011', 150, NULL, NULL, ''),
-('user2', 'Nagy Anna', 'anna.nagy@example.com', '2020-05-30 00:00:00', 'Budapest, 1022', 90.5, NULL, NULL, ''),
-('user3', 'Tóth Péter', 'peter.toth@example.com', '2015-03-18 00:00:00', 'Debrecen, 4029', 120, NULL, NULL, ''),
-('user4', 'Szabó Zsófia', 'zsofia.szabo@example.com', '2017-07-25 00:00:00', 'Szeged, 6722', 60, NULL, NULL, '');
+INSERT INTO `felhasznalo` (`felhasznalo_nev`, `nev`, `emailcim`, `jogositvany_kiallitasDatum`, `szamlazasi_cim`, `jelszo`, `admin`, `Telefonszám`, `husegpontok`) VALUES
+('admin', 'admin', 'admin@admin.com', '2024-11-21 00:00:00', 'dsdsdx', '$2y$10$eA4teVtYs8mUFgNVW/fi7Om.pWa9QzTVQ0SKsnzdy4hgDujq8V/m.', 1, '', 64000),
+('Janos', 'Jurcsó János', 'jurcso.ocsi@gmail.com', '2023-12-22 00:00:00', 'Balatonkenese Urbánus utca 3/1', '$2y$10$CHWVcQZEdPKTpEEk5sAMEeRSuxEK9WxADiObEullZTQ076fx5O0.W', NULL, '', 12300);
 
 -- --------------------------------------------------------
 
@@ -283,13 +294,13 @@ ALTER TABLE `velemenyek`
 -- AUTO_INCREMENT a táblához `akciok`
 --
 ALTER TABLE `akciok`
-  MODIFY `akcio_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `akcio_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT a táblához `berlesek`
 --
 ALTER TABLE `berlesek`
-  MODIFY `berles_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `berles_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT a táblához `jarmuvek`
