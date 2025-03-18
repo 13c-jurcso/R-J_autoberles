@@ -1,6 +1,6 @@
 <?php
     //SQL function lekérdezésekhez:
-    function adatokLekerdezese($muvelet) {
+    function adatokLekerese($muvelet) {
         $db = new mysqli ('localhost', 'root', '', 'autoberles');
         if ($db->connect_errno == 0 ) {
             $eredmeny = $db->query($muvelet);

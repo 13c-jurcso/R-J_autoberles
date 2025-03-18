@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
 
-    $kepmappa = "./kepek/";
+    $kepmappa = "../../php/kepek/";
     $kepek = []; // Ez egy tömb, amely a képek elérési útvonalait tartalmazza.
 
     // Több kép feltöltése
@@ -88,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
         <div class="menu-toggle">☰ Menu</div>
         <nav>
             <ul>
-                <li><a href="/Vizsgaremek/berles/php/index.php">Főoldal</a></li>
-                <li><a href="/Vizsgaremek/berles/php/husegpontok.php">Hűségpontok</a></li>
-                <li><a href="/Vizsgaremek/berles/php/jarmuvek.php">Gépjárművek</a></li>
+                <li><a href="./php/index.php">Főoldal</a></li>
+                <li><a href="./php/husegpontok.php">Hűségpontok</a></li>
+                <li><a href="./php/jarmuvek.php">Gépjárművek</a></li>
             </ul>
         </nav>
     </header>
@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
             <select name="felhasznalas_id">
                 <?php
                     $felhasznalas_sql = "SELECT felhasznalas.felhasznalas_id, felhasznalas.nev FROM felhasznalas;";
-                    $felhasznalas = adatokLekerdezese($felhasznalas_sql);
+                    $felhasznalas = adatokLekerese($felhasznalas_sql);
                     if (is_array($felhasznalas)) {
                         foreach ($felhasznalas as $f) {
                             echo '<option value="'. $f['felhasznalas_id'].'">' . $f['nev'] . '</option>'; 
@@ -211,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
                 <td>
                     <form action="" method="post">
                         <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
-                        <input type="button" class="modositas_button" value="Módosítás">
+                        <a href="autok_kezeles_modositas.php?id=<?= $row['jarmu_id'] ?>"><button type="button" class="modositas_button">Módosítás</button></a>
                     </form>
                 </td>
                 <td>
