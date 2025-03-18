@@ -277,12 +277,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h5 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?></h5>
                     <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p Bookmarks>
                     <p class="card-text">
-                        Ár: <?= number_format($akcios_ar, 0, '.', ' ') ?> Ft/nap
-                        <?php if ($kedvezmeny > 0): ?>
+                    <?php if ($kedvezmeny > 0): ?>
                             <span style="text-decoration: line-through; color: red;">
-                                (eredeti: <?= number_format($original_ar, 0, '.', ' ') ?> Ft)
+                                Ár: <?= number_format($original_ar, 0, '.', ' ') ?> Ft/nap
                             </span>
                         <?php endif; ?>
+                        Ár: <?= number_format($akcios_ar, 0, '.', ' ') ?> Ft/nap
+                        
                     </p>
                     <button class="berles-gomb" onclick="openModal(this)" 
                         data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>" 
