@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
 
-    $kepmappa = "./kepek/";
+    $kepmappa = "../../php/kepek/";
     $kepek = []; // Ez egy tömb, amely a képek elérési útvonalait tartalmazza.
 
     // Több kép feltöltése
