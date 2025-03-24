@@ -1,12 +1,16 @@
 <?php
 session_start();
 
+// Modal include
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
+
 // Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (!isset($_SESSION['felhasznalo_nev'])) {
-    echo '<script type="text/javascript">',
-         'alert("Kérem jelentkezzen be, hogy tovább tudjon lépni!");',
-         'window.location.href = "index.php";',
-         '</script>';
+    $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_type'] = "warning";
+    header("Location: index.php");
     exit();
 }
 
@@ -30,9 +34,11 @@ if (isset($_POST['submit'])) {
     $stmt->bind_param("ss", $username, $message);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Köszönjük a véleményt!');</script>";
+        $_SESSION['alert_message'] = "Köszönjük a véleményt!";
+        $_SESSION['alert_type'] = "success";
     } else {
-        echo "<script>alert('Hiba történt: " . $stmt->error . "');</script>";
+        $_SESSION['alert_message'] = "Hiba történt: " . $stmt->error;
+        $_SESSION['alert_type'] = "warning";
     }
     
     $stmt->close();

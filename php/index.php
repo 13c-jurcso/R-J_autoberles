@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+// Modal include
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
 ?>
 
 <!DOCTYPE html>
@@ -7,12 +12,11 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap CSS link -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>R&J Autókölcsönző</title>
     <link rel="stylesheet" href="../css/styles.css">
-    
     <script defer src="../index.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 <header>
@@ -53,7 +57,6 @@ session_start();
     </div>
 </div>
 
-<!-- Bejelentkezés Modal -->
 <div id="loginModal" class="modal">
     <div class="modal-content-login">
         <span id="closeLoginModal" class="close" onclick="closeModal()">&times;</span>
@@ -66,7 +69,6 @@ session_start();
     </div>
 </div>
 
-<!-- Regisztráció Modal -->
 <div id="registerModal" class="modal">
     <div class="modal-content-register">
         <span id="closeRegisterModal" class="close" onclick="closeModal()">&times;</span>
@@ -83,20 +85,6 @@ session_start();
         </form>
     </div>
 </div>
-
-<!-- Lebegő figyelmeztető alert üzenet -->
-<?php if (isset($_SESSION['warning_alert'])): ?>
-    <div class="alert alert-warning d-flex align-items-center alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x w-75" role="alert">
-        <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Warning:">
-            <use xlink:href="#exclamation-triangle-fill"></use>
-        </svg>
-        <div>
-            <?php echo $_SESSION['warning_alert']; ?>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <?php unset($_SESSION['warning_alert']); ?> <!-- Töröljük az alertet a session-ból, hogy ne jelenjen meg újra -->
-<?php endif; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

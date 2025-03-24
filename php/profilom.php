@@ -2,6 +2,11 @@
 session_start();
 include './db_connection.php';
 
+// Modal include
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
+
 // Ha a felhasználó nincs bejelentkezve, irányítsuk át a bejelentkező oldalra
 if (!isset($_SESSION['felhasznalo_nev'])) {
     header("Location: login.php");
@@ -42,7 +47,6 @@ $berlesek_result = $db->query($berlesek_sql);
 </head>
 <body>
 
-<!-- Navbar -->
 <header>
         <div class="menu-toggle">☰ Menu</div>
         <nav>
@@ -62,7 +66,6 @@ $berlesek_result = $db->query($berlesek_sql);
         </nav>
     </header>
 
-<!-- Profil oldal tartalma -->
 <div class="container">
     <form>
         <h2>Profilom</h2>
