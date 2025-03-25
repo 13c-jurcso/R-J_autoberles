@@ -18,8 +18,7 @@ $result = $conn->query($query);
 
 if ($result->num_rows > 0) {
     $car = $result->fetch_assoc();
-    $carImages = json_decode($car['kep_url']);
-    var_dump($car['kep_url']);
+    $carImages = json_decode($car['kep_url'], true); // JSON dekódolás tömbként
 }
 
 $queryReviews = "SELECT * FROM velemenyek WHERE jarmu_id = $carId ORDER BY datum DESC";
@@ -31,8 +30,7 @@ $resultReviews = $conn->query($queryReviews);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($car['gyarto']) ?> <?= htmlspecialchars($car['tipus']) ?> Részletek</title>
-    <link rel="stylesheet" href="../css/auto_adatok.css">
+    <title><?= isset($car) ? htmlspecialchars($car['gyarto'] . ' ' . $car['tipus']) : 'Autó részletek' ?> Részletek</title>
     <link rel="stylesheet" href="../css/style.css">
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -46,11 +44,11 @@ $resultReviews = $conn->query($queryReviews);
                 <li><a href="forum.php">Fórum</a></li>
                 <li><a href="jarmuvek.php">Gépjárművek</a></li>
                 <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
-                <li><a href="profilom.php">Profilom</a></li>
-                <li><a href="logout.php">Kijelentkezés</a></li>
+                    <li><a href="profilom.php">Profilom</a></li>
+                    <li><a href="logout.php">Kijelentkezés</a></li>
                 <?php else: ?>
-                <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
-                <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
+                    <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
+                    <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
@@ -58,98 +56,124 @@ $resultReviews = $conn->query($queryReviews);
 
     <div class="container mt-5">
         <?php if (isset($car)): ?>
-        <h1><?= htmlspecialchars($car['gyarto']) ?> <?= htmlspecialchars($car['tipus']) ?></h1>
-        
-        <div class="car-gallery">
-    <?php if (!empty($carImages)): ?>
-        <div class="main-image">
-            <img src="<?= htmlspecialchars($carImages[0]) ?>" class="main-car-image" alt="Main Car Image" onclick="openGallery(0)">
-        </div>
-
-        <div id="galleryModal" class="gallery-modal">
-            <span class="close-gallery" onclick="closeGallery()">×</span>
-            <div class="gallery-content">
-                <?php foreach ($carImages as $index => $image): ?>
-                    <img src="<?= htmlspecialchars($image) ?>" class="gallery-image" data-index="<?= $index ?>">
-                <?php endforeach; ?>
+            <h1><?= htmlspecialchars($car['gyarto'] . ' ' . $car['tipus']) ?></h1>
+            
+            <div class="car-gallery">
+                <?php if (!empty($carImages) && is_array($carImages)): ?>
+                    <div class="main-image">
+                        <img src="<?= htmlspecialchars($carImages[0]) ?>" class="main-car-image" alt="Fő autó kép" onclick="openGallery(0)">
+                    </div>
+                    <div id="galleryModal" class="gallery-modal">
+                        <span class="close-gallery" onclick="closeGallery()">×</span>
+                        <div class="gallery-content">
+                            <?php foreach ($carImages as $index => $image): ?>
+                                <img src="<?= htmlspecialchars($image) ?>" class="gallery-image" data-index="<?= $index ?>" alt="Galéria kép <?= $index + 1 ?>">
+                            <?php endforeach; ?>
+                        </div>
+                        <button class="gallery-prev" onclick="changeImage(-1)" aria-label="Előző kép">❮</button>
+                        <button class="gallery-next" onclick="changeImage(1)" aria-label="Következő kép">❯</button>
+                    </div>
+                <?php else: ?>
+                    <p class="text-muted">Nincs elérhető kép ehhez az autóhoz.</p>
+                <?php endif; ?>
             </div>
-            <button class="gallery-prev" onclick="changeImage(-1)">❮</button>
-            <button class="gallery-next" onclick="changeImage(1)">❯</button>
-        </div>
-    <?php else: ?>
-        <p>Nem található kép ehhez az autóhoz.</p>
-    <?php endif; ?>
-</div>
 
-        <p><strong>Motor:</strong> <?= htmlspecialchars($car['motor']) ?></p>
-        <p><strong>Év:</strong> <?= htmlspecialchars($car['gyartasi_ev']) ?></p>
-        <p><strong>Leírás:</strong> <?= nl2br(htmlspecialchars($car['leiras'])) ?></p>
-        <p><strong>Ár:</strong> <?= number_format($car['ar'], 0, '.', ' ') ?> Ft</p>
-        <hr>
+            <p><strong>Motor:</strong> <?= htmlspecialchars($car['motor']) ?></p>
+            <p><strong>Év:</strong> <?= htmlspecialchars($car['gyartasi_ev']) ?></p>
+            <p><strong>Leírás:</strong> <?= nl2br(htmlspecialchars($car['leiras'])) ?></p>
+            <p><strong>Ár:</strong> <?= number_format($car['ar'], 0, '.', ' ') ?> Ft</p>
+            <hr>
 
-        <h3>Vélemények</h3>
-        <div class="reviews">
-            <?php
-            if ($resultReviews->num_rows > 0):
-                while ($review = $resultReviews->fetch_assoc()):
-            ?>
-            <div class="review">
-                <strong><?= htmlspecialchars($review['felhasznalo_nev']) ?>:</strong>
-                <p><?= nl2br(htmlspecialchars($review['uzenet'])) ?></p>
-                <small><?= htmlspecialchars($review['datum']) ?></small>
+            <h3>Vélemények</h3>
+            <div class="reviews">
+                <?php if ($resultReviews->num_rows > 0): ?>
+                    <?php while ($review = $resultReviews->fetch_assoc()): ?>
+                        <div class="review">
+                            <strong><?= htmlspecialchars($review['felhasznalo_nev']) ?>:</strong>
+                            <p><?= nl2br(htmlspecialchars($review['uzenet'])) ?></p>
+                            <small><?= htmlspecialchars($review['datum']) ?></small>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p>Nincs vélemény erről az autóról.</p>
+                <?php endif; ?>
             </div>
-            <?php endwhile; else: ?>
-            <p>Nincs vélemény erről az autóról.</p>
-            <?php endif; ?>
-        </div>
 
-        <form action="cseveges.php" method="post">
-            <input type="hidden" name="jarmu_id" value="<?= $carId ?>">
-            <textarea name="message" rows="5" placeholder="Írd le véleményed" required></textarea>
-            <button type="submit">Vélemény küldése</button>
-        </form>
+            <form action="cseveges.php" method="post">
+                <input type="hidden" name="jarmu_id" value="<?= $carId ?>">
+                <textarea name="message" rows="5" placeholder="Írd le véleményed" required></textarea>
+                <button type="submit">Vélemény küldése</button>
+            </form>
         <?php else: ?>
-        <p>Ez az autó nem található.</p>
+            <p>Ez az autó nem található.</p>
         <?php endif; ?>
     </div>
+
     <script>
-    let currentIndex = 0;
-    const images = document.querySelectorAll('.gallery-image');
+        document.addEventListener('DOMContentLoaded', () => {
+            const galleryModal = document.getElementById('galleryModal');
+            const images = document.querySelectorAll('.gallery-image');
+            const closeButton = document.querySelector('.close-gallery');
+            const prevButton = document.querySelector('.gallery-prev');
+            const nextButton = document.querySelector('.gallery-next');
+            let currentIndex = 0;
 
-    function openGallery(index) {
-        const modal = document.getElementById('galleryModal');
-        modal.style.display = 'flex';
-        showImage(index);
-    }
+            function openGallery(index) {
+                if (images.length === 0) return;
+                galleryModal.style.display = 'flex'; // Közvetlen display váltás
+                currentIndex = index;
+                showImage(currentIndex);
+            }
 
-    function closeGallery() {
-        const modal = document.getElementById('galleryModal');
-        modal.style.display = 'none';
-    }
+            function closeGallery() {
+                galleryModal.style.display = 'none';
+            }
 
-    function showImage(index) {
-        images.forEach(img => img.classList.remove('active'));
-        currentIndex = index;
-        images[currentIndex].classList.add('active');
-    }
+            function showImage(index) {
+                images.forEach(img => {
+                    img.style.display = 'none'; // Minden képet elrejt
+                    img.classList.remove('active');
+                });
+                currentIndex = (index + images.length) % images.length; // Ciklikus index
+                images[currentIndex].style.display = 'block'; // Csak az aktuális kép látható
+                images[currentIndex].classList.add('active');
+            }
 
-    function changeImage(direction) {
-        currentIndex += direction;
-        if (currentIndex < 0) {
-            currentIndex = images.length - 1;
-        } else if (currentIndex >= images.length) {
-            currentIndex = 0;
-        }
-        showImage(currentIndex);
-    }
+            function changeImage(direction) {
+                currentIndex += direction;
+                if (currentIndex < 0) currentIndex = images.length - 1;
+                if (currentIndex >= images.length) currentIndex = 0;
+                showImage(currentIndex);
+            }
 
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeGallery();
-        }
-    });
-</script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+            // Eseménykezelők
+            document.querySelector('.main-car-image')?.addEventListener('click', () => openGallery(0));
+            closeButton?.addEventListener('click', closeGallery);
+            prevButton?.addEventListener('click', () => changeImage(-1));
+            nextButton?.addEventListener('click', () => changeImage(1));
+
+            // Billentyűzetvezérlés
+            document.addEventListener('keydown', (event) => {
+                if (galleryModal.style.display !== 'flex') return;
+                switch (event.key) {
+                    case 'Escape': closeGallery(); break;
+                    case 'ArrowLeft': changeImage(-1); break;
+                    case 'ArrowRight': changeImage(1); break;
+                }
+            });
+
+            // Háttérre kattintás
+            galleryModal?.addEventListener('click', (e) => {
+                if (e.target === galleryModal) closeGallery();
+            });
+        });
+
+        // Globális függvények
+        window.openGallery = openGallery;
+        window.closeGallery = closeGallery;
+        window.changeImage = changeImage;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

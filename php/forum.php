@@ -57,7 +57,7 @@ $result = $conn->query($query);
         </nav>
     </header>
 
-    <div class="container mt-5">
+    <div class="container">
     <h1>Autó Fórum</h1>
     <div class="row">
         <?php
@@ -66,7 +66,7 @@ $result = $conn->query($query);
                 $carImages = json_decode($row['kep_url']);
                 if (is_array($carImages) && count($carImages) > 0):
         ?>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <a href="auto_adatok.php?id=<?= $row['jarmu_id'] ?>" class="card-link">
                 <div class="card">
                     <img src="<?= htmlspecialchars($carImages[0]) ?>" class="d-block w-100" alt="Car Image">

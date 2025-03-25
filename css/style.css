@@ -380,7 +380,7 @@ textarea {
 }
 
 /* Modal Styles */
-.modal, #loginModal, #registerModal, #modal, #galleryModal, #alertModal {
+.modal, #loginModal, #registerModal, #modal,  #alertModal {
     display: none; /* Alapértelmezett állapot */
     position: fixed;
     top: 0;
@@ -557,6 +557,7 @@ textarea {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+    justify-content: center;
 }
 
 .col-md-4 {
@@ -628,9 +629,10 @@ textarea {
 
 .szures_div form {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
 }
 
 .input-group {
@@ -1292,4 +1294,8 @@ svg {
     .card { height: 400px; }
     .card-img, .card-img-top { height: 200px; }
     .btn, .berles-gomb { padding: 8px 16px; font-size: 12px; }
+}
+/* index.php cím */
+.cim{
+    margin-top: 150px;
 }

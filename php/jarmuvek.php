@@ -305,31 +305,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h3>Bérlés adatai</h3>
         <form method="POST">
             <input type="hidden" name="jarmu_id" id="jarmu_id">
-            <div class="input-group">
-                
+
                 <input type="text" placeholder="Teljes név" id="name" name="name" value="<?= htmlspecialchars($user_data['nev']) ?>" required>
-            </div>
-
-            <div class="input-group">
-                
-                
                 <input type="email" placeholder="user@example.com" id="email" name="email" value="<?= htmlspecialchars($user_data['emailcim']) ?>" required>
-            </div>
-
-            <div class="input-group">
-                
-                <input type="tel" placeholder="+36201234567" id="phone" name="phone" required>
-            </div>
-
-            <div class="input-group">
-                
+                <input type="tel" placeholder="+36201234567" id="phone" name="phone" required>         
                 <input type="date" id="rental_date" name="rental_date" required>
-            </div>
-
-            <div class="input-group">
-                
                 <input type="date" id="return_date" name="return_date" required>
-            </div>
 
             <button type="submit" name="fizetes_mod" value="1">Fizetés azonnal</button>
             <button type="submit" name="fizetes_mod" value="0">Fizetés a helyszínen</button>

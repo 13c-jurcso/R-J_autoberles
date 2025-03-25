@@ -37,14 +37,9 @@ if (isset($_SESSION['alert_message'])) {
 </header>
 
 <div id="torzs">
-    <h1>R&J autókölcsönző. Indulás!</h1>
+    <h1 class="cim">R&J autókölcsönző. Indulás!</h1>
     <div id="kezdo_input">
         <form action="jarmuvek.php" method="get">
-            <select name="hely" id="hely">
-                <option value="Veszprém">Veszprém</option>
-                <option value="Budapest">Budapest</option>
-                <option value="Debrecen">Debrecen</option>
-            </select>
             <label id="datuma">Átvétel dátuma</label>
             <input type="date" name="atvetel" required>
             <label id="datuma">Leadás dátuma</label>
