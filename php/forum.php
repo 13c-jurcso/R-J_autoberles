@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+// Modal include
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
+
 $conn = new mysqli("localhost", "root", "", "autoberles");
 
 if ($conn->connect_error) {
@@ -13,9 +18,8 @@ $result = $conn->query($query);
 
 if ($result->num_rows > 0) {
     $car = $result->fetch_assoc();
-    // A képek JSON-ként vannak tárolva az adatbázisban, tehát a json_decode függvénnyel átalakítjuk tömbbé.
     $carImages = json_decode($car['kep_url']);
-    var_dump($car['kep_url']);  // Ellenőrizd, hogy mit tartalmaz a 'kep_url' mező
+    var_dump($car['kep_url']);
 }
 $query = "SELECT * FROM jarmuvek";
 $result = $conn->query($query);
@@ -58,15 +62,12 @@ $result = $conn->query($query);
         <?php
         if ($result->num_rows > 0):
             while ($row = $result->fetch_assoc()):
-                // Ha a képek JSON-ként vannak tárolva
                 $carImages = json_decode($row['kep_url']);
-                // Ha van legalább egy kép a járműhöz
                 if (is_array($carImages) && count($carImages) > 0):
         ?>
         <div class="col-md-4">
             <a href="auto_adatok.php?id=<?= $row['jarmu_id'] ?>" class="card-link">
                 <div class="card">
-                    <!-- Itt a tömb első elemét használjuk a képek közül -->
                     <img src="<?= htmlspecialchars($carImages[0]) ?>" class="d-block w-100" alt="Car Image">
                     <div class="card-body">
                         <h5 class="card-title"><?= htmlspecialchars($row['gyarto']) ?> <?= htmlspecialchars($row['tipus']) ?></h5>

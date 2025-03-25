@@ -3,16 +3,20 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 session_start();
 
+// Modal include
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
+
 // Bejelentkezés ellenőrzése
 if (!isset($_SESSION['felhasznalo_nev'])) {
-    echo '<script type="text/javascript">',
-         'alert("Kérem jelentkezzen be, hogy tovább tudjon lépni!");',
-         'window.location.href = "index.php";',
-         '</script>';
+    $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_type'] = "warning";
+    header("Location: index.php");
     exit();
 }
 
-// Adatbázis kapcsolat (csak az adatLekeres.php-ból származó $db-t használjuk)
+// Adatbázis kapcsolat
 include './adatLekeres.php';
 
 // Járművek lekérdezése
@@ -82,14 +86,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $berles_ig = $_POST['return_date'];
     $fizetes_mod = isset($_POST['fizetes_mod']) ? (int)$_POST['fizetes_mod'] : 0;
 
-    // Bérlés rögzítése
     $sql = "INSERT INTO berlesek (jarmu_id, felhasznalo, tol, ig, kifizetve) 
             VALUES (?, ?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("isssi", $jarmu_id, $felhasznalo, $berles_tol, $berles_ig, $fizetes_mod);
 
     if ($stmt->execute()) {
-        // Jármű és akció adatainak lekérdezése
         $vehicle_query = "SELECT gyarto, tipus, ar, 
                           IFNULL(a.kedvezmeny_szazalek, 0) as kedvezmeny_szazalek 
                           FROM jarmuvek j 
@@ -102,29 +104,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vehicle_result = $vehicle_stmt->get_result();
         $vehicle_data = $vehicle_result->fetch_assoc();
 
-        // Akciós ár kiszámítása
         $original_ar = $vehicle_data['ar'];
         $kedvezmeny = $vehicle_data['kedvezmeny_szazalek'];
         $akcios_ar = $kedvezmeny > 0 ? $original_ar * (1 - $kedvezmeny / 100) : $original_ar;
 
-        // Hűségpontok kiszámítása
         $berles_napok = (strtotime($berles_ig) - strtotime($berles_tol)) / (60 * 60 * 24);
         if ($berles_napok <= 0) {
-            $berles_napok = 1; // Minimum 1 nap
+            $berles_napok = 1;
         }
         $total_cost = $akcios_ar * $berles_napok;
-        $husegpontok = floor($total_cost * 0.1); // 10% hűségpont
+        $husegpontok = floor($total_cost * 0.1);
 
-        // Hibakeresés
         error_log("Bérlés: jarmu_id=$jarmu_id, napok=$berles_napok, total_cost=$total_cost, husegpontok=$husegpontok, felhasznalo=$felhasznalo");
 
-        // Hűségpontok frissítése
         $update_pontok = "UPDATE felhasznalo SET husegpontok = husegpontok + ? WHERE felhasznalo_nev = ?";
         $pont_stmt = $db->prepare($update_pontok);
         $pont_stmt->bind_param("is", $husegpontok, $felhasznalo);
         if (!$pont_stmt->execute()) {
             error_log("Hiba a hűségpontok frissítésekor: " . $pont_stmt->error);
-            echo "<script>alert('Hiba a hűségpontok mentésekor: " . $pont_stmt->error . "');</script>";
+            $_SESSION['alert_message'] = "Hiba a hűségpontok mentésekor: " . $pont_stmt->error;
+            $_SESSION['alert_type'] = "warning";
             $stmt->close();
             $db->close();
             exit();
@@ -132,7 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log("Hűségpontok sikeresen frissítve: $husegpontok pont hozzáadva $felhasznalo számára");
         $pont_stmt->close();
 
-        // PHPMailer inicializálása
         require 'src/PHPMailer.php';
         require 'src/SMTP.php';
         require 'src/Exception.php';
@@ -189,12 +187,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </html>";
 
             $mail->send();
-            echo "<script>alert('A bérlés sikeresen rögzítve! Ellenőrizze email fiókját a részletekért.');</script>";
+            $_SESSION['alert_message'] = "A bérlés sikeresen rögzítve! Ellenőrizze email fiókját a részletekért.";
+            $_SESSION['alert_type'] = "success";
         } catch (Exception $e) {
-            echo "<script>alert('Hiba történt az email küldésekor: " . $mail->ErrorInfo . "');</script>";
+            $_SESSION['alert_message'] = "Hiba történt az email küldésekor: " . $mail->ErrorInfo;
+            $_SESSION['alert_type'] = "warning";
         }
     } else {
-        echo "<script>alert('Hiba történt a bérlés mentésekor: " . $stmt->error . "');</script>";
+        $_SESSION['alert_message'] = "Hiba történt a bérlés mentésekor: " . $stmt->error;
+        $_SESSION['alert_type'] = "warning";
     }
 
     $stmt->close();
@@ -211,6 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script defer src="../jarmuvek.js"></script>
     <link rel="stylesheet" href="../css/jarmuvek.css">
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 <header>
@@ -275,14 +277,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="<?= $firstImage ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?>" class="card-img">
                 <div class="card-body">
                     <h5 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?></h5>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p Bookmarks>
+                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p>
                     <p class="card-text">
-                        Ár: <?= number_format($akcios_ar, 0, '.', ' ') ?> Ft/nap
-                        <?php if ($kedvezmeny > 0): ?>
+                    <?php if ($kedvezmeny > 0): ?>
                             <span style="text-decoration: line-through; color: red;">
-                                (eredeti: <?= number_format($original_ar, 0, '.', ' ') ?> Ft)
+                                Ár: <?= number_format($original_ar, 0, '.', ' ') ?> Ft/nap
                             </span>
                         <?php endif; ?>
+                        Ár: <?= number_format($akcios_ar, 0, '.', ' ') ?> Ft/nap
                     </p>
                     <button class="berles-gomb" onclick="openModal(this)" 
                         data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>" 

@@ -2,6 +2,11 @@
 session_start();
 include './db_connection.php';
 
+// Modal include
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
+
 // Ha a felhasználó nincs bejelentkezve, irányítsuk át a bejelentkező oldalra
 if (!isset($_SESSION['felhasznalo_nev'])) {
     header("Location: login.php");
@@ -29,13 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $szamlazasi_cim = $_POST['szamlazasi_cim'];
     $jogositvany_kiallitasDatum = $_POST['jogositvany_kiallitasDatum'];
 
-    // SQL lekérdezés az adatok frissítésére
     $update_sql = "UPDATE felhasznalo SET nev='$nev', emailcim='$emailcim', szamlazasi_cim='$szamlazasi_cim', jogositvany_kiallitasDatum='$jogositvany_kiallitasDatum' WHERE felhasznalo_nev='$felhasznalo_nev'";
 
     if ($db->query($update_sql) === TRUE) {
-        echo "<p>Az adatok sikeresen frissítve!</p>";
+        $_SESSION['alert_message'] = "Az adatok sikeresen frissítve!";
+        $_SESSION['alert_type'] = "success";
     } else {
-        echo "<p>Hiba történt az adatok frissítésekor: " . $db->error . "</p>";
+        $_SESSION['alert_message'] = "Hiba történt az adatok frissítésekor: " . $db->error;
+        $_SESSION['alert_type'] = "warning";
     }
 }
 ?>
@@ -99,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #36395A;
             cursor: pointer;
             display: inline-flex;
-            /* font-family: "JetBrains Mono",monospace; */
             height: 48px;
             justify-content: center;
             line-height: 1;
@@ -153,7 +158,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <input type="submit" value="Frissítés">
 
-        <!-- Vissza gomb -->
         <a href="profilom.php"><button class="back-btn">Vissza a profilomhoz</button></a>
     </form>
     

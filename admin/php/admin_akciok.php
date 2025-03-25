@@ -3,9 +3,9 @@ include "./db_connection.php";
 include "./adatLekeres.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require 'src/PHPMailer.php';
-require 'src/SMTP.php';
-require 'src/Exception.php';
+require '../../php/src/PHPMailer.php';
+require '../../php/src/SMTP.php';
+require '../../php/src/Exception.php';
 
 session_start();
 
@@ -144,7 +144,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Akciók kezelése</title>
-    <link rel="stylesheet" href="../css/admincss/admin.css">
+    <link rel="stylesheet" href="../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>

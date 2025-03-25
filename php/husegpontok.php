@@ -1,10 +1,15 @@
 <?php
 session_start();
 
+// Modal include
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
+
 // Ellenőrizzük, hogy a felhasználó be van-e jelentkezve
 if (!isset($_SESSION['felhasznalo_nev'])) {
-    // Ha nincs bejelentkezve, beállítjuk a figyelmeztetést és átirányítjuk az index.php-ra
-    $_SESSION['warning_alert'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_type'] = "warning";
     header("Location: index.php");
     exit();
 }

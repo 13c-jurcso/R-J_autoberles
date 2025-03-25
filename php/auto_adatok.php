@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+// Modal include
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
+
 $conn = new mysqli("localhost", "root", "", "autoberles");
 
 if ($conn->connect_error) {
@@ -13,10 +18,8 @@ $result = $conn->query($query);
 
 if ($result->num_rows > 0) {
     $car = $result->fetch_assoc();
-    // A képek JSON-ként vannak tárolva az adatbázisban, tehát a json_decode függvénnyel átalakítjuk tömbbé.
     $carImages = json_decode($car['kep_url']);
-    var_dump($car['kep_url']);  // Ellenőrizd, hogy mit tartalmaz a 'kep_url' mező
-
+    var_dump($car['kep_url']);
 }
 
 $queryReviews = "SELECT * FROM velemenyek WHERE jarmu_id = $carId ORDER BY datum DESC";
@@ -59,12 +62,10 @@ $resultReviews = $conn->query($queryReviews);
         
         <div class="car-gallery">
     <?php if (!empty($carImages)): ?>
-        <!-- Csak az első kép megjelenítése nagyobb méretben -->
         <div class="main-image">
             <img src="<?= htmlspecialchars($carImages[0]) ?>" class="main-car-image" alt="Main Car Image" onclick="openGallery(0)">
         </div>
 
-        <!-- Modális galéria a többi képpel -->
         <div id="galleryModal" class="gallery-modal">
             <span class="close-gallery" onclick="closeGallery()">×</span>
             <div class="gallery-content">
@@ -148,7 +149,7 @@ $resultReviews = $conn->query($queryReviews);
         }
     });
 </script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap 5 JS -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
