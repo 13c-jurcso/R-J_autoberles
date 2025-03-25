@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
 
-    $kepmappa = "./kepek/";
+    $kepmappa = "../../php/kepek/";
     $kepek = []; // Ez egy tömb, amely a képek elérési útvonalait tartalmazza.
 
     // Több kép feltöltése
@@ -88,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
         <div class="menu-toggle">☰ Menu</div>
         <nav>
             <ul>
-                <li><a href="/Vizsgaremek/berles/php/index.php">Főoldal</a></li>
-                <li><a href="/Vizsgaremek/berles/php/husegpontok.php">Hűségpontok</a></li>
-                <li><a href="/Vizsgaremek/berles/php/jarmuvek.php">Gépjárművek</a></li>
+                <li><a href="./php/index.php">Főoldal</a></li>
+                <li><a href="./php/husegpontok.php">Hűségpontok</a></li>
+                <li><a href="./php/jarmuvek.php">Gépjárművek</a></li>
             </ul>
         </nav>
     </header>
