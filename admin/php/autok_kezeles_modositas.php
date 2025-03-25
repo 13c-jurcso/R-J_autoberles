@@ -5,6 +5,11 @@
 
     session_start();
 
+    // Modal include
+    if (isset($_SESSION['alert_message'])) {
+        include 'modal.php';
+    }
+
     $conn = new mysqli("localhost", "root", "", "autoberles");
 
     if ($conn->connect_error) {
@@ -18,6 +23,30 @@
 
     if ($autok->num_rows > 0) {
         $car = $autok->fetch_assoc();
+    }
+
+    // Jármű Módosítása
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
+        $jarmu_id = $_POST['jarmu_id'];
+        $felhasznalas_id = $_POST['felhasznalas_id'];
+        $szerviz_id = $_POST['szerviz_id'];
+        $gyarto = $_POST['gyarto'];
+        $tipus = $_POST['tipus'];
+        $motor = $_POST['motor'];
+        $gyartasi_ev = $_POST['gyartasi_ev'];
+        $leiras = $_POST['leiras'];
+        $ar = $_POST['ar'];
+
+        $modositas = $db->prepare("UPDATE jarmuvek SET felhasznalas_id = ?, szerviz_id = ?, gyarto = ?, tipus = ?, motor = ?, gyartasi_ev = ?, leiras = ?, ar = ? WHERE jarmu_id = ?");
+        $modositas->bind_param("iisssssii", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $jarmu_id);
+
+        if ($modositas->execute()) {
+            $_SESSION['uzenet'] = '<div class="sikeres">Sikeres módosítás!</div>';
+        } else {
+            echo '<div class="sikertelen" id="animDiv">Hiba a módosítás során!</div>';
+            var_dump($modositas->error);
+        }
+        $modositas->close();
     }
 ?>
 
@@ -44,10 +73,30 @@
         </nav>
     </header>
     <h1>Módosítás</h1>
+    <hr>
+
+    <div>
+        <!-- Üzenetek -->
+        <?php
+            // session_start();
+            if (isset($_SESSION['uzenet'])) {
+                echo $_SESSION['uzenet'];
+                unset($_SESSION['uzenet']);
+            }
+        ?>
+    </div>
+
+    <div class="menu">
+        <a href="./autok_kezeles.php"><button>Vissza a járművekhez</button></a>
+    </div>
+
     <div id="jarmuvek_modositas" class="tartalmi-resz">
 
 
         <form method="POST" enctype="multipart/form-data" class="form">
+
+            <input type="hidden" name="jarmu_id" value="<?= htmlspecialchars($car['jarmu_id']) ?>">
+
             <label for="gyarto">Gyártó:</label>
             <input type="text" name="gyarto" value="<?= htmlspecialchars($car['gyarto']) ?>"><br>
 
@@ -79,7 +128,7 @@
             <input type="date" name="gyartasi_ev" value="<?= htmlspecialchars($car['gyartasi_ev']) ?>"><br>
 
             <label for="leiras">Leírás:</label>
-            <input type="text" name="leiras" value="<?= htmlspecialchars($car['leiras']) ?>"><br>
+            <textarea name="leiras"><?= htmlspecialchars($car['leiras']) ?></textarea><br>
 
             <label for="ar">Ár:</label>
             <input type="number" name="ar" value="<?= htmlspecialchars($car['ar']) ?>"><br>

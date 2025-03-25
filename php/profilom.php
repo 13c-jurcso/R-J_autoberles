@@ -80,7 +80,7 @@ $berlesek_result = $db->query($berlesek_sql);
 <div style="text-align: center">
     <?php
         if ($user['admin'] == 1) {
-            echo '<a href="/berles/admin/php/autok_kezeles.php"><button class="back-btn">Vezérlőpult</button></a>';
+            echo '<a href="../admin/php/autok_kezeles.php"><button class="back-btn">Vezérlőpult</button></a>';
         }
     ?>
     <a href="modosit_profil.php"><button class="back-btn">Profil módosítása</button></a>
