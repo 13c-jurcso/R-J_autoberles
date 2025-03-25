@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Modal include
 if (isset($_SESSION['alert_message'])) {
     include 'modal.php';
 }
@@ -12,11 +11,9 @@ if (isset($_SESSION['alert_message'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>R&J Autókölcsönző</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <script defer src="../index.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <header>
@@ -59,11 +56,11 @@ if (isset($_SESSION['alert_message'])) {
 
 <div id="loginModal" class="modal">
     <div class="modal-content-login">
-        <span id="closeLoginModal" class="close" onclick="closeModal()">&times;</span>
+        <span class="close" onclick="closeModal()">&times;</span>
         <h2>Bejelentkezés</h2>
         <form action="login.php" method="post">
-            <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required><br>
-            <input type="password" name="jelszo" placeholder="Jelszó" required><br>
+            <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required>
+            <input type="password" name="jelszo" placeholder="Jelszó" required>
             <input type="submit" value="Bejelentkezés">
         </form>
     </div>
@@ -71,21 +68,22 @@ if (isset($_SESSION['alert_message'])) {
 
 <div id="registerModal" class="modal">
     <div class="modal-content-register">
-        <span id="closeRegisterModal" class="close" onclick="closeModal()">&times;</span>
+        <span class="close" onclick="closeModal()">&times;</span>
         <h2>Regisztráció</h2>
         <form action="register.php" method="post">
-            <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required><br>
-            <input type="text" name="nev" placeholder="Teljes név" required><br>
-            <input type="email" name="emailcim" placeholder="Email" required><br>
-            <input type="password" name="jelszo" placeholder="Jelszó" required><br>
-            <input type="password" name="jelszo_ujra" placeholder="Jelszó újra" required><br>
-            <input type="date" name="jogositvany_kiallitasDatum" placeholder="Jogosítvány érvénnysségi dátuma" required><br>
-            <input type="text" name="szamlazasi_cim" placeholder="Számlázási cím" required><br>
+            <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required>
+            <input type="text" name="nev" placeholder="Teljes név" required>
+            <input type="email" name="emailcim" placeholder="Email" required>
+            <input type="password" name="jelszo" placeholder="Jelszó" required>
+            <input type="password" name="jelszo_ujra" placeholder="Jelszó újra" required>
+            <input type="date" name="jogositvany_kiallitasDatum" placeholder="Jogosítvány érvényességi dátuma" required>
+            <input type="text" name="szamlazasi_cim" placeholder="Számlázási cím" required>
             <input type="submit" value="Regisztráció">
         </form>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../index.js"></script>
 </body>
 </html>

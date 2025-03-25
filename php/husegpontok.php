@@ -23,6 +23,7 @@ if (!isset($_SESSION['felhasznalo_nev'])) {
     <link rel="stylesheet" href="../css/index.css"> 
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/husegpontok.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="../index.js"></script>
 </head>

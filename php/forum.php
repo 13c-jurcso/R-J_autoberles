@@ -34,6 +34,7 @@ $result = $conn->query($query);
     <title>Fórum</title>
     <link rel="stylesheet" href="../css/forum.css">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>

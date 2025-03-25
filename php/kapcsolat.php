@@ -56,6 +56,7 @@ $conn->close();
     <link rel="stylesheet" href="../css/index.css">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/kapcsolat.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="../index.js"></script>
 </head>
