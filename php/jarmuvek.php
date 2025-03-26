@@ -236,33 +236,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </nav>
 </header>
 <div class="szures_div">
-    <form method="GET" action="jarmuvek.php">
-        <h2>Elérhető járművek</h2>  
-
-       <br> <label for="atvetel">Átvétel dátuma:</label>
-        <input type="date" id="atvetel" name="atvetel" value="<?= htmlspecialchars($atvetel) ?>">
-<br>
-        <label for="leadas">Leadás dátuma:</label>
-        <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>">
-<br>
-        <label for="kategoria">Kategória: </label>
-        <select id="kategoria" name="kategoria">
-            <option value="">-- Válassz kategóriát --</option>
-            <option value="1">Városi</option>
-            <option value="2">Családi</option>
-            <option value="3">Haszon</option>
-            <option value="4">Élmény</option>
-            <option value="5">Lakó</option>
-        </select>
-
-        <label for="min_ar">Minimum ár:</label>
-        <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000">
-
-        <label for="max_ar">Maximum ár:</label>
-        <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000">
-
-        <button type="submit" class="btn btn-primary">Szűrés</button>
-    </form>
+    <button type="submit" id="toggleFilterBtn" >Szűrők mutatása/elrejtése</button>
+    <div id="filterForm" class="filter-form">
+        <form method="GET" action="jarmuvek.php">
+            <h2>Elérhető járművek</h2>  
+            <br> 
+            <label for="atvetel">Átvétel dátuma:</label>
+            <input type="date" id="atvetel" name="atvetel" value="<?= htmlspecialchars($atvetel) ?>">
+            <br>
+            <label for="leadas">Leadás dátuma:</label>
+            <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>">
+            <br>
+            <label for="kategoria">Kategória: </label>
+            <select id="kategoria" name="kategoria">
+                <option value="">-- Válassz kategóriát --</option>
+                <option value="1">Városi</option>
+                <option value="2">Családi</option>
+                <option value="3">Haszon</option>
+                <option value="4">Élmény</option>
+                <option value="5">Lakó</option>
+            </select>
+            <br>
+            <label for="min_ar">Minimum ár:</label>
+            <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000">
+            <br>
+            <label for="max_ar">Maximum ár:</label>
+            <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000">
+            <br>
+            <button type="submit" class="btn btn-primary">Szűrés</button>
+        </form>
+    </div>
 </div>
 <div class="card-container">
     <?php if (!empty($jarmuvek)): ?>
@@ -330,6 +333,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.getElementById('modal').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
     }
+    document.getElementById('toggleFilterBtn').addEventListener('click', function() {
+        const filterForm = document.getElementById('filterForm');
+        filterForm.classList.toggle('collapsed');
+        
+        // Optional: Change button text based on state
+        if (filterForm.classList.contains('collapsed')) {
+            this.textContent = 'Szűrők mutatása';
+        } else {
+            this.textContent = 'Szűrők elrejtése';
+        }
+    });
 </script>
 </body>
 </html>

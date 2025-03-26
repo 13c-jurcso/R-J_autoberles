@@ -36,27 +36,29 @@ $result = $conn->query($query);
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/style.css">
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 <body>
-    <header>
-        <div class="menu-toggle">☰ Menu</div>
-        <nav>
-            <ul>
-                <li><a href="index.php">R&J</a></li>
-                <li><a href="kapcsolat.php">Kapcsolat</a></li>
-                <li><a href="forum.php">Fórum</a></li>
-                <li><a href="jarmuvek.php">Gépjárművek</a></li>
-                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+<header>
+    <div class="menu-toggle">☰ Menu</div>
+    <nav>
+        <ul>
+            <li><a href="index.php">R&J</a></li>
+            <li><a href="kapcsolat.php">Kapcsolat</a></li>
+            <li><a href="forum.php">Fórum</a></li>
+            <li><a href="husegpontok.php">Hűségpontok</a></li>
+            <li><a href="jarmuvek.php">Gépjárművek</a></li>
+            <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
                 <li><a href="profilom.php">Profilom</a></li>
                 <li><a href="logout.php">Kijelentkezés</a></li>
-                <?php else: ?>
+            <?php else: ?>
                 <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
                 <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
-
+            <?php endif; ?>
+        </ul>
+    </nav>
+</header>
     <div class="container">
     <h1>Autó Fórum</h1>
     <div class="row">

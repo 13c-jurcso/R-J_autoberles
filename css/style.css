@@ -327,6 +327,11 @@ form {
     animation: slideInUp 1s ease-out;
     max-width: 600px;
     margin: 0 auto;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 2px;
+    width: -webkit-fill-available;
 }
 
 label {
@@ -618,6 +623,7 @@ textarea {
 }
 
 /* Jarmuvek Page */
+/* Jarmuvek Page - Filter Form Toggle */
 .szures_div {
     padding: 20px;
     background-color: #f2f4f5;
@@ -625,6 +631,27 @@ textarea {
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
     margin-bottom: 30px;
     margin-top: 133px;
+    position: relative;
+    display: inline-grid;
+}
+
+.filter-form {
+    transition: all 0.3s ease; 
+    overflow: hidden;
+    opacity: 1;
+}
+
+.filter-form.collapsed {
+    max-height: 0; /* Collapse the form */
+    opacity: 0; /* Fade out */
+    padding: 0; /* Remove padding when collapsed */
+    margin: 0; /* Remove margin when collapsed */
+}
+
+#toggleFilterBtn {
+    margin-bottom: 15px;
+   
+    
 }
 
 .szures_div form {
