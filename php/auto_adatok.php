@@ -106,15 +106,24 @@ $resultReviews = $conn->query($queryReviews);
 
         <form action="cseveges.php" method="post">
             <input type="hidden" name="jarmu_id" value="<?= $carId ?>">
-            <textarea name="message" rows="5" placeholder="Írd le véleményed" required></textarea>
+            <textarea name="message" id="message" rows="5" placeholder="Írd le véleményed" maxlength="200" required oninput="updateCharCount()" required></textarea>
+            <div id="charCount">0/200</div>
             <button type="submit">Vélemény küldése</button>
         </form>
         <?php else: ?>
         <p>Ez az autó nem található.</p>
         <?php endif; ?>
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
+         function updateCharCount() {
+        const textarea = document.getElementById("message");
+        const charCount = document.getElementById("charCount");
+        const currentLength = textarea.value.length;
+        charCount.textContent = `${currentLength}/200`;
+    }
     document.addEventListener('DOMContentLoaded', () => {
         const galleryModal = document.getElementById('galleryModal');
         const images = document.querySelectorAll('.gallery-image');

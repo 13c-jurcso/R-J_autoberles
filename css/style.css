@@ -1326,3 +1326,9 @@ svg {
 .cim{
     margin-top: 150px;
 }
+#charCount {
+    font-size: 0.9em;
+    color: #666;
+    text-align: right;
+    margin-top: 5px;
+}

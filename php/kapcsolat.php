@@ -100,7 +100,8 @@ $conn->close();
             <input type="email" id="email" name="email" required>
 
             <label for="message">Üzenet</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
+            <textarea id="message" name="message" rows="5" maxlength="200" required oninput="updateCharCount()"></textarea>
+            <div id="charCount">0/200</div>
 
             <button type="submit" name="submit">Küldés</button>
         </form>
@@ -113,6 +114,12 @@ $conn->close();
         document.querySelector(".menu-toggle").addEventListener("click", function() {
             document.querySelector("header").classList.toggle("menu-opened");
         });
+        function updateCharCount() {
+        const textarea = document.getElementById("message");
+        const charCount = document.getElementById("charCount");
+        const currentLength = textarea.value.length;
+        charCount.textContent = `${currentLength}/200`;
+    }
     </script>
 </body>
 </html>
