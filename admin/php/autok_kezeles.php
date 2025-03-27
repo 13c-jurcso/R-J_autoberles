@@ -88,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
         <div class="menu-toggle">☰ Menu</div>
         <nav>
             <ul>
-                <li><a href="./php/index.php">Főoldal</a></li>
-                <li><a href="./php/husegpontok.php">Hűségpontok</a></li>
-                <li><a href="./php/jarmuvek.php">Gépjárművek</a></li>
+                <li><a href="../../php/index.php">Főoldal</a></li>
+                <li><a href="../../php/husegpontok.php">Hűségpontok</a></li>
+                <li><a href="../../php/jarmuvek.php">Gépjárművek</a></li>
             </ul>
         </nav>
     </header>
