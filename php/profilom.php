@@ -88,7 +88,7 @@ $berlesek_result = $db->query($berlesek_sql);
 <div class="tablazat">
     <h3 style="text-align: center">Bérelt autóim</h3>
     <?php if ($berlesek_result->num_rows > 0): ?>
-        <table class="table table-success table-striped">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Gyártó</th>

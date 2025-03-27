@@ -34,29 +34,32 @@ $result = $conn->query($query);
     <title>Fórum</title>
     <link rel="stylesheet" href="../css/forum.css">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 <body>
-    <header>
-        <div class="menu-toggle">☰ Menu</div>
-        <nav>
-            <ul>
-                <li><a href="index.php">R&J</a></li>
-                <li><a href="kapcsolat.php">Kapcsolat</a></li>
-                <li><a href="forum.php">Fórum</a></li>
-                <li><a href="jarmuvek.php">Gépjárművek</a></li>
-                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+<header>
+    <div class="menu-toggle">☰ Menu</div>
+    <nav>
+        <ul>
+            <li><a href="index.php">R&J</a></li>
+            <li><a href="kapcsolat.php">Kapcsolat</a></li>
+            <li><a href="forum.php">Fórum</a></li>
+            <li><a href="husegpontok.php">Hűségpontok</a></li>
+            <li><a href="jarmuvek.php">Gépjárművek</a></li>
+            <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
                 <li><a href="profilom.php">Profilom</a></li>
                 <li><a href="logout.php">Kijelentkezés</a></li>
-                <?php else: ?>
+            <?php else: ?>
                 <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
                 <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
-
-    <div class="container mt-5">
+            <?php endif; ?>
+        </ul>
+    </nav>
+</header>
+    <div class="container">
     <h1>Autó Fórum</h1>
     <div class="row">
         <?php
@@ -65,7 +68,7 @@ $result = $conn->query($query);
                 $carImages = json_decode($row['kep_url']);
                 if (is_array($carImages) && count($carImages) > 0):
         ?>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <a href="auto_adatok.php?id=<?= $row['jarmu_id'] ?>" class="card-link">
                 <div class="card">
                     <img src="<?= htmlspecialchars($carImages[0]) ?>" class="d-block w-100" alt="Car Image">
@@ -85,9 +88,17 @@ $result = $conn->query($query);
     </div>
 </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.querySelector('.menu-toggle').addEventListener('click', function() {
+        document.querySelector('header').classList.toggle('menu-opened');
+    });
+</script>
+</body>
+</html>
 </body>
 </html>
 
