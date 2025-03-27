@@ -1,14 +1,19 @@
-// Modal megjelenítése
 function openModal(modalId) {
-    document.getElementById(modalId).style.display = "flex";
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+    }
 }
 
-// Modal bezárása
 function closeModal() {
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.style.display = "none";
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
     });
 }
-document.querySelector(".menu-toggle").addEventListener("click", function () {
-    document.querySelector("header").classList.toggle("menu-opened");
-});

@@ -1,5 +1,8 @@
 <?php
 session_start();
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+}
 include './db_connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -12,8 +15,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $jelszo_ujra = $_POST['jelszo_ujra'];
 
     if ($jelszo !== $jelszo_ujra) {
-        echo "A két jelszó nem egyezik!";
-        exit();
+        $_SESSION['alert_type'] = "A két jelszó nem egyezik!";
+        $_SESSION['alert_type'] = "warning";
+                header("Location: index.php");
+                exit();
     }
 
     $query = "SELECT * FROM felhasznalo WHERE felhasznalo_nev = ?";
@@ -23,7 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        echo "Ez a felhasználónév már létezik!";
+        $_SESSION['alert_type'] = "Ez a felhasználónév már létezik!";
+        $_SESSION['alert_type'] = "warning";
+                header("Location: index.php");
+                exit();
     } else {
         $hashed_jelszo = password_hash($jelszo, PASSWORD_DEFAULT);
 
@@ -32,11 +40,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $db->prepare($insert_query);
         $stmt->bind_param("ssssss", $felhasznalo_nev, $nev, $emailcim, $jogositvany_kiallitasDatum, $szamlazasi_cim, $hashed_jelszo);
         if ($stmt->execute()) {
-            echo "Sikeres regisztráció!";
-            header("Location: index.php"); // Átirányítás a főoldalra
+            $_SESSION['alert_type'] = "Sikeres regisztráció!";
+            $_SESSION['alert_type'] = "warning";
+            header("Location: index.php");
             exit();
         } else {
-            echo "Hiba történt a regisztráció során: " . $stmt->error;
+           $_SESSION['alert_type'] = "Hiba történt a regisztráció során: " . $stmt->error;
+            $_SESSION['alert_type'] = "warning";
+                header("Location: index.php");
+                exit();
         }
     }
 }
