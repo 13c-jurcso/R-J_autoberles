@@ -196,6 +196,7 @@ h2 {
     color: #1c2526;
     margin-bottom: 30px;
     font-weight: 600;
+    text-align: center;
 }
 
 h3 {
@@ -284,7 +285,7 @@ p {
 }
 
 /* Buttons */
-.btn, .berles-gomb, button[type="submit"], input[type="submit"] {
+.btn, .berles-gomb,button, button[type="submit"], input[type="submit"] {
     padding: 12px 28px;
     font-size: 16px;
     font-weight: 600;
@@ -332,6 +333,7 @@ form {
     align-content: center;
     gap: 2px;
     width: -webkit-fill-available;
+    margin-top: inherit;
 }
 
 label {
@@ -1331,4 +1333,13 @@ svg {
     color: #666;
     text-align: right;
     margin-top: 5px;
+}
+.tartalmi-resz{
+    margin-top: 60px;
+    
+}
+.menu{
+    margin-top: 150px;
+    margin-inline: auto;
+    text-align: center;
 }
