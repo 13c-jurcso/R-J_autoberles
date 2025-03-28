@@ -1,0 +1,17 @@
+body {
+    padding-top: 8%;
+}
+
+.tartalmi-resz {
+    margin-left: 2%;
+    margin-right: 2%;
+    padding: 1%;
+}
+
+.alert {
+    width: 100%; /* Teljes szélesség */
+    max-width: 600px; /* Ugyanolyan max szélesség, mint a form */
+    margin: 0 auto; /* Középre igazítás */
+    text-align: center;
+}
+

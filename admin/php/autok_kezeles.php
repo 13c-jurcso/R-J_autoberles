@@ -43,9 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
 
         if ($modositas->execute()) {
             session_start();
-            $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Sikeres hozzáadás!</div>';
+            $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
+                                    Sikeres hozzáadás!
+                                </div>';
         } else {
-            echo '<div class="sikertelen" id="animDiv">Hiba a hozzáadás során!</div>';
+            echo '<div class="alert alert-danger" role="alert">
+                                    Hiba a feltöltés során!
+                                </div>';
             var_dump($modositas->error);
         }
         $modositas->close();
@@ -62,9 +66,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
     $torles->bind_param("i", $jarmu_id);
 
     if ($torles->execute()) {
-        $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Sikeres hozzáadás!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
+                                    Sikeres törlés!
+                                </div>';
     } else {
-        echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
+        echo '<div class="alert alert-danger" role="alert">
+                                    Hiba a törlés során!
+                                </div>';
         var_dump($torles->error);
     }
     $torles->close();
@@ -79,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vezérlőpult</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
