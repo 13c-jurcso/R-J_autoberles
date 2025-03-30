@@ -2,6 +2,8 @@
 include "./db_connection.php";
 include "./adatLekeres.php";
 
+session_start();
+
 // Felhasználó törlése
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_felhasznalo'])) {
     $fnev = $_POST['felhasznalo_nev'];
@@ -10,12 +12,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_felhasznalo']))
     $torles->bind_param("s", $fnev);
 
     if ($torles->execute()) {
-        $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Sikeres törlés!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
+                                    Sikeres törlés!
+                                </div>';
     } else {
-        echo '<div class="sikertelen" id="animDiv">Hiba a törlés során!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
+                                    Hiba a törlés során!
+                                </div>';
         var_dump($torles->error);
     }
     $torles->close();
+}
+
+//Felhasználó jogosultságának módosítása:
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
+    $felhasznalo_nev = $_POST['felhasznalo_nev'];
+    $admin = (int)$_POST['admin'];
+
+    // Adatbázis frissítése
+    $stmt = $db->prepare("UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?");
+    $stmt->bind_param("is", $admin, $felhasznalo_nev);
+
+    if ($stmt->execute()) {
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
+                                    Jogosultság sikeres módosítva!
+                                </div>';
+    } else {
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">
+                                    Hiba történt a módosítás során!
+                                </div>';
+    }
+    $stmt->close();
 }
 ?>
 
@@ -26,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_felhasznalo']))
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Jogosúltságok</title>
 </head>
@@ -113,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_felhasznalo']))
                 <option>-- Kérem válasszon --</option>
                 <?php
                     $felhasznalok_sql = "SELECT * FROM felhasznalo;";
-                    $felhasznalok = adatokLekerdezese($felhasznalok_sql);
+                    $felhasznalok = adatokLekerese($felhasznalok_sql);
                     if(is_array($felhasznalok)){
                         foreach ($felhasznalok as $f) {
                             echo '<option value="'. $f['felhasznalo_nev'].'">' . $f['nev'] . '</option>'; 
@@ -141,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_felhasznalo']))
             <?php
                 $felhasznalok_listazasa_sql = "SELECT felhasznalo.felhasznalo_nev, felhasznalo.nev, felhasznalo.emailcim, felhasznalo.szamlazasi_cim, 
                                                 felhasznalo.husegpontok, felhasznalo.admin FROM felhasznalo;";
-                $felhasznalok_listazasa = adatokLekerdezese($felhasznalok_listazasa_sql);
+                $felhasznalok_listazasa = adatokLekerese($felhasznalok_listazasa_sql);
                 echo '<table><tr><th>Felhasználónév</th><th>Teljsen név</th><th>Email</th><th>Számlázási cím</th><th>Hűségpontok</th><th>Admin</th><th>Művelet</th></tr>';
                 if(is_array($felhasznalok_listazasa)){
                     foreach ($felhasznalok_listazasa as $f) {
@@ -168,21 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_felhasznalo']))
 
     <div>
         <?php
-            //Felhasználó jogosultságának módosítása:
-            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas'])) {
-                $felhasznalo_nev = $_POST['felhasznalo_nev'];
-                $admin = (int)$_POST['admin'];
             
-                // Adatbázis frissítése
-                $stmt = $db->prepare("UPDATE felhasznalo SET admin = ? WHERE felhasznalo_nev = ?");
-                $stmt->bind_param("is", $admin, $felhasznalo_nev);
-            
-                if ($stmt->execute()) {
-                    echo '<div id="animDiv">Jogosultság sikeresen módosítva.</div>';
-                } else {
-                    echo '<div id="animDiv">Hiba!.</div>';
-                }
-            }
         ?>
     </div>
 </body>

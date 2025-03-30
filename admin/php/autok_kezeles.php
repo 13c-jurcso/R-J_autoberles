@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
                                     Sikeres törlés!
                                 </div>';
     } else {
-        echo '<div class="alert alert-danger" role="alert">
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">
                                     Hiba a törlés során!
                                 </div>';
         var_dump($torles->error);
