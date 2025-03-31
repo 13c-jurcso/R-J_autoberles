@@ -3,10 +3,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 session_start();
 
-// Modal include
-if (isset($_SESSION['alert_message'])) {
-    include 'modal.php';
-}
+// Adatbázis kapcsolat
+include './adatLekeres.php';
 
 // Bejelentkezés ellenőrzése
 if (!isset($_SESSION['felhasznalo_nev'])) {
@@ -16,8 +14,8 @@ if (!isset($_SESSION['felhasznalo_nev'])) {
     exit();
 }
 
-// Adatbázis kapcsolat
-include './adatLekeres.php';
+
+
 
 // Járművek lekérdezése
 $atvetel = isset($_GET['atvetel']) ? $_GET['atvetel'] : null;
@@ -322,15 +320,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <div id="overlay" class="overlay"></div>
+
+<?php
+// Modal include és megjelenítés
+if (isset($_SESSION['alert_message'])) {
+    include 'modal.php';
+    echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById("alertModal").classList.add("active");
+                document.getElementById("overlay").style.display = "block";
+            });
+          </script>';
+}
+?>
+
 <script>
     function openModal(button) {
-        document.getElementById('jarmu_id').value = button.getAttribute('data-id');
-        document.getElementById('modal').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
+        let modal = document.getElementById('modal');
+        let alertModal = document.getElementById('alertModal');
+        let overlay = document.getElementById('overlay');
+
+        //Ha stringet kapunk akkor az alertModal
+        if (typeof button === 'string') {
+            if(button === 'alertModal'){
+                alertModal.classList.add('active');
+            } else {
+                document.getElementById(button).style.display = 'block';
+            }
+        } else { //egyébként a béreles modal
+            document.getElementById('jarmu_id').value = button.getAttribute('data-id');
+            modal.style.display = 'block';
+        }
+         overlay.style.display = 'block';
     }
 
     function closeModal() {
         document.getElementById('modal').style.display = 'none';
+        document.getElementById('alertModal').classList.remove('active');
         document.getElementById('overlay').style.display = 'none';
     }
     document.getElementById('toggleFilterBtn').addEventListener('click', function() {
