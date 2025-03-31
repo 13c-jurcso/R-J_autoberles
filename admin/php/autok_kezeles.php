@@ -1,4 +1,5 @@
 <?php
+session_start();
 include "./db_connection.php";
 include "./adatLekeres.php";
 
@@ -7,56 +8,110 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
 $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
 
 // Jármű hozzáadása
+// Jármű hozzáadása
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
+    error_log("===== Kezdődik a POST feldolgozás (add_vehicle) - ID: " . uniqid());
+
     $felhasznalas_id = $_POST['felhasznalas_id'];
     $szerviz_id = $_POST['szerviz_id'];
-    $gyarto = $_POST['gyarto'];
-    $tipus = $_POST['tipus'];
+    $gyarto = $_POST['gyarto']; // Ezt használjuk a névhez
+    $tipus = $_POST['tipus'];   // Ezt használjuk a névhez
     $motor = $_POST['motor'];
     $gyartasi_ev = $_POST['gyartasi_ev'];
     $leiras = $_POST['leiras'];
     $ar = $_POST['ar'];
 
-    $kepmappa = "../../php/kepek/";
-    $kepek = []; // Ez egy tömb, amely a képek elérési útvonalait tartalmazza.
+    $feltoltesiMappa = "../../php/kepek/";
+    $adatbazisMappaPrefix = "./kepek/";
+    $kepek = [];
+    $sikeresFeltoltesOsszes = true;
 
-    // Több kép feltöltése
-    foreach ($_FILES['kep_url']['name'] as $key => $kep_name) {
-        $fileTmpPath = $_FILES['kep_url']['tmp_name'][$key];
-        $fileName = basename($kep_name);
-        $filePath = $kepmappa . $fileName;
+    // ---- ÚJ RÉSZ: Alap fájlnév előkészítése ----
+    // Tisztítás: kisbetűs, szóközök és nem alfanumerikus karakterek eltávolítása
+    $safeGyarto = strtolower(preg_replace('/[^a-z0-9]/i', '', $gyarto));
+    $safeTipus = strtolower(preg_replace('/[^a-z0-9]/i', '', $tipus));
+    $baseFileName = $safeGyarto . $safeTipus; // Pl.: "bmwx6"
+    if (empty($baseFileName)) { // Ha a gyártó/típus üres vagy csak spec. karaktereket tartalmazott
+        $baseFileName = 'jarmu'; // Vészhelyzeti alapnév
+    }
+    $kepSzamlalo = 0; // Képszámláló inicializálása ehhez az autóhoz
+    // ---- ÚJ RÉSZ VÉGE ----
 
-        if (move_uploaded_file($fileTmpPath, $filePath)) {
-            $kepek[] = $filePath; // A sikeresen feltöltött képek elérési útvonalát hozzáadjuk a tömbhöz.
-        }
+
+    if (isset($_FILES['kep_url']) && is_array($_FILES['kep_url']['name'])) {
+        error_log("Fájlok feldolgozása előtt. FILES tömb: " . print_r($_FILES, true));
+
+        // Több kép feltöltése - CIKLUS KEZDETE
+        foreach ($_FILES['kep_url']['name'] as $key => $kep_name) {
+            if ($_FILES['kep_url']['error'][$key] === UPLOAD_ERR_OK && !empty($kep_name)) {
+                $fileTmpPath = $_FILES['kep_url']['tmp_name'][$key];
+                // Eredeti kiterjesztés lekérése és kisbetűsítése
+                $extension = strtolower(pathinfo($kep_name, PATHINFO_EXTENSION));
+
+                // ---- MÓDOSÍTOTT RÉSZ: Új fájlnév generálása ----
+                $kepSzamlalo++; // Növeljük a számlálót ennél a képnél
+                $fileName = $baseFileName . '_' . $kepSzamlalo . '.' . $extension; // Pl.: bmwx6_1.png, bmwx6_2.jpg stb.
+                // ---- MÓDOSÍTOTT RÉSZ VÉGE ----
+
+                $feltoltesiFilePath = $feltoltesiMappa . $fileName; // Az ÚJ nevet használjuk a mentéshez
+                error_log("Fájl mozgatása ide: " . $feltoltesiFilePath);
+
+                if (move_uploaded_file($fileTmpPath, $feltoltesiFilePath)) {
+                    $kepek[] = $adatbazisMappaPrefix . $fileName; // Az ÚJ nevet adjuk hozzá az adatbázisba mentendő listához
+                    error_log("Sikeres move_uploaded_file: " . $fileName . ". Jelenlegi \$kepek: " . json_encode($kepek));
+                } else {
+                    // ... (Hibakezelés, break;) ...
+                    error_log("!!! Sikertelen fájlmozgatás: " . $fileName . " ide: " . $feltoltesiFilePath . ". PHP hiba: " . error_get_last()['message'] ?? 'N/A');
+                    $sikeresFeltoltesOsszes = false;
+                    $_SESSION['uzenet'] = '<div class="alert alert-warning" role="alert">Hiba történt a(z) ' . htmlspecialchars($kep_name) . ' (' . $fileName . ') kép feltöltése során. A folyamat megszakadt.</div>';
+                    break;
+                }
+            } else if ($_FILES['kep_url']['error'][$key] !== UPLOAD_ERR_NO_FILE) {
+                 // ... (Hibakezelés, break;) ...
+                 error_log("!!! Fájlfeltöltési hiba a(z) " . htmlspecialchars($kep_name) . " fájlnál. Hiba kód: " . $_FILES['kep_url']['error'][$key]);
+                $sikeresFeltoltesOsszes = false;
+                $_SESSION['uzenet'] = '<div class="alert alert-warning" role="alert">Hiba történt a(z) ' . htmlspecialchars($kep_name) . ' kép feltöltése közben (kód: ' . $_FILES['kep_url']['error'][$key] . '). A folyamat megszakadt.</div>';
+                break;
+            }
+        } // CIKLUS VÉGE
+
+    } else {
+        // ... (Nincs fájl / hibás struktúra kezelése) ...
     }
 
-    // Ha legalább egy kép sikeresen feltöltésre került, azokat elmenthetjük
-    if (count($kepek) > 0) {
-        // Képek tárolása az adatbázisban (JSON formátumban tároljuk)
+    // ---- Adatbázis művelet - A CIKLUS UTÁN ----
+    if ($sikeresFeltoltesOsszes && count($kepek) > 0) {
+        // ... (INSERT INTO jarmuvek ... $kepek_json ... ) ...
+        // Itt nincs változás, a $kepek tömb már az új fájlneveket tartalmazza
+        error_log("Adatbázis INSERT előkészítése. Képek: " . json_encode($kepek));
         $kepek_json = json_encode($kepek);
-
-        // Jármű adatainak beszúrása
-        $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url) 
+        // ... (prepare, bind_param, execute, close) ...
+         $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $kepek_json);
-
         if ($modositas->execute()) {
-            session_start();
-            $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
-                                    Sikeres hozzáadás!
-                                </div>';
-        } else {
-            echo '<div class="alert alert-danger" role="alert">
-                                    Hiba a feltöltés során!
-                                </div>';
-            var_dump($modositas->error);
-        }
-        $modositas->close();
+             error_log("Adatbázis execute() eredmény: SIKER");
+             $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Sikeres hozzáadás!</div>';
+         } else {
+             error_log("!!! Adatbázis execute() eredmény: HIBA: " . $modositas->error);
+             $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű adatbázisba mentése során! (' . htmlspecialchars($modositas->error) . ')</div>';
+         }
+         $modositas->close();
+
     } else {
-        echo '<div class="sikertelen" id="animDiv">Nem sikerült képeket feltölteni.</div>';
+        // ... (Hibakezelés, ha a feltöltés sikertelen volt) ...
+         error_log("Adatbázis INSERT kihagyva. Sikeres feltöltés összes: " . ($sikeresFeltoltesOsszes?'igen':'nem') . ", Képek száma: " . count($kepek));
+        if (!isset($_SESSION['uzenet'])) { // Ha valamiért még nincs üzenet
+             $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">A jármű hozzáadása sikertelen volt a képfeltöltési hiba miatt.</div>';
+        }
     }
-}
+
+    // ---- PRG Minta: Átirányítás MINDEN ESETBEN ----
+    error_log("Átirányítás előkészítése ide: autok_kezeles.php");
+    header("Location: autok_kezeles.php");
+    exit();
+
+} // <-- add_vehicle POST blokk vége
 
 // Jármű törlése
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && isset($_POST['jarmu_id'])) {
@@ -325,7 +380,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
 </body>
 
 </html>
-
 <?php
 $db->close();
 ?>

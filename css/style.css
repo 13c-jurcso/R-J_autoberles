@@ -172,6 +172,7 @@ nav ul li a:hover::after {
 .container {
     width: 90%;
     max-width: 1400px;
+    margin-top: 160px !important;
     margin: 100px auto 40px;
     padding: 30px;
     background-color: #f2f4f5;
