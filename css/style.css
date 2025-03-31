@@ -403,7 +403,7 @@ textarea {
 }
 
 .modal.active, #alertModal.active { /*Hozzáadva*/
-    display: flex; /* Látható állapot */
+    display: flex !important;
     opacity: 1;
 }
 

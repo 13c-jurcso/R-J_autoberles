@@ -59,23 +59,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
 }
 
 // Jármű törlése
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && isset($_POST['jarmu_id'])) {
     $jarmu_id = $_POST['jarmu_id'];
 
-    $torles = $db->prepare("DELETE FROM jarmuvek WHERE jarmu_id = ?");
-    $torles->bind_param("i", $jarmu_id);
+    // Biztonsági okokból ellenőrizd, hogy a $jarmu_id tényleg szám
+    if (is_numeric($jarmu_id)) {
+        $db->begin_transaction(); // Tranzakció indítása
 
-    if ($torles->execute()) {
-        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
-                                    Sikeres törlés!
-                                </div>';
+        // Először töröld a bérléseket
+        $sql_delete_berlesek = "DELETE FROM berlesek WHERE jarmu_id = ?";
+        $stmt_delete_berlesek = $db->prepare($sql_delete_berlesek);
+        $stmt_delete_berlesek->bind_param("i", $jarmu_id);
+
+        if ($stmt_delete_berlesek->execute()) {
+            // Ha a bérlések törlése sikerült, akkor töröld a járművet
+            $sql_delete_jarmuvek = "DELETE FROM jarmuvek WHERE jarmu_id = ?";
+            $stmt_delete_jarmuvek = $db->prepare($sql_delete_jarmuvek);
+            $stmt_delete_jarmuvek->bind_param("i", $jarmu_id);
+
+            if ($stmt_delete_jarmuvek->execute()) {
+                $db->commit(); // Ha minden sikerült, véglegesítsd a tranzakciót
+                $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Jármű és a hozzá tartozó bérlések sikeresen törölve!</div>';
+            } else {
+                $db->rollback(); // Hiba esetén görgess vissza
+                $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű törlése során!</div>';
+                error_log("Hiba a jármű törlése során: " . $stmt_delete_jarmuvek->error);
+            }
+            $stmt_delete_jarmuvek->close();
+        } else {
+            $db->rollback(); // Hiba esetén görgess vissza
+            $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a bérlések törlése során!</div>';
+            error_log("Hiba a bérlések törlése során: " . $stmt_delete_berlesek->error);
+        }
+        $stmt_delete_berlesek->close();
+
     } else {
-        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">
-                                    Hiba a törlés során!
-                                </div>';
-        var_dump($torles->error);
+        $_SESSION['uzenet'] = '<div class="alert alert-warning" role="alert">Érvénytelen jármű ID!</div>';
     }
-    $torles->close();
+
+    header("Location: autok_kezeles.php"); // Átirányítás a lap tetejére a törlés után
+    exit();
 }
 ?>
 
