@@ -285,7 +285,7 @@ p {
 }
 
 /* Buttons */
-.btn, .berles-gomb,button, button[type="submit"], input[type="submit"] {
+.btn, .berles-gomb,button[type="button"], button[type="submit"], input[type="submit"] {
     padding: 12px 28px;
     font-size: 16px;
     font-weight: 600;
@@ -402,10 +402,12 @@ textarea {
     transition: opacity 0.3s ease;
 }
 
-.modal.active {
+.modal.active, #alertModal.active { /*Hozzáadva*/
     display: flex; /* Látható állapot */
     opacity: 1;
 }
+
+
 
 .modal-content,
 .modal-content-login,
@@ -1183,6 +1185,7 @@ input[disabled], button[disabled] {
     color: #999;
     cursor: not-allowed;
     box-shadow: none;
+    
 }
 
 /* Custom Icons (SVG) */
