@@ -226,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
     <!-- EGYNLORE KIVESZEM, HOGY MUKODJON -->
 
     <!-- Törlésre figyelmeztető modális ablak -->
-    <!-- <div id="csoo" class="modal">
+    <div id="csoo" class="modal">
         <div class="modal-dialog modal-confirm">
             <div class="modal-content">
                 <div class="modal-header flex-column">
@@ -250,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle'])) {
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
 
     <!-- Módosítás modális ablaka -->
     <!-- <div id="modositas" class="modal">
