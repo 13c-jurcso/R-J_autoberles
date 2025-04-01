@@ -60,7 +60,7 @@ function sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leir
 
         $mail->send();
     } catch (Exception $e) {
-        $_SESSION['uzenet'] .= '<div class="sikertelen" id="animDiv">Hiba az e-mail küldésekor: ' . $mail->ErrorInfo . '</div>';
+        $_SESSION['uzenet'] .= '<div class="alert alert-danger" role="alert">Hiba az e-mail küldésekor: ' . $mail->ErrorInfo . '</div>';
     }
 }
 
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_akcio'])) {
     $stmt->bind_param("idsssi", $jarmu_id, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday);
 
     if ($stmt->execute()) {
-        $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Akció sikeresen hozzáadva!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Akció sikeresen hozzáadva!</div>';
         $jarmu_sql = "SELECT gyarto, tipus FROM jarmuvek WHERE jarmu_id = ?";
         $jarmu_stmt = $db->prepare($jarmu_sql);
         $jarmu_stmt->bind_param("i", $jarmu_id);
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_akcio'])) {
         $jarmu_nev = $jarmu['gyarto'] . ' ' . $jarmu['tipus'];
         sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday);
     } else {
-        $_SESSION['uzenet'] = '<div class="sikertelen" id="animDiv">Hiba az akció hozzáadása során!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az akció hozzáadása során!</div>';
     }
     $stmt->close();
 }
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_black_friday'])) 
     $stmt->bind_param("idsssi", $jarmu_id, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday);
 
     if ($stmt->execute()) {
-        $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Black Friday akció sikeresen hozzáadva!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Black Friday akció sikeresen hozzáadva!</div>';
         $jarmu_sql = "SELECT gyarto, tipus FROM jarmuvek WHERE jarmu_id = ?";
         $jarmu_stmt = $db->prepare($jarmu_sql);
         $jarmu_stmt->bind_param("i", $jarmu_id);
@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_black_friday'])) 
         $jarmu_nev = $jarmu['gyarto'] . ' ' . $jarmu['tipus'];
         sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday);
     } else {
-        $_SESSION['uzenet'] = '<div class="sikertelen" id="animDiv">Hiba a Black Friday akció hozzáadása során!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a Black Friday akció hozzáadása során!</div>';
     }
     $stmt->close();
 }
@@ -126,9 +126,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_akcio'])) {
     $stmt->bind_param("i", $akcio_id);
 
     if ($stmt->execute()) {
-        $_SESSION['uzenet'] = '<div class="sikeres" id="animDiv">Akció sikeresen törölve!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Akció sikeresen törölve!</div>';
     } else {
-        $_SESSION['uzenet'] = '<div class="sikertelen" id="animDiv">Hiba az akció törlése során!</div>';
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az akció törlése során!</div>';
     }
     $stmt->close();
 }
@@ -153,17 +153,17 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
         <div class="menu-toggle">☰ Menu</div>
         <nav>
             <ul>
-                <li><a href="index.php">Főoldal</a></li>
-                <li><a href="husegpontok.php">Hűségpontok</a></li>
-                <li><a href="jarmuvek.php">Gépjárművek</a></li>
+                <li><a href="../../php/index.php">Főoldal</a></li>
+                <li><a href="../../php/husegpontok.php">Hűségpontok</a></li>
+                <li><a href="../../php/jarmuvek.php">Gépjárművek</a></li>
             </ul>
         </nav>
     </header>
-    <h1>Akciók kezelése</h1>
+    <h1>Akciók</h1>
 
     <div class="menu">
-        <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek" onclick="mutatResz('resz1')">Járművek</button></a>
-        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag" onclick="mutatResz('resz2')">Jogosultságok </button></a>
+        <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek">Járművek</button></a>
+        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag">Jogosultságok </button></a>
         <a href="./admin_berlesek.php"><button type="submit" id="berlesek">Bérlések</button></a>
         <a href="./admin_velemenyek.php"><button type="submit">Vélemények</button></a>
         <a href="./admin_akciok.php"><button type="submit">Akciók</button></a>
@@ -210,7 +210,9 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
 
             <button type="submit" name="add_akcio">Hozzáadás</button>
         </form>
-
+    </div>
+    <hr><br>
+    <div class="tartalmi-resz">
         <h2>Black Friday akció gyors hozzáadása</h2>
         <form method="POST" class="form">
             <label>Jármű:</label>
@@ -228,6 +230,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
             <button type="submit" name="add_black_friday" class="black-friday-btn">Black Friday akció (50%)</button>
         </form>
     </div>
+    <hr><br>
 
     <div class="table-container">
         <h2>Aktuális akciók</h2>
@@ -261,11 +264,9 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
         ?>
     </div>
 
-    <script>
-        document.getElementById("animDiv")?.addEventListener("click", function() {
-            this.classList.add("hidden");
-        });
-    </script>
+    <footer class="container mt-5 mb-3 text-center text-muted">
+        R&J Admin - @ <?=date('Y') ?>
+    </footer>
 </body>
 </html>
 <?php $db->close(); ?>

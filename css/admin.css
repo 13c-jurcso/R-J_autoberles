@@ -8,6 +8,12 @@ body {
     padding: 1%;
 }
 
+.table-container {
+    margin-left: 2%;
+    margin-right: 2%;
+    padding: 1%;
+}
+
 .alert {
     width: 100%; /* Teljes szélesség */
     max-width: 600px; /* Ugyanolyan max szélesség, mint a form */
