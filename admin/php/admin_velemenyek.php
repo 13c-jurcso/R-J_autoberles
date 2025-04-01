@@ -9,6 +9,26 @@ require '../../php/vendor/autoload.php';
 
 session_start();
 
+// Vélemény törlése
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_velemeny'])) {
+    $vid = $_POST['velemeny_id'];
+
+    $torles = $db->prepare("DELETE FROM `velemenyek` WHERE velemenyek.velemeny_id = ?;");
+    $torles->bind_param("i", $vid);
+
+    if ($torles->execute()) {
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
+                                    Sikeres törlés!
+                                </div>';
+    } else {
+        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">
+                                    Hiba a törlés során!
+                                </div>';
+        var_dump($torles->error);
+    }
+    $torles->close();
+}
+
 // Véleményre válaszadás és e-mail küldés PHPMailer-rel
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
     $velemeny_id = $_POST['velemeny_id'];
@@ -128,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
                            LEFT JOIN jarmuvek j ON v.jarmu_id = j.jarmu_id ORDER BY v.velemeny_id DESC;";
         $velemenyek = adatokLekerese($velemenyek_sql);
 
-        echo '<table><tr><th>ID</th><th>Felhasználó</th><th>Vélemény</th><th>Dátum</th><th>Jármű</th><th>Admin válasz</th><th>Művelet</th></tr>';
+        echo '<table><tr><th>ID</th><th>Felhasználó</th><th>Vélemény</th><th>Dátum</th><th>Jármű</th><th>Admin válasz</th><th></th><th>Művelet</th></tr>';
         if (is_array($velemenyek)) {
             foreach ($velemenyek as $v) {
                 $jarmu = isset($v['jarmu_id']) && $v['jarmu_id'] > 0 ? "{$v['gyarto']} {$v['tipus']}" : "Nincs hozzárendelve";
@@ -139,6 +159,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
                 echo '<td>' . $v['datum'] . '</td>';
                 echo '<td>' . $jarmu . '</td>';
                 echo '<td>' . ($v['admin_valasz'] ?? 'Nincs válasz') . '</td>';
+                echo '<td><form method="POST">
+                        <input type="hidden" name="velemeny_id" value="' . $v['velemeny_id'] . '">
+                        <button type="submit" class="torles_button" name="delete_velemeny">Törlés</button>
+                    </form></td>';
                 echo '<td><form method="POST">
                             <input type="hidden" name="velemeny_id" value="' . $v['velemeny_id'] . '">
                             <textarea name="admin_valasz" placeholder="Írja meg válaszát"></textarea>
