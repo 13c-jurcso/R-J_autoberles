@@ -263,6 +263,10 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
         echo '</table>';
         ?>
     </div>
+
+    <footer class="container mt-5 mb-3 text-center text-muted">
+        R&J Admin - @ <?=date('Y') ?>
+    </footer>
 </body>
 </html>
 <?php $db->close(); ?>

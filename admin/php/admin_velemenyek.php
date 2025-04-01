@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
         <?php
         $velemenyek_sql = "SELECT v.velemeny_id, v.felhasznalo_nev, v.uzenet, v.datum, v.admin_valasz, v.jarmu_id, j.gyarto, j.tipus 
                            FROM velemenyek v 
-                           LEFT JOIN jarmuvek j ON v.jarmu_id = j.jarmu_id";
+                           LEFT JOIN jarmuvek j ON v.jarmu_id = j.jarmu_id ORDER BY v.velemeny_id DESC;";
         $velemenyek = adatokLekerese($velemenyek_sql);
 
         echo '<table><tr><th>ID</th><th>Felhasználó</th><th>Vélemény</th><th>Dátum</th><th>Jármű</th><th>Admin válasz</th><th>Művelet</th></tr>';
@@ -152,6 +152,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
         echo '</table>';
         ?>
     </div>
+
+    <footer class="container mt-5 mb-3 text-center text-muted">
+        R&J Admin - @ <?=date('Y') ?>
+    </footer>
 </body>
 </html>
 <?php $db->close(); ?>

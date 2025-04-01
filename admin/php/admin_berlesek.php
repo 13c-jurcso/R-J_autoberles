@@ -241,6 +241,10 @@
         // Oldal betöltésekor bérlések lekérése
         document.addEventListener('DOMContentLoaded', loadBerlesek);
     </script>
+
+    <footer class="container mt-5 mb-3 text-center text-muted">
+        R&J Admin - @ <?= date('Y') ?>
+    </footer>
 </body>
 
 </html>

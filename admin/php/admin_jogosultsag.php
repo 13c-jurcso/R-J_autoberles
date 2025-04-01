@@ -176,10 +176,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
         </div>
     </div>
 
-    <div>
-        <?php
-            
-        ?>
-    </div>
+    <footer class="container mt-5 mb-3 text-center text-muted">
+        R&J Admin - @ <?=date('Y') ?>
+    </footer>
 </body>
 </html>
