@@ -8,110 +8,167 @@ $jarmuvek = $db->query("SELECT * FROM jarmuvek");
 $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
 
 // Jármű hozzáadása
-// Jármű hozzáadása
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
-    error_log("===== Kezdődik a POST feldolgozás (add_vehicle) - ID: " . uniqid());
-
+    // Alapadatok
     $felhasznalas_id = $_POST['felhasznalas_id'];
     $szerviz_id = $_POST['szerviz_id'];
-    $gyarto = $_POST['gyarto']; // Ezt használjuk a névhez
-    $tipus = $_POST['tipus'];   // Ezt használjuk a névhez
-    $motor = $_POST['motor'];
+    $gyarto = trim($_POST['gyarto']);
+    $tipus = trim($_POST['tipus']);
+    $motor = trim($_POST['motor']);
     $gyartasi_ev = $_POST['gyartasi_ev'];
-    $leiras = $_POST['leiras'];
+    $leiras = trim($_POST['leiras']);
     $ar = $_POST['ar'];
 
-    $feltoltesiMappa = "../../php/kepek/";
-    $adatbazisMappaPrefix = "./kepek/";
-    $kepek = [];
-    $sikeresFeltoltesOsszes = true;
+    // --- Képkezelési változók ---
+    // Fizikai mappa útvonala a szerveren (htdocs a gyökér)
+    $image_folder_physical = $_SERVER['DOCUMENT_ROOT'] . '/php/kepek/';
+    // Webes elérési út prefix (ezt mentjük az adatbázisba)
+    $image_folder_web_base = '/php/kepek/';
 
-    // ---- ÚJ RÉSZ: Alap fájlnév előkészítése ----
-    // Tisztítás: kisbetűs, szóközök és nem alfanumerikus karakterek eltávolítása
+    $kepek = []; // Ebben gyűjtjük a webes útvonalakat az adatbázishoz
+    $sikeresFeltoltesOsszes = true; // Jelző, hogy minden kép feltöltése sikeres volt-e
+    $upload_errors = []; // Hibák gyűjtése
+
+    // Fájlnév előkészítése
     $safeGyarto = strtolower(preg_replace('/[^a-z0-9]/i', '', $gyarto));
     $safeTipus = strtolower(preg_replace('/[^a-z0-9]/i', '', $tipus));
-    $baseFileName = $safeGyarto . $safeTipus; // Pl.: "bmwx6"
-    if (empty($baseFileName)) { // Ha a gyártó/típus üres vagy csak spec. karaktereket tartalmazott
-        $baseFileName = 'jarmu'; // Vészhelyzeti alapnév
+    $baseFileName = $safeGyarto . $safeTipus;
+    if (empty($baseFileName)) {
+        $baseFileName = 'jarmu';
     }
-    $kepSzamlalo = 0; // Képszámláló inicializálása ehhez az autóhoz
-    // ---- ÚJ RÉSZ VÉGE ----
+    $kepSzamlalo = 0;
 
+    // --- Képfeltöltés logikája ---
+    if (isset($_FILES['kep_url']) && is_array($_FILES['kep_url']['name']) && !empty($_FILES['kep_url']['name'][0])) {
 
-    if (isset($_FILES['kep_url']) && is_array($_FILES['kep_url']['name'])) {
-        error_log("Fájlok feldolgozása előtt. FILES tömb: " . print_r($_FILES, true));
-
-        // Több kép feltöltése - CIKLUS KEZDETE
-        foreach ($_FILES['kep_url']['name'] as $key => $kep_name) {
-            if ($_FILES['kep_url']['error'][$key] === UPLOAD_ERR_OK && !empty($kep_name)) {
-                $fileTmpPath = $_FILES['kep_url']['tmp_name'][$key];
-                // Eredeti kiterjesztés lekérése és kisbetűsítése
-                $extension = strtolower(pathinfo($kep_name, PATHINFO_EXTENSION));
-
-                // ---- MÓDOSÍTOTT RÉSZ: Új fájlnév generálása ----
-                $kepSzamlalo++; // Növeljük a számlálót ennél a képnél
-                $fileName = $baseFileName . '_' . $kepSzamlalo . '.' . $extension; // Pl.: bmwx6_1.png, bmwx6_2.jpg stb.
-                // ---- MÓDOSÍTOTT RÉSZ VÉGE ----
-
-                $feltoltesiFilePath = $feltoltesiMappa . $fileName; // Az ÚJ nevet használjuk a mentéshez
-                error_log("Fájl mozgatása ide: " . $feltoltesiFilePath);
-
-                if (move_uploaded_file($fileTmpPath, $feltoltesiFilePath)) {
-                    $kepek[] = $adatbazisMappaPrefix . $fileName; // Az ÚJ nevet adjuk hozzá az adatbázisba mentendő listához
-                    error_log("Sikeres move_uploaded_file: " . $fileName . ". Jelenlegi \$kepek: " . json_encode($kepek));
-                } else {
-                    // ... (Hibakezelés, break;) ...
-                    error_log("!!! Sikertelen fájlmozgatás: " . $fileName . " ide: " . $feltoltesiFilePath . ". PHP hiba: " . error_get_last()['message'] ?? 'N/A');
-                    $sikeresFeltoltesOsszes = false;
-                    $_SESSION['uzenet'] = '<div class="alert alert-warning" role="alert">Hiba történt a(z) ' . htmlspecialchars($kep_name) . ' (' . $fileName . ') kép feltöltése során. A folyamat megszakadt.</div>';
-                    break;
-                }
-            } else if ($_FILES['kep_url']['error'][$key] !== UPLOAD_ERR_NO_FILE) {
-                 // ... (Hibakezelés, break;) ...
-                 error_log("!!! Fájlfeltöltési hiba a(z) " . htmlspecialchars($kep_name) . " fájlnál. Hiba kód: " . $_FILES['kep_url']['error'][$key]);
-                $sikeresFeltoltesOsszes = false;
-                $_SESSION['uzenet'] = '<div class="alert alert-warning" role="alert">Hiba történt a(z) ' . htmlspecialchars($kep_name) . ' kép feltöltése közben (kód: ' . $_FILES['kep_url']['error'][$key] . '). A folyamat megszakadt.</div>';
-                break;
+        // Ellenőrizzük/létrehozzuk a célmappát
+        if (!is_dir($image_folder_physical)) {
+            if (!@mkdir($image_folder_physical, 0775, true) && !is_dir($image_folder_physical)) {
+                 $upload_errors[] = "Nem sikerült létrehozni a képek mappát: " . htmlspecialchars($image_folder_physical) . ". Ellenőrizze a jogosultságokat ('/php' mappára is kell írási jog)!";
+                 $sikeresFeltoltesOsszes = false; // Ha a mappa sincs meg, nem tudunk feltölteni
             }
-        } // CIKLUS VÉGE
-
-    } else {
-        // ... (Nincs fájl / hibás struktúra kezelése) ...
-    }
-
-    // ---- Adatbázis művelet - A CIKLUS UTÁN ----
-    if ($sikeresFeltoltesOsszes && count($kepek) > 0) {
-        // ... (INSERT INTO jarmuvek ... $kepek_json ... ) ...
-        // Itt nincs változás, a $kepek tömb már az új fájlneveket tartalmazza
-        error_log("Adatbázis INSERT előkészítése. Képek: " . json_encode($kepek));
-        $kepek_json = json_encode($kepek);
-        // ... (prepare, bind_param, execute, close) ...
-         $modositas = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $modositas->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $kepek_json);
-        if ($modositas->execute()) {
-             error_log("Adatbázis execute() eredmény: SIKER");
-             $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Sikeres hozzáadás!</div>';
-         } else {
-             error_log("!!! Adatbázis execute() eredmény: HIBA: " . $modositas->error);
-             $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű adatbázisba mentése során! (' . htmlspecialchars($modositas->error) . ')</div>';
-         }
-         $modositas->close();
-
-    } else {
-        // ... (Hibakezelés, ha a feltöltés sikertelen volt) ...
-         error_log("Adatbázis INSERT kihagyva. Sikeres feltöltés összes: " . ($sikeresFeltoltesOsszes?'igen':'nem') . ", Képek száma: " . count($kepek));
-        if (!isset($_SESSION['uzenet'])) { // Ha valamiért még nincs üzenet
-             $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">A jármű hozzáadása sikertelen volt a képfeltöltési hiba miatt.</div>';
+        } elseif (!is_writable($image_folder_physical)) {
+             $upload_errors[] = "A képek mappa nem írható: " . htmlspecialchars($image_folder_physical);
+             $sikeresFeltoltesOsszes = false; // Ha nem írható, nem tudunk feltölteni
         }
+
+        // Csak akkor megyünk tovább, ha a mappa rendben van
+        if ($sikeresFeltoltesOsszes) {
+            foreach ($_FILES['kep_url']['name'] as $key => $kep_name) {
+                if ($_FILES['kep_url']['error'][$key] === UPLOAD_ERR_OK && !empty($kep_name)) {
+                    $fileTmpPath = $_FILES['kep_url']['tmp_name'][$key];
+                    $file_size = $_FILES['kep_url']['size'][$key];
+
+                     // --- Biztonsági ellenőrzések ---
+                     $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                     $max_size = 5 * 1024 * 1024; // 5MB
+                     $file_mime_type = mime_content_type($fileTmpPath);
+
+                    if (!in_array(strtolower($file_mime_type), $allowed_types)) {
+                        $upload_errors[] = "Fájl ('".htmlspecialchars($kep_name)."') típusa ('".htmlspecialchars($file_mime_type)."') nem engedélyezett.";
+                        $sikeresFeltoltesOsszes = false;
+                        break; // Hiba esetén megszakítjuk a ciklust
+                    }
+                     if ($file_size > $max_size) {
+                        $upload_errors[] = "Fájl ('".htmlspecialchars($kep_name)."') mérete túl nagy (max 5MB).";
+                        $sikeresFeltoltesOsszes = false;
+                        break;
+                    }
+                    // --- Ellenőrzések vége ---
+
+                    $extension = strtolower(pathinfo($kep_name, PATHINFO_EXTENSION));
+                    $kepSzamlalo++;
+                    // Az egyedi, tisztított fájlnév
+                    $fileName = $baseFileName . '_' . $kepSzamlalo . '.' . $extension;
+
+                    // Cél útvonal a FIZIKAI mentéshez
+                    $destination_path_physical = $image_folder_physical . $fileName;
+                    // Webes útvonal az ADATBÁZISHOZ és megjelenítéshez
+                    $web_path_for_db = $image_folder_web_base . $fileName;
+
+                    // Fájl mozgatása a fizikai helyre
+                    if (move_uploaded_file($fileTmpPath, $destination_path_physical)) {
+                        // A HELYES webes útvonalat adjuk hozzá a tömbhöz
+                        $kepek[] = $web_path_for_db;
+                        error_log("Sikeres move_uploaded_file: " . $fileName . " -> " . $destination_path_physical . ". Hozzáadva DB-hez: " . $web_path_for_db);
+                    } else {
+                        $upload_errors[] = "Hiba történt a(z) '" . htmlspecialchars($kep_name) . "' fájl mozgatásakor ide: " . htmlspecialchars($destination_path_physical);
+                        $sikeresFeltoltesOsszes = false;
+                        error_log("!!! Sikertelen move_uploaded_file: " . $fileName . " ide: " . $destination_path_physical . ". PHP hiba: " . print_r(error_get_last(), true));
+                        break; // Hiba esetén megszakítjuk
+                    }
+                } else if ($_FILES['kep_url']['error'][$key] !== UPLOAD_ERR_NO_FILE) {
+                    $upload_errors[] = "Fájlfeltöltési hiba a(z) '" . htmlspecialchars($kep_name) . "' fájlnál. Kód: " . $_FILES['kep_url']['error'][$key];
+                    $sikeresFeltoltesOsszes = false;
+                    error_log("!!! Fájlfeltöltési hiba (nem NO_FILE): " . htmlspecialchars($kep_name) . ". Kód: " . $_FILES['kep_url']['error'][$key]);
+                    break; // Hiba esetén megszakítjuk
+                }
+            } // foreach ciklus vége
+        } // if mappa rendben van vége
+
+    } else {
+         // Ha a 'kep_url' nincs beállítva vagy üres, de kötelező volt a formon ('required')
+         if (isset($_FILES['kep_url']['error'][0]) && $_FILES['kep_url']['error'][0] === UPLOAD_ERR_NO_FILE) {
+            $upload_errors[] = "Nem töltött fel egyetlen képet sem, pedig kötelező.";
+            $sikeresFeltoltesOsszes = false; // Nincs kép, nincs mit menteni
+         } else {
+            // Egyéb hiba a $_FILES struktúrával
+             $upload_errors[] = "Hiba a fájlfeltöltési adatok feldolgozásakor.";
+             $sikeresFeltoltesOsszes = false;
+             error_log("!!! Hiba a FILES tömb struktúrájával: " . print_r($_FILES, true));
+         }
     }
 
-    // ---- PRG Minta: Átirányítás MINDEN ESETBEN ----
-    error_log("Átirányítás előkészítése ide: autok_kezeles.php");
+    // ---- Adatbázis művelet ----
+    // Csak akkor próbálunk beszúrni, ha minden kép feltöltése sikeres volt ÉS van legalább egy kép
+    if ($sikeresFeltoltesOsszes && count($kepek) > 0) {
+        $kepek_json = json_encode($kepek); // A $kepek már a /php/kepek/... útvonalakat tartalmazza
+        error_log("Adatbázis INSERT előkészítése. Képek JSON: " . $kepek_json);
+
+        $stmt_insert = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        if ($stmt_insert === false) {
+             error_log("!!! Adatbázis prepare() HIBA: " . $db->error);
+             $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az adatbázis művelet előkészítésekor!</div>';
+        } else {
+            $stmt_insert->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $kepek_json);
+            if ($stmt_insert->execute()) {
+                 error_log("Adatbázis execute() SIKER. Beszúrt ID: " . $stmt_insert->insert_id);
+                 $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Jármű sikeresen hozzáadva!</div>';
+            } else {
+                 error_log("!!! Adatbázis execute() HIBA: " . $stmt_insert->error);
+                 // Részletesebb hibaüzenet fejlesztéshez
+                 $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű adatbázisba mentése során! Részletek: '.htmlspecialchars($stmt_insert->error).'</div>';
+
+                 // Próbáljuk meg törölni a feltöltött képeket, ha a DB mentés nem sikerült
+                  foreach ($kepek as $web_path_to_delete) {
+                      $physical_path_to_delete = $_SERVER['DOCUMENT_ROOT'] . $web_path_to_delete;
+                      if (file_exists($physical_path_to_delete)) {
+                          @unlink($physical_path_to_delete);
+                      }
+                  }
+            }
+            $stmt_insert->close();
+        }
+
+    } else {
+        // Ha a feltöltés sikertelen volt, vagy nem volt kép
+         $hiba_uzenet = "A jármű hozzáadása sikertelen volt.";
+         if (!empty($upload_errors)) {
+             $hiba_uzenet .= " Hibák: " . implode('; ', $upload_errors);
+         } elseif (empty($kepek)) {
+             // Ez az ág akkor futhat, ha a required ellenére nem töltöttek fel fájlt, vagy hiba volt a $_FILES-ban
+             $hiba_uzenet .= " Nem történt képfeltöltés vagy hiba történt a fájlok feldolgozása közben.";
+         }
+         $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">' . htmlspecialchars($hiba_uzenet) . '</div>';
+         error_log("Adatbázis INSERT kihagyva. Sikeres összes feltöltés: " . ($sikeresFeltoltesOsszes?'igen':'nem') . ", Képek száma: " . count($kepek) . ". Hibák: " . implode('; ', $upload_errors));
+    }
+
+    // Átirányítás a PRG (Post-Redirect-Get) minta alapján, hogy ne lehessen újraküldeni a formot frissítéssel
     header("Location: autok_kezeles.php");
     exit();
-
-} // <-- add_vehicle POST blokk vége
+}
 
 // Jármű törlése
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && isset($_POST['jarmu_id'])) {
@@ -330,22 +387,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
         </div>
     </div>
 
-    <!-- Módosítás modális ablaka -->
-    <!-- <div id="modositas" class="modal">
-        <div class="modal-dialog modal-confirm">
-            <div class="modal-content">
-                <div class="modal-header flex-column">
-                    <span class="close" onclick="closeModal()">&times;</span>
-                    <h2 class="modal-title w-100">Módosítás</h2>
-                </div>
-                <div class="modal-body">
-                    <form action="" class="form">
-                
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> -->
+   
 
 
     
