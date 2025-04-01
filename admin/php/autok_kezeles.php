@@ -343,7 +343,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
                     </form>
                 </td>
                 <td>
-                    <form method="POST" action="">
+                    <form method="POST" action="" onsubmit="return confirm('Biztosan törölni kívánja az autót?');">
                         <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
                         <button type="submit" class="torles_button" name="delete_vehicle">Törlés</button>
                     </form>
@@ -361,7 +361,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
     <!-- EGYNLORE KIVESZEM, HOGY MUKODJON -->
 
     <!-- Törlésre figyelmeztető modális ablak -->
-    <div id="csoo" class="modal">
+    <!-- <div id="csoo" class="modal">
         <div class="modal-dialog modal-confirm">
             <div class="modal-content">
                 <div class="modal-header flex-column">
@@ -385,12 +385,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
                 </div>
             </div>
         </div>
-    </div>
-
-   
-
-
-    
+    </div> -->
 
     <div id="overlay" class="overlay"></div>
 

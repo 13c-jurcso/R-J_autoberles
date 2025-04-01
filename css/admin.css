@@ -20,6 +20,7 @@ body {
     margin: 0 auto; /* Középre igazítás */
     text-align: center;
 }
+
 /* Képek kezeléséhez stílusok */
 .image-management-container {
     border: 1px solid #ccc;
@@ -31,7 +32,8 @@ body {
 .image-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px; /* Térköz a képek között */
+    gap: 15px;
+    justify-content: center;
 }
 .image-item {
     border: 1px solid #ddd;

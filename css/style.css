@@ -327,7 +327,7 @@ form {
     border-radius: 12px;
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
     animation: slideInUp 1s ease-out;
-    /* max-width: 600px; */
+    max-width: 680px;
     margin: 0 auto;
     display: grid;
     justify-items: center;
