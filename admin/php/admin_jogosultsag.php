@@ -84,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
             // session_start();
             if (isset($_SESSION['uzenet'])) {
                 echo $_SESSION['uzenet'];
+                unset($_SESSION['uzenet']);
             }
         ?>
     </div>

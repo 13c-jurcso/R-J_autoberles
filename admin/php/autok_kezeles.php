@@ -282,6 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
             // session_start();
             if (isset($_SESSION['uzenet'])) {
                 echo $_SESSION['uzenet'];
+                unset($_SESSION['uzenet']);
             }
         ?>
     </div>
@@ -388,37 +389,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
         </table>
     </div>
 
-    <!-- EGYNLORE KIVESZEM, HOGY MUKODJON -->
-
-    <!-- Törlésre figyelmeztető modális ablak -->
-    <!-- <div id="csoo" class="modal">
-        <div class="modal-dialog modal-confirm">
-            <div class="modal-content">
-                <div class="modal-header flex-column">
-                    <div class="icon-box">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="red" style="margin-top: 12px" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                        </svg>
-                    </div>
-                    <h4 class="modal-title w-100">Figyelem!</h4>
-                    <span class="close" onclick="closeModal()">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <h3>Biztos benne, högy törölni kívánja az elemet?</h3>
-                    <p>Ez a művelet nem visszavonható.</p>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Mégse</button>
-                    <form method="POST">
-                        <button type="submit" class="btn btn-danger" name="delete_vehicle">Törlés</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> -->
+  
 
     <div id="overlay" class="overlay"></div>
-
+    <footer class="container mt-5 mb-3 text-center text-muted">
+        R&J Admin - © <?= date('Y') ?>
+    </footer>
     <script>
     function mutatResz(reszAzonosito, gomb) {
         // Az összes tartalmi rész rejtése
