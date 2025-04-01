@@ -20,6 +20,58 @@ body {
     margin: 0 auto; /* Középre igazítás */
     text-align: center;
 }
-
+/* Képek kezeléséhez stílusok */
+.image-management-container {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+.image-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* Térköz a képek között */
+}
+.image-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    background-color: #fff;
+    border-radius: 4px;
+    position: relative;
+     max-width: 180px;
+     display: flex; /* Flexbox a belső elemekhez */
+    flex-direction: column; /* Elemek függőlegesen */
+    justify-content: space-between; /* Térköz elosztása */
+}
+.image-item img {
+    max-width: 100%; /* Igazodjon a containerhez */
+    height: auto;
+    max-height: 120px; /* Maximum magasság */
+    object-fit: cover; /* Kép vágása, ha aránytalan */
+    display: block;
+    margin: 0 auto 10px auto;
+    border: 1px solid #eee;
+}
+ .image-item label {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+    cursor: pointer; /* Jobb UX */
+ }
+ .image-item .controls {
+    margin-top: auto; /* Vezérlők alulra tolása */
+ }
+.image-item input[type="checkbox"],
+.image-item input[type="radio"] {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.primary-indicator {
+     font-weight: bold;
+     color: green;
+     font-size: 0.85em;
+}
 
 
