@@ -325,6 +325,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
 
             <label for="felhasznalas_id">Felhasználási mód:</label>
             <select name="felhasznalas_id">
+                <option value="<?= htmlspecialchars($car['felhasznalas_id']) ?>">-- Kérem válassz egyet --</option>
                 <?php
                     $felhasznalas_sql = "SELECT felhasznalas.felhasznalas_id, felhasznalas.nev FROM felhasznalas;";
                     $felhasznalas = adatokLekerese($felhasznalas_sql);

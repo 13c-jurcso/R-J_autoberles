@@ -184,23 +184,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
         $stmt_delete_berlesek->bind_param("i", $jarmu_id);
 
         if ($stmt_delete_berlesek->execute()) {
-            // Ha a bérlések törlése sikerült, akkor töröld a járművet
-            $sql_delete_jarmuvek = "DELETE FROM jarmuvek WHERE jarmu_id = ?";
-            $stmt_delete_jarmuvek = $db->prepare($sql_delete_jarmuvek);
-            $stmt_delete_jarmuvek->bind_param("i", $jarmu_id);
+            //Ha sikeresen törlődtek a bérlések, kitöröljük az akciókbol is.
+            $sql_delete_akciok = "DELETE FROM `akciok` WHERE jarmu_id = ?";
+            $stmt_delete_akciok = $db->prepare($sql_delete_akciok);
+            $stmt_delete_akciok->bind_param("i", $jarmu_id);
 
-            if ($stmt_delete_jarmuvek->execute()) {
-                $db->commit(); // Ha minden sikerült, véglegesítsd a tranzakciót
-                $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Jármű és a hozzá tartozó bérlések sikeresen törölve!</div>';
-            } else {
-                $db->rollback(); // Hiba esetén görgess vissza
-                $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű törlése során!</div>';
-                error_log("Hiba a jármű törlése során: " . $stmt_delete_jarmuvek->error);
+            if($stmt_delete_akciok->execute()){
+                //Ha az akciók törlése sikeres, kitöröljük a véleményektől.
+                $sql_delete_velemeny = "DELETE FROM `velemenyek` WHERE jarmu_id = ?";
+                $stmt_delete_velemeny = $db->prepare($sql_delete_velemeny);
+                $stmt_delete_velemeny->bind_param("i", $jarmu_id);
+
+                if($stmt_delete_velemeny->execute()){
+                    // Ha a bérlések törlése sikerült, akkor töröld a járművet
+                    $sql_delete_jarmuvek = "DELETE FROM jarmuvek WHERE jarmu_id = ?";
+                    $stmt_delete_jarmuvek = $db->prepare($sql_delete_jarmuvek);
+                    $stmt_delete_jarmuvek->bind_param("i", $jarmu_id);
+
+                    if ($stmt_delete_jarmuvek->execute()) {
+                        $db->commit(); // Ha minden sikerült, véglegesítsd a tranzakciót
+                        $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Jármű sikeresen törölve!</div>';
+                    } else {
+                        $db->rollback(); // Hiba esetén görgess vissza
+                        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű törlése során!</div>';
+                        error_log("Hiba a jármű törlése során: " . $stmt_delete_jarmuvek->error);
+                    }
+                    $stmt_delete_jarmuvek->close();
+                }
+                else{
+                    $db->rollback(); // Hiba esetén görgess vissza
+                    $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba, a jármű törlése során, a vélemények táblából!</div>';
+                    error_log("Hiba a vélemények törlése során: " . $stmt_delete_akciok->error);
+                }
+                $stmt_delete_velemeny->close();
             }
-            $stmt_delete_jarmuvek->close();
+            else{
+                $db->rollback(); // Hiba esetén görgess vissza
+                $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba, a jármű törlése során, az akciók táblából!</div>';
+                error_log("Hiba az akciók törlése során: " . $stmt_delete_akciok->error);
+            }
+            $stmt_delete_akciok->close();
         } else {
             $db->rollback(); // Hiba esetén görgess vissza
-            $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a bérlések törlése során!</div>';
+            $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba, a jármű törlése során, a bérlések táblából!</div>';
             error_log("Hiba a bérlések törlése során: " . $stmt_delete_berlesek->error);
         }
         $stmt_delete_berlesek->close();
@@ -240,9 +266,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
     <h1>Vezérlőpult</h1>
 
     <div class="menu">
-        <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek" onclick="mutatResz('resz1')">Járművek
+        <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek">Járművek
         </button></a>
-        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag" onclick="mutatResz('resz2')">Jogosultságok 
+        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag">Jogosultságok 
         </button></a>
         <a href="./admin_berlesek.php"><button type="submit" id="berlesek">Bérlések 
         </button></a>
@@ -274,6 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
 
             <label for="felhasznalas_id">Felhasználási mód:</label>
             <select name="felhasznalas_id">
+                <option value="">-- Kérem válasszon --</option>
                 <?php
                     $felhasznalas_sql = "SELECT felhasznalas.felhasznalas_id, felhasznalas.nev FROM felhasznalas;";
                     $felhasznalas = adatokLekerese($felhasznalas_sql);
@@ -294,13 +321,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
             <input type="date" name="gyartasi_ev" required><br>
 
             <label for="leiras">Leírás:</label>
-            <input type="text" name="leiras" required><br>
+            <textarea name="leiras" required></textarea><br>
 
             <label for="ar">Ár:</label>
             <input type="number" name="ar" required><br>
 
             <label for="kep_url">Képek:</label>
-            <input type="file" name="kep_url[]" accept="image/*" multiple required><br>
+            <div class="mb-3">
+                <input type="file" class="form-control" id="new_images" name="kep_url[]" accept="image/jpeg, image/png, image/gif, image/webp" multiple>
+                <div class="form-text">Engedélyezett formátumok: JPG, PNG, GIF, WEBP. Max méret: 5MB / kép.</div>
+            </div>
 
             <button type="submit" name="add_vehicle">Hozzáadás</button>
         </form>
