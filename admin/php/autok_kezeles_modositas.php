@@ -106,9 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
 
     // === HELYES ÚTVONALAK DEFINIÁLÁSA ===
     // A képek FIZIKAI tárolási helye a szerveren
-    $image_folder_physical = $_SERVER['DOCUMENT_ROOT'] . '/php/kepek/';
+    $image_folder_physical = $_SERVER['DOCUMENT_ROOT'] . '/berles/kepek/';
     // A képek WEBEN elérhető útvonala (ezt tároljuk a DB-ben és használjuk src-ben)
-    $image_folder_web_base = '/php/kepek/';
+    $image_folder_web_base = '/berles/kepek/';
     // ====================================
 
 
