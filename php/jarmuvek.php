@@ -157,11 +157,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <head>
                 <title>Sikeres bérlés</title>
                 <style>
-                    body { font-family: Arial, sans-serif; color: #333; }
-                    .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-                    h2 { color: #2c3e50; }
-                    .details { background-color: #f9f9f9; padding: 15px; border-radius: 5px; }
-                    .footer { margin-top: 20px; font-size: 12px; color: #777; }
+                    body { font-family: Arial, sans-serif; color: #333; background: #f4f4f4; margin: 0; padding: 0; }
+                    .container { max-width: 600px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+                    h2 { color: #2c3e50; text-align: center; }
+                    .details { background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 5px solid #3498db; margin-top: 15px; }
+                    .details h3 { color: #3498db; margin-top: 0; }
+                    .details p { margin: 8px 0; font-size: 14px; }
+                    .footer { margin-top: 20px; font-size: 12px; color: #777; text-align: center; }
+                    strong { color: #2c3e50; }
                 </style>
             </head>
             <body>

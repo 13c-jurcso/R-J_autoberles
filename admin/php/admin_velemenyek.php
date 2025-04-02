@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_velemeny'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
     $velemeny_id = $_POST['velemeny_id'];
     $admin_valasz = $_POST['admin_valasz'];
+    $felhasznalo_nev = $_POST['felhasznalo_nev'];
 
     // 1. Válasz mentése az adatbázisba
     $stmt = $db->prepare("UPDATE velemenyek SET admin_valasz = ? WHERE velemeny_id = ?");
@@ -62,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
         if ($felhasznalo && !empty($felhasznalo['emailcim'])) {
             $to = $felhasznalo['emailcim'];
             $subject = "Válasz a véleményére - Autóbérlés";
-            $message = "Kedves Felhasználó,\n\n" .
+            $message = "Kedves $felhasznalo_nev,\n\n" .
                        "Az Ön véleményére az alábbi választ kaptuk adminisztrátorunktól:\n\n" .
                        "\"$admin_valasz\"\n\n" .
                        "Köszönjük, hogy megosztotta velünk véleményét!\n" .
@@ -166,12 +167,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
                 echo '<td>' . $v['datum'] . '</td>';
                 echo '<td>' . $jarmu . '</td>';
                 echo '<td>' . ($v['admin_valasz'] ?? 'Nincs válasz') . '</td>';
-                echo '<td><form method="POST">
+                echo '<td><form method="POST" onsubmit="return confirm(`Biztosan törölni kívánja ezt a véleményt?`);">
                         <input type="hidden" name="velemeny_id" value="' . $v['velemeny_id'] . '">
                         <button type="submit" class="torles_button" name="delete_velemeny">Törlés</button>
                     </form></td>';
                 echo '<td><form method="POST">
                             <input type="hidden" name="velemeny_id" value="' . $v['velemeny_id'] . '">
+                            <input type="hidden" name="felhasznalo_nev" value="' . $v['felhasznalo_nev'] . '">
                             <textarea name="admin_valasz" placeholder="Írja meg válaszát"></textarea>
                             <button type="submit" name="valasz_submit">Válasz</button>
                           </form></td>';

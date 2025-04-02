@@ -205,7 +205,7 @@ if ($result) {
                                     <form action="./api.php" method="POST" class="delete-form" onsubmit="return confirm('Biztosan törölni szeretné ezt a bérlést?');">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="berles_id" value="<?= htmlspecialchars($berles['berles_id']) ?>">
-                                        <button type="submit" title="Törlés">Törlés🗑️</button> <!-- Kuka ikon -->
+                                        <button type="submit" title="Törlés">Törlés🗑️</button>
                                     </form>
                                     <!-- Opcionális: Módosítás link egy külön oldalra -->
                                     <!-- <a href="edit_berles_page.php?id=<?= htmlspecialchars($berles['berles_id']) ?>" class="btn btn-warning btn-sm" title="Módosítás">✎</a> -->

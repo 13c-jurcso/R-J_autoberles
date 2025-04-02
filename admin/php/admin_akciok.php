@@ -257,7 +257,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
                 echo '<td>' . $a['vege'] . '</td>';
                 echo '<td>' . ($a['leiras'] ?? 'Nincs') . '</td>';
                 echo '<td>' . ($a['is_black_friday'] ? 'Igen' : 'Nem') . '</td>';
-                echo '<td><form method="POST">
+                echo '<td><form method="POST" onsubmit="return confirm(`Biztosan törölni kívánja ezt az akciót?`);">
                             <input type="hidden" name="akcio_id" value="' . $a['akcio_id'] . '">
                             <button type="submit" name="delete_akcio" class="torles_button">Törlés</button>
                           </form></td>';

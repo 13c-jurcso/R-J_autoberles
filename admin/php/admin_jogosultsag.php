@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
                         echo '<td>' . $f['szamlazasi_cim'] . '</td>';
                         echo '<td>' . $f['husegpontok'] . '</td>';
                         echo '<td>' . $f['admin'] . '</td>';
-                        echo '<td><form method="post">
+                        echo '<td><form method="post" onsubmit="return confirm(`Biztosan törölni kívánja a felhasználót?`);">
                                     <input type="hidden" name="felhasznalo_nev" value="' . $f['felhasznalo_nev'] . '">
                                     <button type="submit" name="delete_felhasznalo" class="torles_button">Törlés</button>
                             </form></td></tr>';
