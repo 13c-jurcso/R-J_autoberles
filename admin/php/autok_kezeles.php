@@ -2,6 +2,12 @@
 session_start();
 include "./db_connection.php";
 include "./adatLekeres.php";
+if (!isset($_SESSION['felhasznalo_nev'])) {
+    $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_type'] = "warning";
+    header("Location: index.php");
+    exit();
+}
 
 // Jármű és felhasznalo lista lekérése
 $jarmuvek = $db->query("SELECT * FROM jarmuvek");

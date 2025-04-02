@@ -4,6 +4,12 @@ session_start();
 include "./db_connection.php"; // Feltételezem, hogy ez $db néven hozza létre a kapcsolatot
 include "./adatLekeres.php"; // Feltételezem, hogy ez tartalmazza az adatokLekerese funkciót
 
+if (!isset($_SESSION['felhasznalo_nev'])) {
+    $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_type'] = "warning";
+    header("Location: index.php");
+    exit();
+}
 
 
 // --- Modal include helyett közvetlen üzenetkezelés ---
@@ -320,7 +326,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
         .form input[type=date],
         .form select,
         .form textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; box-sizing: border-box; }
-        .menu button { padding: 8px 12px; } /* Vissza gomb stílusa */
+        
     </style>
 </head>
 <body>
