@@ -272,19 +272,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                 // Ha átirányítasz, az alábbi $car és $car_images frissítések feleslegesek itt,
                 // mert az oldal újratöltésekor úgyis újra lekérdezi az adatokat a DB-ből.
 
-                /* // Csak akkor kell, ha NEM használsz átirányítást:
-                $car['felhasznalas_id'] = $felhasznalas_id;
-                $car['szerviz_id'] = $szerviz_id;
-                $car['gyarto'] = $gyarto;
-                $car['tipus'] = $tipus;
-                $car['motor'] = $motor;
-                $car['gyartasi_ev'] = $gyartasi_ev;
-                $car['leiras'] = $leiras;
-                $car['ar'] = $ar;
-                $car['kep_url'] = $new_kep_url_json; // JSON string
-                $car_images = $updated_images; // PHP tömb
-                */
-
             } else {
               // Naplózás + felhasználóbarát üzenet
               error_log("SQL execute hiba (jármű frissítés): " . $modositas->error);
@@ -306,22 +293,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-        /* Egyszerűbb stílusok a jobb átláthatóságért, ahogy eredetileg volt */
-        .image-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; }
-        .image-item { border: 1px solid #ccc; padding: 5px; text-align: center; }
-        .image-item img { max-width: 150px; height: auto; display: block; margin-bottom: 5px; }
-        .image-item .controls label { display: block; margin-bottom: 3px; font-size: 0.9em; }
-        .primary-indicator { font-weight: bold; color: green; font-size: 0.8em;}
-        /* Eredeti form stílusok megtartása (ha voltak a .form class-hoz) */
-        .form label { display: block; margin-top: 10px; }
-        .form input[type=text],
-        .form input[type=number],
-        .form input[type=date],
-        .form select,
-        .form textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; box-sizing: border-box; }
-        .menu button { padding: 8px 12px; } /* Vissza gomb stílusa */
-    </style>
 </head>
 <body>
     <header>
@@ -331,22 +302,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                 <li><a href="../../php/index.php">Főoldal</a></li>
                 <li><a href="../../php/husegpontok.php">Hűségpontok</a></li>
                 <li><a href="../../php/jarmuvek.php">Gépjárművek</a></li>
-                <!-- Feltételezve, hogy van admin menü is -->
                 <li><a href="./autok_kezeles.php">Járművek Kezelése</a></li>
             </ul>
         </nav>
     </header>
-    <div class="menu">
-        <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek">Járművek
-        </button></a>
-        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag">Jogosultságok 
-        </button></a>
-        <a href="./admin_berlesek.php"><button type="submit" id="berlesek">Bérlések 
-        </button></a>
-        <a href="./admin_velemenyek.php"><button type="submit">Vélemények</button></a>
-        <a href="./admin_akciok.php"><button type="submit">Akciók</button></a>
-    </div>
-        <hr>
     <h1>Módosítás</h1>
     <hr>
 
@@ -498,6 +457,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
              </div>
         <?php endif; // vége if (isset($car)) ?>
     </div>
+    <footer class="container mt-5 mb-3 text-center text-muted">
+        R&J Admin - @ <?=date('Y') ?>
+    </footer>
 
     <!-- Bootstrap JS (opcionális, ha használsz JS komponenseket) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

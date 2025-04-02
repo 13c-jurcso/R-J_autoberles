@@ -15,9 +15,12 @@ body {
 }
 
 .alert {
-    width: 100%; /* Teljes szélesség */
-    max-width: 600px; /* Ugyanolyan max szélesség, mint a form */
-    margin: 0 auto; /* Középre igazítás */
+    width: 100%;
+    /* Teljes szélesség */
+    max-width: 600px;
+    /* Ugyanolyan max szélesség, mint a form */
+    margin: 0 auto;
+    /* Középre igazítás */
     text-align: center;
 }
 
@@ -29,12 +32,14 @@ body {
     border-radius: 5px;
     background-color: #f9f9f9;
 }
+
 .image-list {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     justify-content: center;
 }
+
 .image-item {
     border: 1px solid #ddd;
     padding: 10px;
@@ -42,38 +47,100 @@ body {
     background-color: #fff;
     border-radius: 4px;
     position: relative;
-     max-width: 180px;
-     display: flex; /* Flexbox a belső elemekhez */
-    flex-direction: column; /* Elemek függőlegesen */
-    justify-content: space-between; /* Térköz elosztása */
+    max-width: 180px;
+    display: flex;
+    /* Flexbox a belső elemekhez */
+    flex-direction: column;
+    /* Elemek függőlegesen */
+    justify-content: space-between;
+    /* Térköz elosztása */
 }
+
 .image-item img {
-    max-width: 100%; /* Igazodjon a containerhez */
+    max-width: 100%;
+    /* Igazodjon a containerhez */
     height: auto;
-    max-height: 120px; /* Maximum magasság */
-    object-fit: cover; /* Kép vágása, ha aránytalan */
+    max-height: 120px;
+    /* Maximum magasság */
+    object-fit: cover;
+    /* Kép vágása, ha aránytalan */
     display: block;
     margin: 0 auto 10px auto;
     border: 1px solid #eee;
 }
- .image-item label {
+
+.image-item label {
     display: block;
     margin-top: 5px;
     font-size: 0.9em;
-    cursor: pointer; /* Jobb UX */
- }
- .image-item .controls {
-    margin-top: auto; /* Vezérlők alulra tolása */
- }
+    cursor: pointer;
+    /* Jobb UX */
+}
+
+.image-item .controls {
+    margin-top: auto;
+    /* Vezérlők alulra tolása */
+}
+
 .image-item input[type="checkbox"],
 .image-item input[type="radio"] {
     margin-right: 5px;
     vertical-align: middle;
 }
+
 .primary-indicator {
-     font-weight: bold;
-     color: green;
-     font-size: 0.85em;
+    font-weight: bold;
+    color: green;
+    font-size: 0.85em;
 }
 
+/* Egyszerűbb stílusok a jobb átláthatóságért, ahogy eredetileg volt */
+.image-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
 
+.image-item {
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+}
+
+.image-item img {
+    max-width: 150px;
+    height: auto;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.image-item .controls label {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 0.9em;
+}
+
+.primary-indicator {
+    font-weight: bold;
+    color: green;
+    font-size: 0.8em;
+}
+
+/* Eredeti form stílusok megtartása (ha voltak a .form class-hoz) */
+.form label {
+    display: block;
+    margin-top: 10px;
+}
+
+.form input[type=text],
+.form input[type=number],
+.form input[type=date],
+.form select,
+.form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
