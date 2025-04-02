@@ -1,13 +1,14 @@
 <?php
 include "./db_connection.php";
 include "./adatLekeres.php";
+
+session_start();
 if (!isset($_SESSION['felhasznalo_nev'])) {
     $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
     $_SESSION['alert_type'] = "warning";
     header("Location: index.php");
     exit();
 }
-session_start();
 
 // Felhasználó törlése
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_felhasznalo'])) {
@@ -57,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../../admin_favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">

@@ -1,6 +1,8 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
 session_start();
 
 // Adatbázis kapcsolat
@@ -203,173 +205,181 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Járművek</title>
+    <title> R&J - Járművek</title>
     <script defer src="../jarmuvek.js"></script>
+    <link rel="icon" href="../favicon.png" type="image/png">
     <link rel="stylesheet" href="../css/jarmuvek.css">
     <link rel="stylesheet" href="../css/style.css">
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
-<header>
-    <div class="menu-toggle">☰ Menu</div>
-    <nav>
-        <ul>
-            <li><a href="index.php">R&J</a></li>
-            <li><a href="kapcsolat.php">Kapcsolat</a></li>
-            <li><a href="forum.php">Fórum</a></li>
-            <li><a href="husegpontok.php">Hűségpontok</a></li>
-            <li><a href="jarmuvek.php">Gépjárművek</a></li>
-            <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
-                <li><a href="profilom.php">Profilom</a></li>
-                <li><a href="logout.php">Kijelentkezés</a></li>
-            <?php else: ?>
-                <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
-                <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
-            <?php endif; ?>
-        </ul>
-    </nav>
-</header>
-<div class="szures_div">
-    <button type="submit" id="toggleFilterBtn" >Szűrők mutatása/elrejtése</button>
-    <div id="filterForm" class="filter-form">
-        <form method="GET" action="jarmuvek.php">
-            <h2>Elérhető járművek</h2>  
-            <br> 
-            <label for="atvetel">Átvétel dátuma:</label>
-            <input type="date" id="atvetel" name="atvetel" value="<?= htmlspecialchars($atvetel) ?>">
-            <br>
-            <label for="leadas">Leadás dátuma:</label>
-            <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>">
-            <br>
-            <label for="kategoria">Kategória: </label>
-            <select id="kategoria" name="kategoria">
-                <option value="">-- Válassz kategóriát --</option>
-                <option value="1">Városi</option>
-                <option value="2">Családi</option>
-                <option value="3">Haszon</option>
-                <option value="4">Élmény</option>
-                <option value="5">Lakó</option>
-            </select>
-            <br>
-            <label for="min_ar">Minimum ár:</label>
-            <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000">
-            <br>
-            <label for="max_ar">Maximum ár:</label>
-            <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000">
-            <br>
-            <button type="submit" class="btn btn-primary">Szűrés</button>
-        </form>
-    </div>
-</div>
-<div class="card-container">
-    <?php if (!empty($jarmuvek)): ?>
-        <?php foreach ($jarmuvek as $kocsi): ?>
-            <?php
-            $carImages = json_decode($kocsi['kep_url']);
-            $firstImage = !empty($carImages) ? $carImages[0] : 'default.jpg';
-            $original_ar = $kocsi['ar'];
-            $kedvezmeny = $kocsi['kedvezmeny_szazalek'] ?? 0;
-            $akcios_ar = $kedvezmeny > 0 ? $original_ar * (1 - $kedvezmeny / 100) : $original_ar;
-            ?>
-            <div class="card">
-                <img src="<?= $firstImage ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?>" class="card-img">
-                <div class="card-body">
-                    <h5 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?></h5>
-                    <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p>
-                    <p class="card-text">
-                    <?php if ($kedvezmeny > 0): ?>
-                            <span style="text-decoration: line-through; color: red;">
-                                Ár: <?= number_format($original_ar, 0, '.', ' ') ?> Ft/nap
-                            </span>
-                        <?php endif; ?>
-                        Ár: <?= number_format($akcios_ar, 0, '.', ' ') ?> Ft/nap
-                    </p>
-                    <button class="berles-gomb" onclick="openModal(this)" 
-                        data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>" 
-                        data-gyarto="<?= htmlspecialchars($kocsi['gyarto']) ?>" 
-                        data-tipus="<?= htmlspecialchars($kocsi['tipus']) ?>">Részletek</button>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p>Jelenleg nincs elérhető jármű.</p>
-    <?php endif; ?>
-</div>
 
-<div id="modal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">×</span>
-        <h3>Bérlés adatai</h3>
-        <form method="POST">
-            <input type="hidden" name="jarmu_id" id="jarmu_id">
+<body>
+    <header>
+        <div class="menu-toggle">☰ Menu</div>
+        <nav>
+            <ul>
+                <li><a href="index.php">R&J</a></li>
+                <li><a href="kapcsolat.php">Kapcsolat</a></li>
+                <li><a href="forum.php">Fórum</a></li>
+                <li><a href="husegpontok.php">Hűségpontok</a></li>
+                <li><a href="jarmuvek.php">Gépjárművek</a></li>
+                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+                    <li><a href="profilom.php">Profilom</a></li>
+                    <li><a href="logout.php">Kijelentkezés</a></li>
+                <?php else: ?>
+                    <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
+                    <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    </header>
+    <div class="szures_div">
+        <button type="submit" id="toggleFilterBtn">Szűrők mutatása/elrejtése</button>
+        <div id="filterForm" class="filter-form">
+            <form method="GET" action="jarmuvek.php">
+                <h2>Elérhető járművek</h2>
+                <br>
+                <label for="atvetel">Átvétel dátuma:</label>
+                <input type="date" id="atvetel" name="atvetel" value="<?= htmlspecialchars($atvetel) ?>">
+                <br>
+                <label for="leadas">Leadás dátuma:</label>
+                <input type="date" id="leadas" name="leadas" value="<?= htmlspecialchars($leadas) ?>">
+                <br>
+                <label for="kategoria">Kategória: </label>
+                <select id="kategoria" name="kategoria">
+                    <option value="">-- Válassz kategóriát --</option>
+                    <option value="1">Városi</option>
+                    <option value="2">Családi</option>
+                    <option value="3">Haszon</option>
+                    <option value="4">Élmény</option>
+                    <option value="5">Lakó</option>
+                </select>
+                <br>
+                <label for="min_ar">Minimum ár:</label>
+                <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000">
+                <br>
+                <label for="max_ar">Maximum ár:</label>
+                <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000">
+                <br>
+                <button type="submit" class="btn btn-primary">Szűrés</button>
+            </form>
+        </div>
+    </div>
+    <div class="card-container">
+        <?php if (!empty($jarmuvek)): ?>
+            <?php foreach ($jarmuvek as $kocsi): ?>
+                <?php
+                $carImages = json_decode($kocsi['kep_url']);
+                $firstImage = !empty($carImages) ? $carImages[0] : 'default.jpg';
+                $original_ar = $kocsi['ar'];
+                $kedvezmeny = $kocsi['kedvezmeny_szazalek'] ?? 0;
+                $akcios_ar = $kedvezmeny > 0 ? $original_ar * (1 - $kedvezmeny / 100) : $original_ar;
+                ?>
+                <div class="card">
+                    <img src="<?= $firstImage ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?>" class="card-img">
+                    <div class="card-body">
+                        <h5 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?></h5>
+                        <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p>
+                        <p class="card-text">
+                            <?php if ($kedvezmeny > 0): ?>
+                                <span style="text-decoration: line-through; color: red;">
+                                    Ár: <?= number_format($original_ar, 0, '.', ' ') ?> Ft/nap
+                                </span>
+                            <?php endif; ?>
+                            Ár: <?= number_format($akcios_ar, 0, '.', ' ') ?> Ft/nap
+                        </p>
+                        <button class="berles-gomb" onclick="openModal(this)"
+                            data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>"
+                            data-gyarto="<?= htmlspecialchars($kocsi['gyarto']) ?>"
+                            data-tipus="<?= htmlspecialchars($kocsi['tipus']) ?>">Részletek</button>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>Jelenleg nincs elérhető jármű.</p>
+        <?php endif; ?>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">×</span>
+            <h3>Bérlés adatai</h3>
+            <form method="POST">
+                <input type="hidden" name="jarmu_id" id="jarmu_id">
 
                 <input type="text" placeholder="Teljes név" id="name" name="name" value="<?= htmlspecialchars($user_data['nev']) ?>" required>
                 <input type="email" placeholder="user@example.com" id="email" name="email" value="<?= htmlspecialchars($user_data['emailcim']) ?>" required>
-                <input type="tel" placeholder="+36201234567" id="phone" name="phone" required>         
+                <input type="tel" placeholder="+36201234567" id="phone" name="phone" required>
                 <input type="date" id="rental_date" name="rental_date" required>
                 <input type="date" id="return_date" name="return_date" required>
 
-            <button type="submit" name="fizetes_mod" value="1">Fizetés azonnal</button>
-            <button type="submit" name="fizetes_mod" value="0">Fizetés a helyszínen</button>
-        </form>
+                <button type="submit" name="fizetes_mod" value="1">Fizetés azonnal</button>
+                <button type="submit" name="fizetes_mod" value="0">Fizetés a helyszínen</button>
+            </form>
+        </div>
     </div>
-</div>
 
-<div id="overlay" class="overlay"></div>
+    <div id="overlay" class="overlay"></div>
 
-<?php
-// Modal include és megjelenítés
-if (isset($_SESSION['alert_message'])) {
-    include 'modal.php';
-    echo '<script>
+    <?php
+    // Modal include és megjelenítés
+    if (isset($_SESSION['alert_message'])) {
+        include 'modal.php';
+        echo '<script>
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("alertModal").classList.add("active");
                 document.getElementById("overlay").style.display = "block";
             });
           </script>';
-}
-?>
+    }
+    ?>
 
-<script>
-    function openModal(button) {
-        let modal = document.getElementById('modal');
-        let alertModal = document.getElementById('alertModal');
-        let overlay = document.getElementById('overlay');
+    <footer>
+        © <?= date('Y') ?> R&J - Minden jog fenntartva
+    </footer>
 
-        //Ha stringet kapunk akkor az alertModal
-        if (typeof button === 'string') {
-            if(button === 'alertModal'){
-                alertModal.classList.add('active');
-            } else {
-                document.getElementById(button).style.display = 'block';
+    <script>
+        function openModal(button) {
+            let modal = document.getElementById('modal');
+            let alertModal = document.getElementById('alertModal');
+            let overlay = document.getElementById('overlay');
+
+            //Ha stringet kapunk akkor az alertModal
+            if (typeof button === 'string') {
+                if (button === 'alertModal') {
+                    alertModal.classList.add('active');
+                } else {
+                    document.getElementById(button).style.display = 'block';
+                }
+            } else { //egyébként a béreles modal
+                document.getElementById('jarmu_id').value = button.getAttribute('data-id');
+                modal.style.display = 'block';
             }
-        } else { //egyébként a béreles modal
-            document.getElementById('jarmu_id').value = button.getAttribute('data-id');
-            modal.style.display = 'block';
+            overlay.style.display = 'block';
         }
-         overlay.style.display = 'block';
-    }
 
-    function closeModal() {
-        document.getElementById('modal').style.display = 'none';
-        document.getElementById('alertModal').classList.remove('active');
-        document.getElementById('overlay').style.display = 'none';
-    }
-    document.getElementById('toggleFilterBtn').addEventListener('click', function() {
-        const filterForm = document.getElementById('filterForm');
-        filterForm.classList.toggle('collapsed');
-        
-        // Optional: Change button text based on state
-        if (filterForm.classList.contains('collapsed')) {
-            this.textContent = 'Szűrők mutatása';
-        } else {
-            this.textContent = 'Szűrők elrejtése';
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('alertModal').classList.remove('active');
+            document.getElementById('overlay').style.display = 'none';
         }
-    });
-</script>
+        document.getElementById('toggleFilterBtn').addEventListener('click', function() {
+            const filterForm = document.getElementById('filterForm');
+            filterForm.classList.toggle('collapsed');
+
+            // Optional: Change button text based on state
+            if (filterForm.classList.contains('collapsed')) {
+                this.textContent = 'Szűrők mutatása';
+            } else {
+                this.textContent = 'Szűrők elrejtése';
+            }
+        });
+    </script>
 </body>
+
 </html>

@@ -1,6 +1,8 @@
 <?php
 include "./db_connection.php";
 include "./adatLekeres.php";
+session_start();
+
 if (!isset($_SESSION['felhasznalo_nev'])) {
     $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
     $_SESSION['alert_type'] = "warning";
@@ -12,7 +14,6 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require '../../php/vendor/autoload.php';
 
-session_start();
 
 // Vélemény törlése
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_velemeny'])) {
@@ -111,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vélemények kezelése</title>
+    <link rel="icon" href="../../admin_favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">

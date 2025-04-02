@@ -48,36 +48,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil módosítása</title>
+    <title>R&J - Profil módosítása</title>
+    <link rel="icon" href="../favicon.png" type="image/png">
     <link rel="stylesheet" href="../css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
 
-<div class="container">
-    <h2>Profil módosítása</h2>
-    <form method="post" action="modosit_profil.php">
-        <label for="nev">Név:</label>
-        <input type="text" id="nev" name="nev" value="<?php echo htmlspecialchars($user['nev']); ?>" required>
+    <div class="container">
+        <h2>Profil módosítása</h2>
+        <form method="post" action="modosit_profil.php">
+            <label for="nev">Név:</label>
+            <input type="text" id="nev" name="nev" value="<?php echo htmlspecialchars($user['nev']); ?>" required>
 
-        <label for="emailcim">Email cím:</label>
-        <input type="email" id="emailcim" name="emailcim" value="<?php echo htmlspecialchars($user['emailcim']); ?>" required>
+            <label for="emailcim">Email cím:</label>
+            <input type="email" id="emailcim" name="emailcim" value="<?php echo htmlspecialchars($user['emailcim']); ?>" required>
 
-        <label for="szamlazasi_cim">Számlázási cím:</label>
-        <input type="text" id="szamlazasi_cim" name="szamlazasi_cim" value="<?php echo htmlspecialchars($user['szamlazasi_cim']); ?>" required>
+            <label for="szamlazasi_cim">Számlázási cím:</label>
+            <input type="text" id="szamlazasi_cim" name="szamlazasi_cim" value="<?php echo htmlspecialchars($user['szamlazasi_cim']); ?>" required>
 
-        <label for="jogositvany_kiallitasDatum">Jogosítvány kiállítás dátuma:</label>
-        <input type="date" id="jogositvany_kiallitasDatum" name="jogositvany_kiallitasDatum" value="<?php echo htmlspecialchars($user['jogositvany_kiallitasDatum']); ?>" required>
+            <label for="jogositvany_kiallitasDatum">Jogosítvány kiállítás dátuma:</label>
+            <input type="date" id="jogositvany_kiallitasDatum" name="jogositvany_kiallitasDatum" value="<?php echo htmlspecialchars($user['jogositvany_kiallitasDatum']); ?>" required>
 
-        <input type="submit" value="Frissítés">
+            <input type="submit" value="Frissítés">
 
-        <a href="profilom.php"><button class="back-btn">Vissza a profilomhoz</button></a>
-    </form>
-    
-</div>
-
+            <a href="profilom.php"><button class="back-btn">Vissza a profilomhoz</button></a>
+        </form>
+    </div>
+    <footer>
+        © <?= date('Y') ?> R&J - Minden jog fenntartva
+    </footer>
 </body>
+
 </html>

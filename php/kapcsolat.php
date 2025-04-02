@@ -28,7 +28,7 @@ $result = $conn->query($query);
 if (isset($_POST['submit'])) {
     $username = $_SESSION['felhasznalo_nev'];
     $message = $conn->real_escape_string($_POST['message']);
-    
+
     $insertQuery = "INSERT INTO velemenyek (felhasznalo_nev, uzenet, jarmu_id) VALUES (?, ?, 0)";
     $stmt = $conn->prepare($insertQuery);
     $stmt->bind_param("ss", $username, $message);
@@ -40,7 +40,7 @@ if (isset($_POST['submit'])) {
         $_SESSION['alert_message'] = "Hiba történt: " . $stmt->error;
         $_SESSION['alert_type'] = "warning";
     }
-    
+
     $stmt->close();
 }
 
@@ -49,10 +49,12 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kapcsolat</title>
+    <title>R&J - Kapcsolat</title>
+    <link rel="icon" href="../favicon.png" type="image/png">
     <link rel="stylesheet" href="../css/index.css">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/kapcsolat.css">
@@ -60,6 +62,7 @@ $conn->close();
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="../index.js"></script>
 </head>
+
 <body>
     <header>
         <div class="menu-toggle">☰ Menu</div>
@@ -106,7 +109,9 @@ $conn->close();
             <button type="submit" name="submit">Küldés</button>
         </form>
     </div>
-
+    <footer>
+        © <?= date('Y') ?> R&J - Minden jog fenntartva
+    </footer>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -114,12 +119,14 @@ $conn->close();
         document.querySelector(".menu-toggle").addEventListener("click", function() {
             document.querySelector("header").classList.toggle("menu-opened");
         });
+
         function updateCharCount() {
-        const textarea = document.getElementById("message");
-        const charCount = document.getElementById("charCount");
-        const currentLength = textarea.value.length;
-        charCount.textContent = `${currentLength}/200`;
-    }
+            const textarea = document.getElementById("message");
+            const charCount = document.getElementById("charCount");
+            const currentLength = textarea.value.length;
+            charCount.textContent = `${currentLength}/200`;
+        }
     </script>
 </body>
+
 </html>

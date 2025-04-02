@@ -42,9 +42,9 @@ if ($stmt_car === false) {
 }
 $stmt_car->bind_param("i", $kocsiId);
 if (!$stmt_car->execute()) {
-     // Naplózás ajánlott éles környezetben
-     error_log("SQL execute hiba (jármű lekérdezés): " . $stmt_car->error);
-     die("Hiba történt az adatok lekérésekor. Kérjük, próbálja meg később."); // Felhasználóbarát üzenet
+    // Naplózás ajánlott éles környezetben
+    error_log("SQL execute hiba (jármű lekérdezés): " . $stmt_car->error);
+    die("Hiba történt az adatok lekérésekor. Kérjük, próbálja meg később."); // Felhasználóbarát üzenet
 }
 $result_car = $stmt_car->get_result();
 
@@ -64,7 +64,6 @@ if ($result_car->num_rows > 0) {
     if (!is_array($car_images)) {
         $car_images = [];
     }
-
 } else {
     $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">A keresett jármű nem található.</div>';
     header("Location: autok_kezeles.php");
@@ -148,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                         error_log("Fájl törlési hiba: " . $physical_path_to_delete);
                     }
                 } else {
-                     // Nem feltétlenül hiba, ha már nem létezik a fájl
+                    // Nem feltétlenül hiba, ha már nem létezik a fájl
                 }
             }
         }
@@ -159,11 +158,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
             $max_size = 5 * 1024 * 1024; // 5MB
 
             if (!is_dir($image_folder_physical)) {
-                 if (!@mkdir($image_folder_physical, 0775, true) && !is_dir($image_folder_physical)) {
-                     $upload_errors[] = "Képek mappa létrehozása sikertelen. Jogosultságok ellenőrzése szükséges.";
-                     error_log("Nem sikerült létrehozni a képek mappát: " . $image_folder_physical);
-                 }
-             }
+                if (!@mkdir($image_folder_physical, 0775, true) && !is_dir($image_folder_physical)) {
+                    $upload_errors[] = "Képek mappa létrehozása sikertelen. Jogosultságok ellenőrzése szükséges.";
+                    error_log("Nem sikerült létrehozni a képek mappát: " . $image_folder_physical);
+                }
+            }
 
             if (is_dir($image_folder_physical) && is_writable($image_folder_physical)) {
                 foreach ($_FILES['new_images']['tmp_name'] as $key => $tmp_name) {
@@ -178,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                         finfo_close($finfo);
 
                         if (!in_array(strtolower($mime_type), $allowed_types)) {
-                            $upload_errors[] = htmlspecialchars($file_name) . ": Nem engedélyezett fájltípus (".htmlspecialchars($mime_type).").";
+                            $upload_errors[] = htmlspecialchars($file_name) . ": Nem engedélyezett fájltípus (" . htmlspecialchars($mime_type) . ").";
                             continue;
                         }
                         if ($file_size > $max_size) {
@@ -189,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                         $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
                         // Tisztított, egyedi fájlnév
                         $safe_basename = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($file_name, PATHINFO_FILENAME));
-                        $unique_filename = 'car_'.$jarmu_id.'_' . $safe_basename . '_' . uniqid('', true) . '.' . strtolower($file_extension);
+                        $unique_filename = 'car_' . $jarmu_id . '_' . $safe_basename . '_' . uniqid('', true) . '.' . strtolower($file_extension);
 
                         $destination_path_physical = $image_folder_physical . $unique_filename;
                         $web_path_for_db = $image_folder_web_base . $unique_filename;
@@ -206,12 +205,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                     }
                 }
             } else {
-                 $upload_errors[] = "A képek mappa nem létezik vagy nem írható: " . htmlspecialchars($image_folder_physical);
-                 error_log("Képek mappa nem létezik vagy nem írható: " . $image_folder_physical);
+                $upload_errors[] = "A képek mappa nem létezik vagy nem írható: " . htmlspecialchars($image_folder_physical);
+                error_log("Képek mappa nem létezik vagy nem írható: " . $image_folder_physical);
             }
         }
 
-         // 3. Elsődleges kép beállítása
+        // 3. Elsődleges kép beállítása
         $primary_image = isset($_POST['primary_image']) ? $_POST['primary_image'] : null;
         if ($primary_image && in_array($primary_image, $updated_images)) {
             $primary_key = array_search($primary_image, $updated_images);
@@ -220,9 +219,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                 array_unshift($updated_images, $primary_item);
             }
         } elseif (!empty($updated_images) && $primary_image === null) {
-             // Ha nincs elsődleges kép expliciten kiválasztva, és vannak képek,
-             // az első elem a listában lesz az elsődleges (ez az alapértelmezett viselkedés a jelenlegi logikával).
-             // Ha a korábbi elsődlegest törölték, a következő kép lesz az elsődleges.
+            // Ha nincs elsődleges kép expliciten kiválasztva, és vannak képek,
+            // az első elem a listában lesz az elsődleges (ez az alapértelmezett viselkedés a jelenlegi logikával).
+            // Ha a korábbi elsődlegest törölték, a következő kép lesz az elsődleges.
         }
 
         // --- Képkezelés VÉGE ---
@@ -239,32 +238,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                                   WHERE jarmu_id = ?");
 
         if ($modositas === false) {
-           // Naplózás + felhasználóbarát üzenet
-           error_log("SQL prepare hiba (jármű frissítés): " . $db->error);
-           $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba történt a módosítás előkészítésekor.</div>';
+            // Naplózás + felhasználóbarát üzenet
+            error_log("SQL prepare hiba (jármű frissítés): " . $db->error);
+            $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba történt a módosítás előkészítésekor.</div>';
         } else {
             // bind_param típusok: i=integer, d=double/float, s=string, b=blob
-            $modositas->bind_param("iisssssdsi", // 'ar' lehet double/float ('d'), 'szerviz_id' integer ('i')
-                                    $felhasznalas_id,
-                                    $szerviz_id, // Ha a szerviz_id lehet NULL a DB-ben, akkor itt komplexebb logika kellhet
-                                    $gyarto,
-                                    $tipus,
-                                    $motor,
-                                    $gyartasi_ev, // $gyartasi_ev már string vagy null
-                                    $leiras,
-                                    $ar,
-                                    $new_kep_url_json,
-                                    $jarmu_id);
+            $modositas->bind_param(
+                "iisssssdsi", // 'ar' lehet double/float ('d'), 'szerviz_id' integer ('i')
+                $felhasznalas_id,
+                $szerviz_id, // Ha a szerviz_id lehet NULL a DB-ben, akkor itt komplexebb logika kellhet
+                $gyarto,
+                $tipus,
+                $motor,
+                $gyartasi_ev, // $gyartasi_ev már string vagy null
+                $leiras,
+                $ar,
+                $new_kep_url_json,
+                $jarmu_id
+            );
 
             if ($modositas->execute()) {
                 // Siker esetén az alap üzenet
-                 $alert_msg = "Sikeres módosítás!";
-                 $alert_type = "success";
+                $alert_msg = "Sikeres módosítás!";
+                $alert_type = "success";
 
                 // Ha voltak feltöltési hibák, jelezzük és módosítjuk az üzenet típusát
                 if (!empty($upload_errors)) {
-                     $alert_msg .= " Figyelem, képkezelési hibák történtek: <ul><li>" . implode('</li><li>', $upload_errors) . "</li></ul>";
-                     $alert_type = 'warning'; // Típus módosítása warningra
+                    $alert_msg .= " Figyelem, képkezelési hibák történtek: <ul><li>" . implode('</li><li>', $upload_errors) . "</li></ul>";
+                    $alert_type = 'warning'; // Típus módosítása warningra
                 }
 
                 // === EZ A FONTOS RÉSZ ===
@@ -279,9 +280,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                 // mert az oldal újratöltésekor úgyis újra lekérdezi az adatokat a DB-ből.
 
             } else {
-              // Naplózás + felhasználóbarát üzenet
-              error_log("SQL execute hiba (jármű frissítés): " . $modositas->error);
-              $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba történt a módosítás során. Kérjük, próbálja meg később.</div>';
+                // Naplózás + felhasználóbarát üzenet
+                error_log("SQL execute hiba (jármű frissítés): " . $modositas->error);
+                $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba történt a módosítás során. Kérjük, próbálja meg később.</div>';
             }
             $modositas->close();
         }
@@ -291,31 +292,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
 
 
 <!DOCTYPE html>
-<html lang="hu"> <!-- Nyelv beállítása magyarra -->
+<html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jármű Módosítása</title> <!-- Cím javítása -->
+    <title>Jármű Módosítása</title>
+    <link rel="icon" href="../../admin_favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-        /* Egyszerűbb stílusok a jobb átláthatóságért, ahogy eredetileg volt */
-        .image-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; }
-        .image-item { border: 1px solid #ccc; padding: 5px; text-align: center; }
-        .image-item img { max-width: 150px; height: auto; display: block; margin-bottom: 5px; }
-        .image-item .controls label { display: block; margin-bottom: 3px; font-size: 0.9em; }
-        .primary-indicator { font-weight: bold; color: green; font-size: 0.8em;}
-        /* Eredeti form stílusok megtartása (ha voltak a .form class-hoz) */
-        .form label { display: block; margin-top: 10px; }
-        .form input[type=text],
-        .form input[type=number],
-        .form input[type=date],
-        .form select,
-        .form textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; box-sizing: border-box; }
-        .menu button { padding: 8px 12px; } /* Vissza gomb stílusa */
-    </style>
 </head>
+
 <body>
     <header>
         <div class="menu-toggle">☰ Menu</div>
@@ -334,46 +322,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
     <div>
         <!-- Üzenetek -->
         <?php
-            // Ellenőrizzük a $_SESSION['uzenet'] létezését
-            if (isset($_SESSION['uzenet'])) {
-                echo $_SESSION['uzenet'];
-                // Töröljük az üzenetet a session-ből, hogy ne jelenjen meg újra (Flash message)
-                unset($_SESSION['uzenet']);
-            }
-            // Opcionális: Ha átirányítás után status paramétert használunk
-            if (isset($_GET['status']) && $_GET['status'] === 'ok' && !isset($_SESSION['uzenet'])) {
-               // echo '<div class="alert alert-success" role="alert">Sikeres módosítás!</div>';
-               // Ez már nem szükséges, mert a session üzenet kezeli a sikert is az átirányítás előtt.
-            }
+        // Ellenőrizzük a $_SESSION['uzenet'] létezését
+        if (isset($_SESSION['uzenet'])) {
+            echo $_SESSION['uzenet'];
+            // Töröljük az üzenetet a session-ből, hogy ne jelenjen meg újra (Flash message)
+            unset($_SESSION['uzenet']);
+        }
+        // Opcionális: Ha átirányítás után status paramétert használunk
+        if (isset($_GET['status']) && $_GET['status'] === 'ok' && !isset($_SESSION['uzenet'])) {
+            // echo '<div class="alert alert-success" role="alert">Sikeres módosítás!</div>';
+            // Ez már nem szükséges, mert a session üzenet kezeli a sikert is az átirányítás előtt.
+        }
         ?>
     </div>
 
     <div class="menu">
-         <!-- A gomb itt nem submit típusú, hanem egy link -->
+        <!-- A gomb itt nem submit típusú, hanem egy link -->
         <a href="./autok_kezeles.php"><button type="button">Vissza a járművekhez</button></a>
     </div>
 
     <div id="jarmuvek_modositas" class="tartalmi-resz">
 
-        <?php if (isset($car)): // Csak akkor jelenítjük meg a formot, ha $car létezik ?>
-        <form method="POST" enctype="multipart/form-data" class="form" id="modositas-form" novalidate> <!-- novalidate a böngésző alapértelmezett hibaüzeneteinek kikapcsolásához, ha sajátot használsz -->
+        <?php if (isset($car)): // Csak akkor jelenítjük meg a formot, ha $car létezik 
+        ?>
+            <form method="POST" enctype="multipart/form-data" class="form" id="modositas-form" novalidate> <!-- novalidate a böngésző alapértelmezett hibaüzeneteinek kikapcsolásához, ha sajátot használsz -->
 
-            <input type="hidden" name="jarmu_id" value="<?= htmlspecialchars($car['jarmu_id'] ?? '') ?>">
+                <input type="hidden" name="jarmu_id" value="<?= htmlspecialchars($car['jarmu_id'] ?? '') ?>">
 
-            <label for="gyarto">Gyártó:</label>
-            <input type="text" id="gyarto" name="gyarto" value="<?= htmlspecialchars($_POST['gyarto'] ?? $car['gyarto'] ?? '') ?>" required><br> <!-- POST érték használata hiba esetén -->
+                <label for="gyarto">Gyártó:</label>
+                <input type="text" id="gyarto" name="gyarto" value="<?= htmlspecialchars($_POST['gyarto'] ?? $car['gyarto'] ?? '') ?>" required><br> <!-- POST érték használata hiba esetén -->
 
-            <label for="tipus">Típus:</label>
-            <input type="text" id="tipus" name="tipus" value="<?= htmlspecialchars($_POST['tipus'] ?? $car['tipus'] ?? '') ?>" required><br>
+                <label for="tipus">Típus:</label>
+                <input type="text" id="tipus" name="tipus" value="<?= htmlspecialchars($_POST['tipus'] ?? $car['tipus'] ?? '') ?>" required><br>
 
-            <label for="motor">Motor:</label>
-            <input type="text" id="motor" name="motor" value="<?= htmlspecialchars($_POST['motor'] ?? $car['motor'] ?? '') ?>"><br>
+                <label for="motor">Motor:</label>
+                <input type="text" id="motor" name="motor" value="<?= htmlspecialchars($_POST['motor'] ?? $car['motor'] ?? '') ?>"><br>
 
-            <label for="felhasznalas_id">Felhasználási mód:</label>
-            <select name="felhasznalas_id" id="felhasznalas_id" required>
-                 <!-- Üres opció a validációhoz -->
-                 <option value="">-- Kérem válassz --</option>
-                <?php
+                <label for="felhasznalas_id">Felhasználási mód:</label>
+                <select name="felhasznalas_id" id="felhasznalas_id" required>
+                    <!-- Üres opció a validációhoz -->
+                    <option value="">-- Kérem válassz --</option>
+                    <?php
                     $felhasznalas_sql = "SELECT felhasznalas_id, nev FROM felhasznalas ORDER BY nev ASC;"; // Rendezés ABC szerint
                     $felhasznalas_modok = adatokLekerese($felhasznalas_sql);
                     $selected_felhasznalas = $_POST['felhasznalas_id'] ?? $car['felhasznalas_id'] ?? null; // POST érték hiba esetén
@@ -382,58 +371,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                         foreach ($felhasznalas_modok as $f) {
                             // Összehasonlítás == típuskényszerítéssel, mert a POST string lehet, a DB int
                             $selected = ($selected_felhasznalas !== null && $f['felhasznalas_id'] == $selected_felhasznalas) ? 'selected' : '';
-                            echo '<option value="'. htmlspecialchars($f['felhasznalas_id']).'" '.$selected.'>' . htmlspecialchars($f['nev']) . '</option>';
+                            echo '<option value="' . htmlspecialchars($f['felhasznalas_id']) . '" ' . $selected . '>' . htmlspecialchars($f['nev']) . '</option>';
                         }
                     } else {
                         // Hibakezelés, ha a lekérdezés nem tömböt ad vissza
-                         echo '<option value="" disabled>Hiba a módok betöltésekor.</option>';
-                         error_log("Hiba adatokLekerese (felhasznalas): " . print_r($felhasznalas_modok, true));
+                        echo '<option value="" disabled>Hiba a módok betöltésekor.</option>';
+                        error_log("Hiba adatokLekerese (felhasznalas): " . print_r($felhasznalas_modok, true));
                     }
-                ?>
-            </select><br>
+                    ?>
+                </select><br>
 
-            <label for="szerviz_id">Szerviz ID (opcionális):</label>
-            <input type="number" id="szerviz_id" name="szerviz_id" value="<?= htmlspecialchars($_POST['szerviz_id'] ?? $car['szerviz_id'] ?? '') ?>" min="1"><br> <!-- min="1" ha csak pozitív ID lehet -->
+                <label for="szerviz_id">Szerviz ID (opcionális):</label>
+                <input type="number" id="szerviz_id" name="szerviz_id" value="<?= htmlspecialchars($_POST['szerviz_id'] ?? $car['szerviz_id'] ?? '') ?>" min="1"><br> <!-- min="1" ha csak pozitív ID lehet -->
 
-            <label for="gyartasi_ev">Gyártási év (opcionális):</label>
-            <?php
+                <label for="gyartasi_ev">Gyártási év (opcionális):</label>
+                <?php
                 // Formátum beállítása YYYY-MM-DD -ra, POST érték használata hiba esetén
-                 $display_gyartasi_ev = $_POST['gyartasi_ev'] ?? $car['gyartasi_ev'] ?? '';
-                 $gyartasi_ev_formatted = '';
-                 if (!empty($display_gyartasi_ev)) {
-                     try {
-                         // Csak akkor formázzuk, ha már eleve nem a helyes formátumban van
-                         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $display_gyartasi_ev)) {
+                $display_gyartasi_ev = $_POST['gyartasi_ev'] ?? $car['gyartasi_ev'] ?? '';
+                $gyartasi_ev_formatted = '';
+                if (!empty($display_gyartasi_ev)) {
+                    try {
+                        // Csak akkor formázzuk, ha már eleve nem a helyes formátumban van
+                        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $display_gyartasi_ev)) {
                             $date_obj = new DateTime($display_gyartasi_ev);
                             $gyartasi_ev_formatted = $date_obj->format('Y-m-d');
-                         } else {
+                        } else {
                             $gyartasi_ev_formatted = $display_gyartasi_ev;
-                         }
-                     } catch (Exception $e) {
-                         $gyartasi_ev_formatted = ''; // Hiba esetén üresen hagyjuk
-                     }
-                 }
-            ?>
-            <input type="date" id="gyartasi_ev" name="gyartasi_ev" value="<?= htmlspecialchars($gyartasi_ev_formatted) ?>"><br>
+                        }
+                    } catch (Exception $e) {
+                        $gyartasi_ev_formatted = ''; // Hiba esetén üresen hagyjuk
+                    }
+                }
+                ?>
+                <input type="date" id="gyartasi_ev" name="gyartasi_ev" value="<?= htmlspecialchars($gyartasi_ev_formatted) ?>"><br>
 
-            <label for="leiras">Leírás:</label>
-            <textarea name="leiras" id="leiras" rows="4"><?= htmlspecialchars($_POST['leiras'] ?? $car['leiras'] ?? '') ?></textarea><br>
+                <label for="leiras">Leírás:</label>
+                <textarea name="leiras" id="leiras" rows="4"><?= htmlspecialchars($_POST['leiras'] ?? $car['leiras'] ?? '') ?></textarea><br>
 
-            <label for="ar">Ár (Ft):</label>
-            <input type="number" id="ar" name="ar" value="<?= htmlspecialchars($_POST['ar'] ?? $car['ar'] ?? '') ?>" required min="0" step="any"><br> <!-- step="any" a tizedesekhez, ha float -->
+                <label for="ar">Ár (Ft):</label>
+                <input type="number" id="ar" name="ar" value="<?= htmlspecialchars($_POST['ar'] ?? $car['ar'] ?? '') ?>" required min="0" step="any"><br> <!-- step="any" a tizedesekhez, ha float -->
 
-              <!-- Képek Kezelése Szekció -->
-              <div class="image-management-container" style="margin-top: 20px; border: 1px solid #eee; padding: 15px;">
+                <!-- Képek Kezelése Szekció -->
+                <div class="image-management-container" style="margin-top: 20px; border: 1px solid #eee; padding: 15px;">
                     <h4>Képek kezelése</h4>
 
                     <?php
-                        // Ha hiba történt a POST kérésben, a $car_images még a régi adatokat tartalmazza.
-                        // Ideális esetben a POST feldolgozás utáni átirányítás miatt ez nem gond.
-                        // Ha nincs átirányítás, akkor a $car_images-t is frissíteni kellene a POST blokkban
-                        // a $updated_images alapján, hogy a felhasználó a módosítás utáni állapotot lássa.
-                        // Mivel most átirányítást használunk (ajánlott), ez a $car_images a GET kérésből jön.
-                        $images_to_display = $car_images ?? []; // Biztosítjuk, hogy tömb legyen
-                     ?>
+                    // Ha hiba történt a POST kérésben, a $car_images még a régi adatokat tartalmazza.
+                    // Ideális esetben a POST feldolgozás utáni átirányítás miatt ez nem gond.
+                    // Ha nincs átirányítás, akkor a $car_images-t is frissíteni kellene a POST blokkban
+                    // a $updated_images alapján, hogy a felhasználó a módosítás utáni állapotot lássa.
+                    // Mivel most átirányítást használunk (ajánlott), ez a $car_images a GET kérésből jön.
+                    $images_to_display = $car_images ?? []; // Biztosítjuk, hogy tömb legyen
+                    ?>
 
                     <?php if (!empty($images_to_display)): ?>
                         <p>Jelenlegi képek (Az első az alapértelmezett):</p>
@@ -443,7 +432,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
                                     <img src="<?= htmlspecialchars($img_web_path) ?>" alt="Jármű kép <?= $index + 1 ?>" loading="lazy">
                                     <div class="controls">
                                         <?php if ($index === 0): ?>
-                                             <span class="primary-indicator d-block mb-1">(Elsődleges)</span>
+                                            <span class="primary-indicator d-block mb-1">(Elsődleges)</span>
                                         <?php endif; ?>
                                         <label>
                                             <input type="radio" name="primary_image" value="<?= htmlspecialchars($img_web_path) ?>" <?= ($index === 0) ? 'checked' : '' ?>>
@@ -465,22 +454,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
 
                     <div style="margin-top: 15px;">
                         <label for="new_images" style="display: block; margin-bottom: 5px;">Új képek hozzáadása (többet is kiválaszthatsz):</label>
-                        <input type="file" id="new_images" name="new_images[]" accept="image/jpeg, image/png, image/gif, image/webp" multiple style="display: block; width: 100%;">
-                        <small style="display: block; margin-top: 5px;">Engedélyezett: JPG, PNG, GIF, WEBP. Max 5MB/kép.</small>
+                        <div class="mb-3">
+                            <input type="file" class="form-control" id="new_images" name="kep_url[]" accept="image/jpeg, image/png, image/gif, image/webp" multiple>
+                            <div class="form-text">Engedélyezett formátumok: JPG, PNG, GIF, WEBP. Max méret: 5MB / kép.</div>
+                        </div>
                     </div>
                 </div>
                 <!-- Képek Kezelése Vége -->
 
-            <button type="submit" name="update_vehicle">Mentés</button>
-        </form>
+                <button type="submit" name="update_vehicle">Mentés</button>
+            </form>
         <?php else: ?>
-             <div class="alert alert-warning" role="alert">
-                 A jármű adatai nem érhetők el.
-             </div>
-        <?php endif; // vége if (isset($car)) ?>
+            <div class="alert alert-warning" role="alert">
+                A jármű adatai nem érhetők el.
+            </div>
+        <?php endif; // vége if (isset($car)) 
+        ?>
     </div>
     <footer class="container mt-5 mb-3 text-center text-muted">
-        R&J Admin - @ <?=date('Y') ?>
+        R&J Admin - @ <?= date('Y') ?>
     </footer>
 
     <!-- Bootstrap JS (opcionális, ha használsz JS komponenseket) -->
@@ -489,7 +481,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
         // Egyszerű menü toggle (ha a CSS-ed használ .active class-t a nav elemen)
         const menuToggle = document.querySelector('.menu-toggle');
         const nav = document.querySelector('header nav');
-        if(menuToggle && nav) {
+        if (menuToggle && nav) {
             menuToggle.addEventListener('click', () => {
                 nav.classList.toggle('active');
             });
@@ -498,7 +490,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
         // Alapvető kliens oldali validáció jelzése (Bootstrap stílusokhoz)
         // Ez csak vizuális visszajelzést ad, a szerver oldali validáció a fontos!
         const form = document.getElementById('modositas-form');
-        if(form) {
+        if (form) {
             form.addEventListener('submit', event => {
                 if (!form.checkValidity()) {
                     // A required mezők miatt a böngésző megállítja a küldést
@@ -511,4 +503,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
     </script>
 
 </body>
+
 </html>
