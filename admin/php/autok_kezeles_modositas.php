@@ -4,6 +4,12 @@ session_start();
 include "./db_connection.php"; // Feltételezem, hogy ez $db néven hozza létre a kapcsolatot
 include "./adatLekeres.php"; // Feltételezem, hogy ez tartalmazza az adatokLekerese funkciót
 
+if (!isset($_SESSION['felhasznalo_nev'])) {
+    $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_type'] = "warning";
+    header("Location: index.php");
+    exit();
+}
 
 
 // --- Modal include helyett közvetlen üzenetkezelés ---
@@ -293,6 +299,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        /* Egyszerűbb stílusok a jobb átláthatóságért, ahogy eredetileg volt */
+        .image-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1rem; }
+        .image-item { border: 1px solid #ccc; padding: 5px; text-align: center; }
+        .image-item img { max-width: 150px; height: auto; display: block; margin-bottom: 5px; }
+        .image-item .controls label { display: block; margin-bottom: 3px; font-size: 0.9em; }
+        .primary-indicator { font-weight: bold; color: green; font-size: 0.8em;}
+        /* Eredeti form stílusok megtartása (ha voltak a .form class-hoz) */
+        .form label { display: block; margin-top: 10px; }
+        .form input[type=text],
+        .form input[type=number],
+        .form input[type=date],
+        .form select,
+        .form textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        .menu button { padding: 8px 12px; } /* Vissza gomb stílusa */
+    </style>
 </head>
 <body>
     <header>

@@ -5,7 +5,12 @@ session_start(); // Session indítása az üzenetekhez
 include "./db_connection.php";
 // Feltételezzük, hogy van egy adatLekerese függvény vagy használunk direkt SQL-t
 // include "./adatLekerese.php"; // Ha használod
-
+if (!isset($_SESSION['felhasznalo_nev'])) {
+    $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_type'] = "warning";
+    header("Location: index.php");
+    exit();
+}
 // Ellenőrizzük a DB kapcsolatot
 if (!isset($db) || $db->connect_error) {
     $error_msg = isset($db) ? $db->connect_error : 'A $db kapcsolat objektum nem jött létre.';

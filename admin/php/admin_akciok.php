@@ -8,7 +8,12 @@ require '../../php/src/SMTP.php';
 require '../../php/src/Exception.php';
 
 session_start();
-
+if (!isset($_SESSION['felhasznalo_nev'])) {
+    $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
+    $_SESSION['alert_type'] = "warning";
+    header("Location: index.php");
+    exit();
+}
 // Felhasználók e-mail címeinek lekérdezése
 function sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday) {
     global $db;
