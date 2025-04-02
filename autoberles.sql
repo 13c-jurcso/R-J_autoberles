@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 01. 20:33
+-- Létrehozás ideje: 2025. Ápr 02. 16:27
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -132,7 +132,7 @@ CREATE TABLE `jarmuvek` (
 --
 
 INSERT INTO `jarmuvek` (`jarmu_id`, `felhasznalas_id`, `szerviz_id`, `gyarto`, `tipus`, `motor`, `gyartasi_ev`, `leiras`, `ar`, `kep_url`) VALUES
-(80, 4, 2, 'BMW', 'M3 Competition Touring', '3.0', '2025-02-06', 'Competition változatban 510 lóerős a soros hathengeres motor, 650 Nm a nyomatékcsúcs 2750 és 5500-as percenkénti fordulatszám között. A nagynyomású (350 bar) közvetlen befecskendezéses motor 7000 fölé húzatható. 3,6 mp a gyorsulási idő 0-ról 100 km/órára, a végsebesség 250 km/óra.', 177800, '[\"\\/berles\\/kepek\\/bmwm3competitiontouring_4.webp\",\"\\/berles\\/kepek\\/bmwm3competitiontouring_3.webp\",\"\\/berles\\/kepek\\/bmwm3competitiontouring_1.webp\",\"\\/berles\\/kepek\\/bmwm3competitiontouring_2.webp\"]'),
+(80, 4, 2, 'BMW', 'M3 Competition Touring', '3.0', '2025-02-06', 'Competition változatban 510 lóerős a soros hathengeres motor, 650 Nm a nyomatékcsúcs 2750 és 5500-as percenkénti fordulatszám között. A nagynyomású (350 bar) közvetlen befecskendezéses motor 7000 fölé húzatható. 3,6 mp a gyorsulási idő 0-ról 100 km/órára, a végsebesség 250 km/óra.', 177800, '[\"\\/berles\\/kepek\\/bmwm3competitiontouring_4.webp\",\"\\/berles\\/kepek\\/bmwm3competitiontouring_1.webp\",\"\\/berles\\/kepek\\/bmwm3competitiontouring_2.webp\"]'),
 (81, 4, 2, 'Mercedes-Benz', 'S450 Coupe', '4.0', '2023-05-10', 'Az S kupé az autós világ ópiuma. Innen már csak lefelé vezet az út. Elképesztő, valóságtól teljesen elrugaszkodott élményekkel ajándékoz meg, de ennek ára van: utána minden más autó, de talán az egész világ elnagyolt, kezdetleges, ócska vacaknak tűnik.', 62230, '[\"\\/berles\\/kepek\\/mercedesbenzs450coupe_1.webp\",\"\\/berles\\/kepek\\/mercedesbenzs450coupe_2.webp\",\"\\/berles\\/berles\\/mercedesbenzs450coupe_3.webp\"]'),
 (82, 4, 2, 'Maserati', 'GranCabrio V8', '4.7 V8', '2013-10-16', 'Valószínűleg az egyik legfontosabb elem, amire egy kabriónak szüksége van, az a stílus, amit a Maserati GranCabrio Sport V8 maximálisan képvisel, külsőben és az utastérben egyaránt. Kiváló arányokkal és ízléses, finom tervezési kikacsintásokkal. A Maserati egyszerre testesíti meg a kivételes eleganciát, a sportosságot és exkluzivitást, ami minden Maserati modell sajátja. Igazi Ferrari V8 életérzés 460 lóerővel, akár 4 fővel. Felszereltség: Full extra.', 190500, '[\"\\/berles\\/kepek\\/maseratigrancabriov8_1.webp\",\"\\/berles\\/kepek\\/maseratigrancabriov8_2.webp\",\"\\/berles\\/kepek\\/maseratigrancabriov8_3.webp\"]'),
 (83, 4, 2, 'Chevrolet', 'Corvette C6 6.2 V8', '6.2 V8', '2012-10-12', 'A Chevrolet Corvette C6 egy legendás sportautó, ami minden részletében a sebességet és a teljesítményt hordozza. A motor ereje lebilincselő, a 430 lóerő V8 4,2 másodperc alatt már 100 km/h-ra is repíti az autót, amitől garantáltan a gyomrodban dobog a szíved! Az erőátvitel pedig simán és precízen veszi az akadályokat. A kifinomult futómű és az agilis kormányzás számára egy kanyar sem akadály. A belső tér tágas, elegáns és sportos, valódi Corvette élményt ad. Erő, adrenalin és hamisítatlan amerikai stílus.', 64900, '[\"\\/berles\\/kepek\\/chevroletcorvettec662v8_2.webp\",\"\\/berles\\/kepek\\/chevroletcorvettec662v8_1.webp\",\"\\/berles\\/kepek\\/chevroletcorvettec662v8_3.webp\"]'),
