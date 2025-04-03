@@ -187,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
     </div>
 
     <footer class="container mt-5 mb-3 text-center text-muted">
-        R&J Admin - @ <?=date('Y') ?>
+        © <?= date('Y M') ?> R&J - Admin
     </footer>
 </body>
 </html>

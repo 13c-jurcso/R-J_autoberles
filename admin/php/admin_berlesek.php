@@ -228,7 +228,7 @@ if ($result) {
     </div> <!-- /.container -->
 
     <footer class="container mt-5 mb-3 text-center text-muted">
-        R&J Admin - © <?= date('Y') ?>
+        © <?= date('Y M') ?> R&J - Admin
     </footer>
 
     <!-- Bootstrap Bundle JS (csak ha kell pl. dropdownokhoz, de a validációhoz nem feltétlenül) -->
