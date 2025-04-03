@@ -127,8 +127,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_vehicle'])) {
         $updated_images = []; // Az új képlista inicializálása
         $upload_errors = [];
 
-        $image_folder_physical = $_SERVER['DOCUMENT_ROOT'] . '/berles/kepek/';
-        $image_folder_web_base = '/berles/kepek/';
+        $image_folder_physical = $_SERVER['DOCUMENT_ROOT'] . '/R-J_autoberles/kepek/';
+        $image_folder_web_base = '/R-J_autoberles/kepek/';
 
         // 1. Képek törlése
         $images_to_delete = isset($_POST['delete_image']) ? $_POST['delete_image'] : [];

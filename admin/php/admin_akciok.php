@@ -233,6 +233,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
                 }
                 ?>
             </select>
+            <br>
             <button type="submit" name="add_black_friday" class="black-friday-btn">Black Friday akció (50%)</button>
         </form>
     </div>

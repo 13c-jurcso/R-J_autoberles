@@ -27,9 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
 
     // --- Képkezelési változók ---
     // Fizikai mappa útvonala a szerveren (htdocs a gyökér)
-    $image_folder_physical = $_SERVER['DOCUMENT_ROOT'] . '/berles/kepek/';
+    $image_folder_physical = $_SERVER['DOCUMENT_ROOT'] . '/R-J_autoberles/kepek/';
     // Webes elérési út prefix (ezt mentjük az adatbázisba)
-    $image_folder_web_base = '/berles/kepek/';
+    $image_folder_web_base = '/R-J_autoberles/kepek/';
 
     $kepek = []; // Ebben gyűjtjük a webes útvonalakat az adatbázishoz
     $sikeresFeltoltesOsszes = true; // Jelző, hogy minden kép feltöltése sikeres volt-e
@@ -322,7 +322,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
                 ?>
             </select>
 
-            <label for="szerviz_id">Szerviz ID:</label>
+            <label for="szerviz_id">Műszaki lejárat:(Csak év)</label>
             <input type="number" name="szerviz_id" required><br>
 
             <label for="gyartasi_ev">Gyártási év:</label>
