@@ -17,7 +17,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     // Alapadatok
     $felhasznalas_id = $_POST['felhasznalas_id'];
-    $szerviz_id = $_POST['szerviz_id'];
+    $muszaki_ev = $_POST['szerviz_id'];
     $gyarto = trim($_POST['gyarto']);
     $tipus = trim($_POST['tipus']);
     $motor = trim($_POST['motor']);
@@ -131,31 +131,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
         $kepek_json = json_encode($kepek); // A $kepek már a /php/kepek/... útvonalakat tartalmazza
         error_log("Adatbázis INSERT előkészítése. Képek JSON: " . $kepek_json);
 
-        $stmt_insert = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt_szerviz = $db->prepare("SELECT id FROM szervizek WHERE muszaki_vizs_lejarat = ?");
+        $stmt_szerviz->execute([$muszaki_ev]);
+        $szerviz = $stmt_szerviz->get_result()->fetch_assoc();
+        $stmt_szerviz->close(); // <- EZ HIÁNYZOTT
 
-        if ($stmt_insert === false) {
-             error_log("!!! Adatbázis prepare() HIBA: " . $db->error);
-             $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az adatbázis művelet előkészítésekor!</div>';
-        } else {
-            $stmt_insert->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $kepek_json);
-            if ($stmt_insert->execute()) {
-                 error_log("Adatbázis execute() SIKER. Beszúrt ID: " . $stmt_insert->insert_id);
-                 $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Jármű sikeresen hozzáadva!</div>';
+        if ($szerviz) {
+            $szerviz_id = $szerviz['id'];
+
+            $stmt_insert = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            if ($stmt_insert === false) {
+                error_log("!!! Adatbázis prepare() HIBA: " . $db->error);
+                $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az adatbázis művelet előkészítésekor!</div>';
             } else {
-                 error_log("!!! Adatbázis execute() HIBA: " . $stmt_insert->error);
-                 // Részletesebb hibaüzenet fejlesztéshez
-                 $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű adatbázisba mentése során! Részletek: '.htmlspecialchars($stmt_insert->error).'</div>';
+                $stmt_insert->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $kepek_json);
+                if ($stmt_insert->execute()) {
+                    error_log("Adatbázis execute() SIKER. Beszúrt ID: " . $stmt_insert->insert_id);
+                    $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Jármű sikeresen hozzáadva!</div>';
+                } else {
+                    error_log("!!! Adatbázis execute() HIBA: " . $stmt_insert->error);
+                    // Részletesebb hibaüzenet fejlesztéshez
+                    $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű adatbázisba mentése során! Részletek: '.htmlspecialchars($stmt_insert->error).'</div>';
 
-                 // Próbáljuk meg törölni a feltöltött képeket, ha a DB mentés nem sikerült
-                  foreach ($kepek as $web_path_to_delete) {
-                      $physical_path_to_delete = $_SERVER['DOCUMENT_ROOT'] . $web_path_to_delete;
-                      if (file_exists($physical_path_to_delete)) {
-                          @unlink($physical_path_to_delete);
-                      }
-                  }
+                    // Próbáljuk meg törölni a feltöltött képeket, ha a DB mentés nem sikerült
+                    foreach ($kepek as $web_path_to_delete) {
+                        $physical_path_to_delete = $_SERVER['DOCUMENT_ROOT'] . $web_path_to_delete;
+                        if (file_exists($physical_path_to_delete)) {
+                            @unlink($physical_path_to_delete);
+                        }
+                    }
+                }
+                $stmt_insert->close();
             }
-            $stmt_insert->close();
+        }
+        else{
+            $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">A műszaki lejárat dátuma hibás!</div>';
         }
 
     } else {
