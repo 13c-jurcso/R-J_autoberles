@@ -384,12 +384,12 @@ textarea:hover {
 }
 
 textarea {
-    min-height: 120px;
+    min-height: 180px;
     resize: vertical;
 }
 
 /* Modal Styles */
-.modal, #loginModal, #registerModal, #modal,  #alertModal {
+#loginModal, #registerModal, #modal,  #alertModal {
     display: none; /* Alapértelmezett állapot */
     position: fixed;
     top: 0;

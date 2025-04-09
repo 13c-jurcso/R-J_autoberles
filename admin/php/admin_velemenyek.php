@@ -12,6 +12,7 @@ if (!isset($_SESSION['felhasznalo_nev'])) {
 // PHPMailer betöltése
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
 require '../../php/vendor/autoload.php';
 
 
@@ -64,34 +65,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
             $to = $felhasznalo['emailcim'];
             $subject = "Válasz a véleményére - Autóbérlés";
             $message = "Kedves $felhasznalo_nev,\n\n" .
-                       "Az Ön véleményére az alábbi választ kaptuk adminisztrátorunktól:\n\n" .
-                       "\"$admin_valasz\"\n\n" .
-                       "Köszönjük, hogy megosztotta velünk véleményét!\n" .
-                       "Üdvözlettel,\nAutóbérlés Csapata";
+                "Az Ön véleményére az alábbi választ kaptuk adminisztrátorunktól:\n\n" .
+                "\"$admin_valasz\"\n\n" .
+                "Köszönjük, hogy megosztotta velünk véleményét!\n" .
+                "Üdvözlettel,\nAutóbérlés Csapata";
 
-            
+
             $mail = new PHPMailer(true);
             try {
-               
+
                 $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';          
+                $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
-                $mail->Username = '13c-jurcso@ipari.vein.hu'; 
-                $mail->Password = 'wnbd fotg aszs yseh';           
+                $mail->Username = '13c-jurcso@ipari.vein.hu';
+                $mail->Password = 'wnbd fotg aszs yseh';
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
 
-              
+
                 $mail->setFrom('13c-jurcso@ipari.vein.hu', 'Autóbérlés');
                 $mail->addAddress($to);
 
-                
-                $mail->isHTML(false);                     
+
+                $mail->isHTML(false);
                 $mail->Subject = $subject;
                 $mail->Body = $message;
                 $mail->CharSet = 'UTF-8';
 
-                
+
                 $mail->send();
                 $_SESSION['uzenet'] .= '<div class="alert alert-success" role="alert">Email sikeresen elküldve a felhasználónak!</div>';
             } catch (Exception $e) {
@@ -109,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
 
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -117,7 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap JS (Popper is benne) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
     <header>
         <div class="menu-toggle">☰ Menu</div>
@@ -167,10 +172,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
                 echo '<td>' . $v['datum'] . '</td>';
                 echo '<td>' . $jarmu . '</td>';
                 echo '<td>' . ($v['admin_valasz'] ?? 'Nincs válasz') . '</td>';
-                echo '<td><form method="POST" onsubmit="return confirm(`Biztosan törölni kívánja ezt a véleményt?`);">
-                        <input type="hidden" name="velemeny_id" value="' . $v['velemeny_id'] . '">
-                        <button type="submit" class="torles_button" name="delete_velemeny">Törlés</button>
-                    </form></td>';
+                echo '<td>
+                        <button type="button" class="btn btn-danger torles_button" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#confirmDeleteModal" 
+                            data-velemeny-id="' . $v['velemeny_id'] . '">
+                                Törlés
+                        </button>
+                    </td>';
                 echo '<td><form method="POST">
                             <input type="hidden" name="velemeny_id" value="' . $v['velemeny_id'] . '">
                             <input type="hidden" name="felhasznalo_nev" value="' . $v['felhasznalo_nev'] . '">
@@ -189,6 +198,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['valasz_submit'])) {
     <footer class="container mt-5 mb-3 text-center text-muted">
         © <?= date('Y M') ?> R&J - Admin
     </footer>
+
+    <!-- A Modális Ablak HTML Struktúrája -->
+    <!-- Adjunk neki egy egyedi ID-t: id="confirmDeleteModal" -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- Cím módosítása -->
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Törlés Megerősítése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tartalom módosítása -->
+                    <p>Biztosan törölni szeretnéd ezt az elemet? Ez a művelet nem vonható vissza.</p>
+                </div>
+                <div class="modal-footer">
+                    <!-- Gombok módosítása -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form method="POST" id="deleteForm" style="display: none;">
+        <input type="hidden" name="velemeny_id" id="deleteVelemenyId">
+        <button type="submit" name="delete_velemeny" id="submitDeleteButton"></button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedVelemenyId = null;
+
+            // Minden törlés gomb eseménykezelése
+            document.querySelectorAll('.torles_button').forEach(button => {
+                button.addEventListener('click', function() {
+                    selectedVelemenyId = this.getAttribute('data-velemeny-id');
+                });
+            });
+
+            // A modálon belüli törlés gomb eseménykezelése
+            document.getElementById('confirmDeleteBtnActual').addEventListener('click', function() {
+                if (selectedVelemenyId) {
+                    document.getElementById('deleteVelemenyId').value = selectedVelemenyId;
+                    document.getElementById('submitDeleteButton').click();
+                }
+            });
+        });
+    </script>
 </body>
+
 </html>
 <?php $db->close(); ?>

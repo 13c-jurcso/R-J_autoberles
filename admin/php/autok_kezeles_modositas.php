@@ -480,7 +480,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($errors)) {
                 <input type="date" id="gyartasi_ev" name="gyartasi_ev" value="<?= htmlspecialchars($gyartasi_ev_formatted) ?>"><br>
 
                 <label for="leiras">Leírás:</label>
-                <textarea name="leiras" id="leiras" rows="4"><?= htmlspecialchars($_POST['leiras'] ?? $car['leiras'] ?? '') ?></textarea><br>
+                <textarea name="leiras" id="message" rows="4"><?= htmlspecialchars($_POST['leiras'] ?? $car['leiras'] ?? '') ?></textarea><br>
 
                 <label for="ar">Ár (Ft):</label>
                 <input type="number" id="ar" name="ar" value="<?= htmlspecialchars($_POST['ar'] ?? $car['ar'] ?? '') ?>" required min="0" step="any"><br> <!-- step="any" a tizedesekhez, ha float -->
