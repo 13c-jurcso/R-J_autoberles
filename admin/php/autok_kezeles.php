@@ -384,13 +384,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_jarmu']) && iss
                         <td><?php echo $row['leiras']; ?></td>
                         <td><?php echo $row['ar']; ?></td>
                         <td>
-                            <form action="" method="post">
                                 <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
                                 <a href="./autok_kezeles_modositas.php?id=<?= $row['jarmu_id'] ?>"><button type="button" class="modositas_button">Módosítás</button></a>
-                            </form>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-danger torles_button"
+                            <button type="button" class="torles_button"
                                 data-bs-toggle="modal"
                                 data-bs-target="#confirmDeleteModal"
                                 data-jarmu-id="<?php echo $row['jarmu_id']; ?>">
@@ -430,7 +428,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_jarmu']) && iss
                     <!-- Gombok módosítása -->
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
                     <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
+                    <button type="button" class="torles_button" id="confirmDeleteBtnActual">Törlés</button>
                 </div>
             </div>
         </div>

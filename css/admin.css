@@ -144,3 +144,19 @@ body {
     border: 1px solid #ccc;
     box-sizing: border-box;
 }
+
+.modositas_button {
+    background-color: #3eb1cd !important;
+}
+
+.modositas_button:hover {
+    background-color: #0c8196  !important;
+}
+
+.torles_button {
+    background-color: #e73223 !important;
+}
+
+.torles_button:hover {
+    background-color: #b01b0f !important;
+}

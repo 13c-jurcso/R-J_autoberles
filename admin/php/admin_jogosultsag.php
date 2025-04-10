@@ -209,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
                     <!-- Gombok módosítása -->
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
                     <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
+                    <button type="button" class="torles_button" id="confirmDeleteBtnActual">Törlés</button>
                 </div>
             </div>
         </div>

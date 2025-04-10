@@ -261,7 +261,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
                 echo '<td>' . ($a['leiras'] ?? 'Nincs') . '</td>';
                 echo '<td>' . ($a['is_black_friday'] ? 'Igen' : 'Nem') . '</td>';
                 echo '<td>
-                        <button type="button" class="btn btn-danger torles_button" 
+                        <button type="button" class="torles_button" 
                             data-bs-toggle="modal" 
                             data-bs-target="#confirmDeleteModal" 
                             data-akcio-id="' . $a['akcio_id'] . '">
@@ -297,7 +297,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
                     <!-- Gombok módosítása -->
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
                     <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
+                    <button type="button" class="torles_button" id="confirmDeleteBtnActual">Törlés</button>
                 </div>
             </div>
         </div>
