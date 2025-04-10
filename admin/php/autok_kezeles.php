@@ -17,7 +17,7 @@ $felhasznalok = $db->query("SELECT * FROM felhasznalo;");
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
     // Alapadatok
     $felhasznalas_id = $_POST['felhasznalas_id'];
-    $szerviz_id = $_POST['szerviz_id'];
+    $muszaki_ev = $_POST['szerviz_id'];
     $gyarto = trim($_POST['gyarto']);
     $tipus = trim($_POST['tipus']);
     $motor = trim($_POST['motor']);
@@ -50,12 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
         // Ellenőrizzük/létrehozzuk a célmappát
         if (!is_dir($image_folder_physical)) {
             if (!@mkdir($image_folder_physical, 0775, true) && !is_dir($image_folder_physical)) {
-                 $upload_errors[] = "Nem sikerült létrehozni a képek mappát: " . htmlspecialchars($image_folder_physical) . ". Ellenőrizze a jogosultságokat ('/php' mappára is kell írási jog)!";
-                 $sikeresFeltoltesOsszes = false; // Ha a mappa sincs meg, nem tudunk feltölteni
+                $upload_errors[] = "Nem sikerült létrehozni a képek mappát: " . htmlspecialchars($image_folder_physical) . ". Ellenőrizze a jogosultságokat ('/php' mappára is kell írási jog)!";
+                $sikeresFeltoltesOsszes = false; // Ha a mappa sincs meg, nem tudunk feltölteni
             }
         } elseif (!is_writable($image_folder_physical)) {
-             $upload_errors[] = "A képek mappa nem írható: " . htmlspecialchars($image_folder_physical);
-             $sikeresFeltoltesOsszes = false; // Ha nem írható, nem tudunk feltölteni
+            $upload_errors[] = "A képek mappa nem írható: " . htmlspecialchars($image_folder_physical);
+            $sikeresFeltoltesOsszes = false; // Ha nem írható, nem tudunk feltölteni
         }
 
         // Csak akkor megyünk tovább, ha a mappa rendben van
@@ -65,18 +65,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
                     $fileTmpPath = $_FILES['kep_url']['tmp_name'][$key];
                     $file_size = $_FILES['kep_url']['size'][$key];
 
-                     // --- Biztonsági ellenőrzések ---
-                     $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                     $max_size = 5 * 1024 * 1024; // 5MB
-                     $file_mime_type = mime_content_type($fileTmpPath);
+                    // --- Biztonsági ellenőrzések ---
+                    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    $max_size = 5 * 1024 * 1024; // 5MB
+                    $file_mime_type = mime_content_type($fileTmpPath);
 
                     if (!in_array(strtolower($file_mime_type), $allowed_types)) {
-                        $upload_errors[] = "Fájl ('".htmlspecialchars($kep_name)."') típusa ('".htmlspecialchars($file_mime_type)."') nem engedélyezett.";
+                        $upload_errors[] = "Fájl ('" . htmlspecialchars($kep_name) . "') típusa ('" . htmlspecialchars($file_mime_type) . "') nem engedélyezett.";
                         $sikeresFeltoltesOsszes = false;
                         break; // Hiba esetén megszakítjuk a ciklust
                     }
-                     if ($file_size > $max_size) {
-                        $upload_errors[] = "Fájl ('".htmlspecialchars($kep_name)."') mérete túl nagy (max 5MB).";
+                    if ($file_size > $max_size) {
+                        $upload_errors[] = "Fájl ('" . htmlspecialchars($kep_name) . "') mérete túl nagy (max 5MB).";
                         $sikeresFeltoltesOsszes = false;
                         break;
                     }
@@ -113,16 +113,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
         } // if mappa rendben van vége
 
     } else {
-         // Ha a 'kep_url' nincs beállítva vagy üres, de kötelező volt a formon ('required')
-         if (isset($_FILES['kep_url']['error'][0]) && $_FILES['kep_url']['error'][0] === UPLOAD_ERR_NO_FILE) {
+        // Ha a 'kep_url' nincs beállítva vagy üres, de kötelező volt a formon ('required')
+        if (isset($_FILES['kep_url']['error'][0]) && $_FILES['kep_url']['error'][0] === UPLOAD_ERR_NO_FILE) {
             $upload_errors[] = "Nem töltött fel egyetlen képet sem, pedig kötelező.";
             $sikeresFeltoltesOsszes = false; // Nincs kép, nincs mit menteni
-         } else {
+        } else {
             // Egyéb hiba a $_FILES struktúrával
-             $upload_errors[] = "Hiba a fájlfeltöltési adatok feldolgozásakor.";
-             $sikeresFeltoltesOsszes = false;
-             error_log("!!! Hiba a FILES tömb struktúrájával: " . print_r($_FILES, true));
-         }
+            $upload_errors[] = "Hiba a fájlfeltöltési adatok feldolgozásakor.";
+            $sikeresFeltoltesOsszes = false;
+            error_log("!!! Hiba a FILES tömb struktúrájával: " . print_r($_FILES, true));
+        }
     }
 
     // ---- Adatbázis művelet ----
@@ -131,44 +131,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
         $kepek_json = json_encode($kepek); // A $kepek már a /php/kepek/... útvonalakat tartalmazza
         error_log("Adatbázis INSERT előkészítése. Képek JSON: " . $kepek_json);
 
-        $stmt_insert = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt_szerviz = $db->prepare("SELECT id FROM szervizek WHERE muszaki_vizs_lejarat = ?");
+        $stmt_szerviz->execute([$muszaki_ev]);
+        $szerviz = $stmt_szerviz->get_result()->fetch_assoc();
+        $stmt_szerviz->close(); // <- EZ HIÁNYZOTT
 
-        if ($stmt_insert === false) {
-             error_log("!!! Adatbázis prepare() HIBA: " . $db->error);
-             $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az adatbázis művelet előkészítésekor!</div>';
-        } else {
-            $stmt_insert->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $kepek_json);
-            if ($stmt_insert->execute()) {
-                 error_log("Adatbázis execute() SIKER. Beszúrt ID: " . $stmt_insert->insert_id);
-                 $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Jármű sikeresen hozzáadva!</div>';
+        if ($szerviz) {
+            $szerviz_id = $szerviz['id'];
+
+            $stmt_insert = $db->prepare("INSERT INTO jarmuvek (felhasznalas_id, szerviz_id, gyarto, tipus, motor, gyartasi_ev, leiras, ar, kep_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            if ($stmt_insert === false) {
+                error_log("!!! Adatbázis prepare() HIBA: " . $db->error);
+                $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az adatbázis művelet előkészítésekor!</div>';
             } else {
-                 error_log("!!! Adatbázis execute() HIBA: " . $stmt_insert->error);
-                 // Részletesebb hibaüzenet fejlesztéshez
-                 $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű adatbázisba mentése során! Részletek: '.htmlspecialchars($stmt_insert->error).'</div>';
+                $stmt_insert->bind_param("iisssssis", $felhasznalas_id, $szerviz_id, $gyarto, $tipus, $motor, $gyartasi_ev, $leiras, $ar, $kepek_json);
+                if ($stmt_insert->execute()) {
+                    error_log("Adatbázis execute() SIKER. Beszúrt ID: " . $stmt_insert->insert_id);
+                    $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Jármű sikeresen hozzáadva!</div>';
+                } else {
+                    error_log("!!! Adatbázis execute() HIBA: " . $stmt_insert->error);
+                    // Részletesebb hibaüzenet fejlesztéshez
+                    $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a jármű adatbázisba mentése során! Részletek: ' . htmlspecialchars($stmt_insert->error) . '</div>';
 
-                 // Próbáljuk meg törölni a feltöltött képeket, ha a DB mentés nem sikerült
-                  foreach ($kepek as $web_path_to_delete) {
-                      $physical_path_to_delete = $_SERVER['DOCUMENT_ROOT'] . $web_path_to_delete;
-                      if (file_exists($physical_path_to_delete)) {
-                          @unlink($physical_path_to_delete);
-                      }
-                  }
+                    // Próbáljuk meg törölni a feltöltött képeket, ha a DB mentés nem sikerült
+                    foreach ($kepek as $web_path_to_delete) {
+                        $physical_path_to_delete = $_SERVER['DOCUMENT_ROOT'] . $web_path_to_delete;
+                        if (file_exists($physical_path_to_delete)) {
+                            @unlink($physical_path_to_delete);
+                        }
+                    }
+                }
+                $stmt_insert->close();
             }
-            $stmt_insert->close();
+        } else {
+            $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">A műszaki lejárat dátuma hibás!</div>';
         }
-
     } else {
         // Ha a feltöltés sikertelen volt, vagy nem volt kép
-         $hiba_uzenet = "A jármű hozzáadása sikertelen volt.";
-         if (!empty($upload_errors)) {
-             $hiba_uzenet .= " Hibák: " . implode('; ', $upload_errors);
-         } elseif (empty($kepek)) {
-             // Ez az ág akkor futhat, ha a required ellenére nem töltöttek fel fájlt, vagy hiba volt a $_FILES-ban
-             $hiba_uzenet .= " Nem történt képfeltöltés vagy hiba történt a fájlok feldolgozása közben.";
-         }
-         $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">' . htmlspecialchars($hiba_uzenet) . '</div>';
-         error_log("Adatbázis INSERT kihagyva. Sikeres összes feltöltés: " . ($sikeresFeltoltesOsszes?'igen':'nem') . ", Képek száma: " . count($kepek) . ". Hibák: " . implode('; ', $upload_errors));
+        $hiba_uzenet = "A jármű hozzáadása sikertelen volt.";
+        if (!empty($upload_errors)) {
+            $hiba_uzenet .= " Hibák: " . implode('; ', $upload_errors);
+        } elseif (empty($kepek)) {
+            // Ez az ág akkor futhat, ha a required ellenére nem töltöttek fel fájlt, vagy hiba volt a $_FILES-ban
+            $hiba_uzenet .= " Nem történt képfeltöltés vagy hiba történt a fájlok feldolgozása közben.";
+        }
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">' . htmlspecialchars($hiba_uzenet) . '</div>';
+        error_log("Adatbázis INSERT kihagyva. Sikeres összes feltöltés: " . ($sikeresFeltoltesOsszes ? 'igen' : 'nem') . ", Képek száma: " . count($kepek) . ". Hibák: " . implode('; ', $upload_errors));
     }
 
     // Átirányítás a PRG (Post-Redirect-Get) minta alapján, hogy ne lehessen újraküldeni a formot frissítéssel
@@ -195,13 +205,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
             $stmt_delete_akciok = $db->prepare($sql_delete_akciok);
             $stmt_delete_akciok->bind_param("i", $jarmu_id);
 
-            if($stmt_delete_akciok->execute()){
+            if ($stmt_delete_akciok->execute()) {
                 //Ha az akciók törlése sikeres, kitöröljük a véleményektől.
                 $sql_delete_velemeny = "DELETE FROM `velemenyek` WHERE jarmu_id = ?";
                 $stmt_delete_velemeny = $db->prepare($sql_delete_velemeny);
                 $stmt_delete_velemeny->bind_param("i", $jarmu_id);
 
-                if($stmt_delete_velemeny->execute()){
+                if ($stmt_delete_velemeny->execute()) {
                     // Ha a bérlések törlése sikerült, akkor töröld a járművet
                     $sql_delete_jarmuvek = "DELETE FROM jarmuvek WHERE jarmu_id = ?";
                     $stmt_delete_jarmuvek = $db->prepare($sql_delete_jarmuvek);
@@ -216,15 +226,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
                         error_log("Hiba a jármű törlése során: " . $stmt_delete_jarmuvek->error);
                     }
                     $stmt_delete_jarmuvek->close();
-                }
-                else{
+                } else {
                     $db->rollback(); // Hiba esetén görgess vissza
                     $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba, a jármű törlése során, a vélemények táblából!</div>';
                     error_log("Hiba a vélemények törlése során: " . $stmt_delete_akciok->error);
                 }
                 $stmt_delete_velemeny->close();
-            }
-            else{
+            } else {
                 $db->rollback(); // Hiba esetén görgess vissza
                 $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba, a jármű törlése során, az akciók táblából!</div>';
                 error_log("Hiba az akciók törlése során: " . $stmt_delete_akciok->error);
@@ -236,7 +244,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
             error_log("Hiba a bérlések törlése során: " . $stmt_delete_berlesek->error);
         }
         $stmt_delete_berlesek->close();
-
     } else {
         $_SESSION['uzenet'] = '<div class="alert alert-warning" role="alert">Érvénytelen jármű ID!</div>';
     }
@@ -274,11 +281,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
 
     <div class="menu">
         <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek">Járművek
-        </button></a>
-        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag">Jogosultságok 
-        </button></a>
-        <a href="./admin_berlesek.php"><button type="submit" id="berlesek">Bérlések 
-        </button></a>
+            </button></a>
+        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag">Jogosultságok
+            </button></a>
+        <a href="./admin_berlesek.php"><button type="submit" id="berlesek">Bérlések
+            </button></a>
         <a href="./admin_velemenyek.php"><button type="submit">Vélemények</button></a>
         <a href="./admin_akciok.php"><button type="submit">Akciók</button></a>
     </div>
@@ -286,11 +293,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
     <div>
         <!-- Üzenetek -->
         <?php
-            // session_start();
-            if (isset($_SESSION['uzenet'])) {
-                echo $_SESSION['uzenet'];
-                unset($_SESSION['uzenet']);
-            }
+        // session_start();
+        if (isset($_SESSION['uzenet'])) {
+            echo $_SESSION['uzenet'];
+            unset($_SESSION['uzenet']);
+        }
         ?>
     </div>
 
@@ -310,15 +317,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
             <select name="felhasznalas_id">
                 <option value="">-- Kérem válasszon --</option>
                 <?php
-                    $felhasznalas_sql = "SELECT felhasznalas.felhasznalas_id, felhasznalas.nev FROM felhasznalas;";
-                    $felhasznalas = adatokLekerese($felhasznalas_sql);
-                    if (is_array($felhasznalas)) {
-                        foreach ($felhasznalas as $f) {
-                            echo '<option value="'. $f['felhasznalas_id'].'">' . $f['nev'] . '</option>'; 
-                        }
-                    } else {
-                        echo $felhasznalas;
+                $felhasznalas_sql = "SELECT felhasznalas.felhasznalas_id, felhasznalas.nev FROM felhasznalas;";
+                $felhasznalas = adatokLekerese($felhasznalas_sql);
+                if (is_array($felhasznalas)) {
+                    foreach ($felhasznalas as $f) {
+                        echo '<option value="' . $f['felhasznalas_id'] . '">' . $f['nev'] . '</option>';
                     }
+                } else {
+                    echo $felhasznalas;
+                }
                 ?>
             </select>
 
@@ -329,7 +336,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
             <input type="date" name="gyartasi_ev" required><br>
 
             <label for="leiras">Leírás:</label>
-            <textarea name="leiras" required></textarea><br>
+            <textarea name="leiras" id="message" rows="5" placeholder="Max 300 karakter, a kártyák egységes kinézete miatt!" maxlength="300" required oninput="updateCharCount()" required></textarea>
+            <div id="charCount">0/300</div>
 
             <label for="ar">Ár:</label>
             <input type="number" name="ar" required><br>
@@ -363,69 +371,75 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
                 <th>Művelet</th>
             </tr>
             <?php if ($jarmuvek->num_rows > 0): ?>
-            <?php while ($row = $jarmuvek->fetch_assoc()): ?>
-            <tr>
-                <td><?php echo $row['jarmu_id']; ?></td>
-                <td><?php echo $row['felhasznalas_id']; ?></td>
-                <td><?php echo $row['szerviz_id']; ?></td>
-                <td><?php echo $row['gyarto']; ?></td>
-                <td><?php echo $row['tipus']; ?></td>
-                <td><?php echo $row['motor']; ?></td>
-                <td><?php echo $row['gyartasi_ev']; ?></td>
-                <td><?php echo $row['leiras']; ?></td>
-                <td><?php echo $row['ar']; ?></td>
-                <td>
-                    <form action="" method="post">
-                        <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
-                        <a href="./autok_kezeles_modositas.php?id=<?= $row['jarmu_id'] ?>"><button type="button"  class="modositas_button">Módosítás</button></a>
-                    </form>
-                </td>
-                <td>
-                    <form method="POST" action="" onsubmit="return confirm('Biztosan törölni kívánja az autót?');">
-                        <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
-                        <button type="submit" class="torles_button" name="delete_vehicle">Törlés</button>
-                    </form>
-                </td>
-            </tr>
-            <?php endwhile; ?>
+                <?php while ($row = $jarmuvek->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo $row['jarmu_id']; ?></td>
+                        <td><?php echo $row['felhasznalas_id']; ?></td>
+                        <td><?php echo $row['szerviz_id']; ?></td>
+                        <td><?php echo $row['gyarto']; ?></td>
+                        <td><?php echo $row['tipus']; ?></td>
+                        <td><?php echo $row['motor']; ?></td>
+                        <td><?php echo $row['gyartasi_ev']; ?></td>
+                        <td><?php echo $row['leiras']; ?></td>
+                        <td><?php echo $row['ar']; ?></td>
+                        <td>
+                            <form action="" method="post">
+                                <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
+                                <a href="./autok_kezeles_modositas.php?id=<?= $row['jarmu_id'] ?>"><button type="button" class="modositas_button">Módosítás</button></a>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action="" onsubmit="return confirm('Biztosan törölni kívánja az autót?');">
+                                <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
+                                <button type="submit" class="torles_button" name="delete_vehicle">Törlés</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
             <?php else: ?>
-            <tr>
-                <td colspan="10">Nincs jármű az adatbázisban.</td>
-            </tr>
+                <tr>
+                    <td colspan="10">Nincs jármű az adatbázisban.</td>
+                </tr>
             <?php endif; ?>
         </table>
     </div>
 
-  
+
 
     <div id="overlay" class="overlay"></div>
     <footer class="container mt-5 mb-3 text-center text-muted">
         © <?= date('Y M') ?> R&J - Admin
     </footer>
     <script>
-    function mutatResz(reszAzonosito, gomb) {
-        // Az összes tartalmi rész rejtése
-        const tartalmiReszek = document.querySelectorAll('.tartalmi-resz');
-        tartalmiReszek.forEach(resz => resz.classList.remove('aktiv'));
-
-        // Csak az adott rész megjelenítése
-        const aktivResz = document.getElementById(reszAzonosito);
-        if (aktivResz) {
-            aktivResz.classList.add('aktiv');
+        function updateCharCount() {
+            const textarea = document.getElementById("message");
+            const charCount = document.getElementById("charCount");
+            const currentLength = textarea.value.length;
+            charCount.textContent = `${currentLength}/300`;
         }
 
-        // Az összes gombról eltávolítjuk az "aktiv" osztályt
-        const gombok = document.querySelectorAll('.menu button');
-        gombok.forEach(g => g.classList.remove('aktiv'));
+        function mutatResz(reszAzonosito, gomb) {
+            // Az összes tartalmi rész rejtése
+            const tartalmiReszek = document.querySelectorAll('.tartalmi-resz');
+            tartalmiReszek.forEach(resz => resz.classList.remove('aktiv'));
 
-        // Az aktuális gombhoz hozzáadjuk az "aktiv" osztályt
-        gomb.classList.add('aktiv');
-    }
+            // Csak az adott rész megjelenítése
+            const aktivResz = document.getElementById(reszAzonosito);
+            if (aktivResz) {
+                aktivResz.classList.add('aktiv');
+            }
 
-    document.getElementById("animDiv").addEventListener("click", function() {
-        this.classList.add("hidden");
-    });
+            // Az összes gombról eltávolítjuk az "aktiv" osztályt
+            const gombok = document.querySelectorAll('.menu button');
+            gombok.forEach(g => g.classList.remove('aktiv'));
 
+            // Az aktuális gombhoz hozzáadjuk az "aktiv" osztályt
+            gomb.classList.add('aktiv');
+        }
+
+        document.getElementById("animDiv").addEventListener("click", function() {
+            this.classList.add("hidden");
+        });
     </script>
 </body>
 
