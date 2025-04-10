@@ -58,7 +58,7 @@ function sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leir
                 <p><strong>Vége:</strong> $vege</p>
                 <p><strong>Leírás:</strong> $leiras</p>
                 " . ($is_black_friday ? "<p style='color: red;'>Ez egy Black Friday különleges ajánlat!</p>" : "") . "
-                <p>Foglaljon most a jarmuvek.php oldalon!</p>
+                <p>Foglaljon most az R&J Autóbérlés oldalon!</p>
             </div>
         </body>
         </html>";
