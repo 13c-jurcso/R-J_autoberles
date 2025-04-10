@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <title>Jogosúltságok</title>
 </head>
 <body>
@@ -169,10 +170,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
                         echo '<td>' . $f['szamlazasi_cim'] . '</td>';
                         echo '<td>' . $f['husegpontok'] . '</td>';
                         echo '<td>' . $f['admin'] . '</td>';
-                        echo '<td><form method="post" onsubmit="return confirm(`Biztosan törölni kívánja a felhasználót?`);">
-                                    <input type="hidden" name="felhasznalo_nev" value="' . $f['felhasznalo_nev'] . '">
-                                    <button type="submit" name="delete_felhasznalo" class="torles_button">Törlés</button>
-                            </form></td></tr>';
+                        echo '<td>
+                                <button type="button" class="btn btn-danger torles_button" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#confirmDeleteModal" 
+                                    data-felhasznalo-id="' . $f['felhasznalo_nev'] . '">
+                                        Törlés
+                                </button>
+                                </td></tr>';
                     }
                 }
                 else{
@@ -187,5 +192,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
     <footer class="container mt-5 mb-3 text-center text-muted">
         © <?= date('Y M') ?> R&J - Admin
     </footer>
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- Cím módosítása -->
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Törlés Megerősítése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tartalom módosítása -->
+                    <p>Biztosan törölni szeretnéd ezt az elemet? Ez a művelet nem vonható vissza.</p>
+                </div>
+                <div class="modal-footer">
+                    <!-- Gombok módosítása -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form method="POST" id="deleteForm" style="display: none;">
+        <input type="hidden" name="felhasznalo_nev" id="deleteFelhasznaloId">
+        <button type="submit" name="delete_felhasznalo" id="submitDeleteButton"></button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedFelhasznaloId = null;
+
+            // Minden törlés gomb eseménykezelése
+            document.querySelectorAll('.torles_button').forEach(button => {
+                button.addEventListener('click', function() {
+                    selectedFelhasznaloId = this.getAttribute('data-felhasznalo-id');
+                });
+            });
+
+            // A modálon belüli törlés gomb eseménykezelése
+            document.getElementById('confirmDeleteBtnActual').addEventListener('click', function() {
+                if (selectedFelhasznaloId) {
+                    document.getElementById('deleteFelhasznaloId').value = selectedFelhasznaloId;
+                    document.getElementById('submitDeleteButton').click();
+                }
+            });
+        });
+    </script>
+
 </body>
 </html>

@@ -152,7 +152,9 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
     <link rel="icon" href="../../admin_favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     <header>
@@ -258,10 +260,14 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
                 echo '<td>' . $a['vege'] . '</td>';
                 echo '<td>' . ($a['leiras'] ?? 'Nincs') . '</td>';
                 echo '<td>' . ($a['is_black_friday'] ? 'Igen' : 'Nem') . '</td>';
-                echo '<td><form method="POST" onsubmit="return confirm(`Biztosan törölni kívánja ezt az akciót?`);">
-                            <input type="hidden" name="akcio_id" value="' . $a['akcio_id'] . '">
-                            <button type="submit" name="delete_akcio" class="torles_button">Törlés</button>
-                          </form></td>';
+                echo '<td>
+                        <button type="button" class="btn btn-danger torles_button" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#confirmDeleteModal" 
+                            data-akcio-id="' . $a['akcio_id'] . '">
+                                Törlés
+                        </button>
+                        </td>';
                 echo '</tr>';
             }
         } else {
@@ -274,6 +280,54 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
     <footer class="container mt-5 mb-3 text-center text-muted">
         © <?= date('Y M') ?> R&J - Admin
     </footer>
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- Cím módosítása -->
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Törlés Megerősítése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tartalom módosítása -->
+                    <p>Biztosan törölni szeretnéd ezt az elemet? Ez a művelet nem vonható vissza.</p>
+                </div>
+                <div class="modal-footer">
+                    <!-- Gombok módosítása -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form method="POST" id="deleteForm" style="display: none;">
+        <input type="hidden" name="akcio_id" id="deleteAkcioId">
+        <button type="submit" name="delete_akcio" id="submitDeleteButton"></button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedAkcioId = null;
+
+            // Minden törlés gomb eseménykezelése
+            document.querySelectorAll('.torles_button').forEach(button => {
+                button.addEventListener('click', function() {
+                    selectedAkcioId = this.getAttribute('data-akcio-id');
+                });
+            });
+
+            // A modálon belüli törlés gomb eseménykezelése
+            document.getElementById('confirmDeleteBtnActual').addEventListener('click', function() {
+                if (selectedAkcioId) {
+                    document.getElementById('deleteAkcioId').value = selectedAkcioId;
+                    document.getElementById('submitDeleteButton').click();
+                }
+            });
+        });
+    </script>
+
 </body>
 </html>
 <?php $db->close(); ?>

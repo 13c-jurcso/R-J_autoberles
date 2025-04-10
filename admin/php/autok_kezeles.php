@@ -187,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_vehicle'])) {
 }
 
 // Jármű törlése
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && isset($_POST['jarmu_id'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_jarmu']) && isset($_POST['jarmu_id'])) {
     $jarmu_id = $_POST['jarmu_id'];
 
     // Biztonsági okokból ellenőrizd, hogy a $jarmu_id tényleg szám
@@ -264,6 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -389,10 +390,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
                             </form>
                         </td>
                         <td>
-                            <form method="POST" action="" onsubmit="return confirm('Biztosan törölni kívánja az autót?');">
-                                <input type="hidden" name="jarmu_id" value="<?php echo $row['jarmu_id']; ?>">
-                                <button type="submit" class="torles_button" name="delete_vehicle">Törlés</button>
-                            </form>
+                            <button type="button" class="btn btn-danger torles_button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal"
+                                data-jarmu-id="<?php echo $row['jarmu_id']; ?>">
+                                Törlés
+                            </button>
                         </td>
                     </tr>
                 <?php endwhile; ?>
@@ -406,11 +409,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
 
 
 
-    <div id="overlay" class="overlay"></div>
+    <!-- <div id="overlay" class="overlay"></div> -->
     <footer class="container mt-5 mb-3 text-center text-muted">
         © <?= date('Y M') ?> R&J - Admin
     </footer>
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- Cím módosítása -->
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Törlés Megerősítése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tartalom módosítása -->
+                    <p>Biztosan törölni szeretnéd ezt az elemet? Ez a művelet nem vonható vissza.</p>
+                </div>
+                <div class="modal-footer">
+                    <!-- Gombok módosítása -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form method="POST" id="deleteForm" style="display: none;">
+        <input type="hidden" name="jarmu_id" id="deleteJarmuId">
+        <button type="submit" name="delete_jarmu" id="submitDeleteButton"></button>
+    </form>
+
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedJarmuId = null;
+
+            // Minden törlés gomb eseménykezelése
+            document.querySelectorAll('.torles_button').forEach(button => {
+                button.addEventListener('click', function() {
+                    selectedJarmuId = this.getAttribute('data-jarmu-id');
+                });
+            });
+
+            // A modálon belüli törlés gomb eseménykezelése
+            document.getElementById('confirmDeleteBtnActual').addEventListener('click', function() {
+                if (selectedJarmuId) {
+                    document.getElementById('deleteJarmuId').value = selectedJarmuId;
+                    document.getElementById('submitDeleteButton').click();
+                }
+            });
+        });
+
         function updateCharCount() {
             const textarea = document.getElementById("message");
             const charCount = document.getElementById("charCount");
@@ -418,28 +467,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_vehicle']) && i
             charCount.textContent = `${currentLength}/300`;
         }
 
-        function mutatResz(reszAzonosito, gomb) {
-            // Az összes tartalmi rész rejtése
-            const tartalmiReszek = document.querySelectorAll('.tartalmi-resz');
-            tartalmiReszek.forEach(resz => resz.classList.remove('aktiv'));
-
-            // Csak az adott rész megjelenítése
-            const aktivResz = document.getElementById(reszAzonosito);
-            if (aktivResz) {
-                aktivResz.classList.add('aktiv');
-            }
-
-            // Az összes gombról eltávolítjuk az "aktiv" osztályt
-            const gombok = document.querySelectorAll('.menu button');
-            gombok.forEach(g => g.classList.remove('aktiv'));
-
-            // Az aktuális gombhoz hozzáadjuk az "aktiv" osztályt
-            gomb.classList.add('aktiv');
-        }
-
-        document.getElementById("animDiv").addEventListener("click", function() {
-            this.classList.add("hidden");
-        });
     </script>
 </body>
 
