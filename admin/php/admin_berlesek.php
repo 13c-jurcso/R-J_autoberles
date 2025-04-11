@@ -5,10 +5,10 @@ session_start(); // Session indítása az üzenetekhez
 include "./db_connection.php";
 // Feltételezzük, hogy van egy adatLekerese függvény vagy használunk direkt SQL-t
 // include "./adatLekerese.php"; // Ha használod
-if (!isset($_SESSION['felhasznalo_nev'])) {
+if ($_SESSION['admin'] == false) {
     $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
     $_SESSION['alert_type'] = "warning";
-    header("Location: index.php");
+    header("Location: ../../php/index.php");
     exit();
 }
 // Ellenőrizzük a DB kapcsolatot

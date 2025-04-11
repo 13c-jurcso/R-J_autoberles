@@ -24,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Ellenőrizzük, hogy a jelszó helyes-e
             if (password_verify($jelszo, $user['jelszo'])) {
                 $_SESSION['felhasznalo_nev'] = $felhasznalo_nev; // Bejelentkezés sikeres
+                $_SESSION['admin'] = $user['admin'];
                 header("Location: index.php"); // Átirányítás a főoldalra
                 exit();
             } else {
