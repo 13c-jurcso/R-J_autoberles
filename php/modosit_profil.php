@@ -19,6 +19,25 @@ if (!isset($_SESSION['felhasznalo_nev'])) {
 </head>
 
 <body>
+    <header>
+        <div class="menu-toggle">☰ Menu</div>
+        <nav>
+            <ul>
+                <li><a href="index.php">R&J</a></li>
+                <li><a href="kapcsolat.php">Kapcsolat</a></li>
+                <li><a href="jarmuvek.php">Bérlés</a></li>
+                <li><a href="forum.php">Gépjárművek</a></li>
+                <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
+                    <li><a href="profilom.php">Profilom</a></li>
+                    <li><a href="logout.php">Kijelentkezés</a></li>
+                <?php else: ?>
+                    <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
+                    <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    </header>
+
     <?php if (isset($_SESSION['alert_message'])): ?>
         <?php include 'modal.php'; ?>
     <?php endif; ?>

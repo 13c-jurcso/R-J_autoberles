@@ -39,9 +39,8 @@ if (!isset($_SESSION['felhasznalo_nev'])) {
             <ul>
                 <li><a href="index.php">R&J</a></li>
                 <li><a href="kapcsolat.php">Kapcsolat</a></li>
-                <li><a href="forum.php">Fórum</a></li>
-                <li><a href="husegpontok.php">Hűségpontok</a></li>
-                <li><a href="jarmuvek.php">Gépjárművek</a></li>
+                <li><a href="jarmuvek.php">Bérlés</a></li>
+                <li><a href="forum.php">Gépjárművek</a></li>
                 <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
                     <li><a href="profilom.php" class="active">Profilom</a></li>
                     <li><a href="logout.php">Kijelentkezés</a></li>
