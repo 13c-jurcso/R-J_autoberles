@@ -154,22 +154,83 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="modal-content-register">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Regisztráció</h2>
-            <form action="register.php" method="post">
-                <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required>
-                <input type="text" name="nev" placeholder="Teljes név" required>
-                <input type="email" name="emailcim" placeholder="Email" required>
-                <input type="password" name="jelszo" placeholder="Jelszó" required>
-                <input type="password" name="jelszo_ujra" placeholder="Jelszó újra" required>
-                <input type="date" name="jogositvany_kiallitasDatum" placeholder="Jogosítvány érvényességi dátuma" required>
-                <input type="text" name="szamlazasi_cim" placeholder="Számlázási cím" required>
+            <form action="register.php" method="post" class="animated-form">
+                <div class="form-group">
+                    <label for="felhasznalo_nev">Felhasználónév</label>
+                    <input type="text" id="felhasznalo_nev" name="felhasznalo_nev" required>
+                </div>
+                <div class="form-group">
+                    <label for="nev">Teljes név</label>
+                    <input type="text" id="nev" name="nev" required>
+                </div>
+                <div class="form-group">
+                    <label for="emailcim">Email</label>
+                    <input type="email" id="emailcim" name="emailcim" required>
+                </div>
+                <div class="form-group">
+                    <label for="jelszo">Jelszó</label>
+                    <input type="password" id="jelszo" name="jelszo" required>
+                </div>
+                <div class="form-group">
+                    <label for="jelszo_ujra">Jelszó újra</label>
+                    <input type="password" id="jelszo_ujra" name="jelszo_ujra" required>
+                </div>
+                <div class="form-group">
+                    <label for="jogositvany_kiallitasDatum">Jogosítvány érvényességi dátuma</label>
+                    <input type="date" id="jogositvany_kiallitasDatum" name="jogositvany_kiallitasDatum" required>
+                </div>
+                <div class="form-group">
+                    <label for="szamlazasi_cim">Számlázási cím</label>
+                    <input type="text" id="szamlazasi_cim" name="szamlazasi_cim" required>
+                </div>
                 <input type="submit" value="Regisztráció">
             </form>
         </div>
     </div>
 
+    <style>
+        .form-group {
+            position: relative;
+          
+        }
 
+        .form-group label {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #aaa;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
 
-    <!-- Meglévő kód -->
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        
+
+        .form-group input:focus + label,
+        .form-group input:not(:placeholder-shown) + label {
+            top: -10px;
+            font-size: 12px;
+            color: #007bff;
+        }
+
+        .form-group input[type="date"]::-webkit-datetime-edit {
+            color: transparent;
+        }
+
+        
+    </style>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
