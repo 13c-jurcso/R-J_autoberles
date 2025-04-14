@@ -34,14 +34,16 @@ if (isset($_POST['submit'])) {
     $stmt->bind_param("ss", $username, $message);
 
     if ($stmt->execute()) {
-        $_SESSION['alert_message'] = "Köszönjük a véleményt!";
+        $_SESSION['alert_message'] = "Köszönjük, hogy felvette velünk a kapcsolatot! Hamarosan válaszolunk.";
         $_SESSION['alert_type'] = "success";
     } else {
-        $_SESSION['alert_message'] = "Hiba történt: " . $stmt->error;
-        $_SESSION['alert_type'] = "warning";
+        $_SESSION['alert_message'] = "Hiba történt az üzenet küldése közben: " . $stmt->error;
+        $_SESSION['alert_type'] = "danger";
     }
 
     $stmt->close();
+    header("Location: kapcsolat.php"); // Redirect to refresh the page and display the alert
+    exit();
 }
 
 $conn->close();
@@ -61,9 +63,25 @@ $conn->close();
     <link rel="stylesheet" href="../css/style.css">
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <script defer src="../index.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 
 <body>
+    <!-- Alert message display -->
+    <?php if (isset($_SESSION['alert_message'])): ?>
+        <div class="alert alert-<?= $_SESSION['alert_type'] ?> alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['alert_message']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php
+        // Clear the alert message after displaying it
+        unset($_SESSION['alert_message']);
+        unset($_SESSION['alert_type']);
+        ?>
+    <?php endif; ?>
+
     <header>
         <div class="menu-toggle">☰ Menu</div>
         <nav>
@@ -111,9 +129,6 @@ $conn->close();
     <footer>
         © <?= date('Y') ?> R&J - Minden jog fenntartva
     </footer>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         document.querySelector(".menu-toggle").addEventListener("click", function() {
             document.querySelector("header").classList.toggle("menu-opened");
