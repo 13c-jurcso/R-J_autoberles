@@ -284,7 +284,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $akcios_ar = $kedvezmeny > 0 ? $original_ar * (1 - $kedvezmeny / 100) : $original_ar;
                 ?>
                 <div class="card">
-                    <img src="<?= $firstImage ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?>" class="card-img">
+                    <a href="auto_adatok.php?id=<?= htmlspecialchars($kocsi['jarmu_id']) ?>">
+                        <img src="<?= $firstImage ?>" alt="<?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?>" class="card-img">
+                    </a>
                     <div class="card-body">
                         <h5 class="card-title"><?= htmlspecialchars($kocsi['gyarto']) . ' ' . htmlspecialchars($kocsi['tipus']) ?></h5>
                         <p class="card-text"><?= htmlspecialchars($kocsi['leiras']) ?></p>
