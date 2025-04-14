@@ -256,18 +256,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="kategoria">Kategória: </label>
                 <select id="kategoria" name="kategoria">
                     <option value="">-- Válassz kategóriát --</option>
-                    <option value="1">Városi</option>
-                    <option value="2">Családi</option>
-                    <option value="3">Haszon</option>
-                    <option value="4">Élmény</option>
-                    <option value="5">Lakó</option>
+                    <option value="1" <?= isset($kategoria) && $kategoria == "1" ? "selected" : "" ?>>Városi</option>
+                    <option value="2" <?= isset($kategoria) && $kategoria == "2" ? "selected" : "" ?>>Családi</option>
+                    <option value="3" <?= isset($kategoria) && $kategoria == "3" ? "selected" : "" ?>>Haszon</option>
+                    <option value="4" <?= isset($kategoria) && $kategoria == "4" ? "selected" : "" ?>>Élmény</option>
+                    <option value="5" <?= isset($kategoria) && $kategoria == "5" ? "selected" : "" ?>>Lakó</option>
                 </select>
                 <br>
                 <label for="min_ar">Minimum ár:</label>
-                <input type="number" id="min_ar" name="min_ar" value="<?= htmlspecialchars($min_ar) ?>" placeholder="Pl. 10000">
+                <input type="number" id="min_ar" name="min_ar" value="<?= isset($min_ar) && $min_ar !== 0 ? htmlspecialchars($min_ar) : '' ?>" placeholder="Pl. 10000">
                 <br>
                 <label for="max_ar">Maximum ár:</label>
-                <input type="number" id="max_ar" name="max_ar" value="<?= htmlspecialchars($max_ar) ?>" placeholder="Pl. 50000">
+                <input type="number" id="max_ar" name="max_ar" value="<?= isset($max_ar) && $max_ar !== 0 ? htmlspecialchars($max_ar) : '' ?>" placeholder="Pl. 50000">
                 <br>
                 <button type="submit" class="btn btn-primary">Szűrés</button>
             </form>
@@ -299,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button class="berles-gomb" onclick="openModal(this)"
                             data-id="<?= htmlspecialchars($kocsi['jarmu_id']) ?>"
                             data-gyarto="<?= htmlspecialchars($kocsi['gyarto']) ?>"
-                            data-tipus="<?= htmlspecialchars($kocsi['tipus']) ?>">Részletek</button>
+                            data-tipus="<?= htmlspecialchars($kocsi['tipus']) ?>">Bérlés</button>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -369,7 +369,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
             document.getElementById('alertModal').classList.remove('active');
-            document.getElementById('overlay').style.display = 'none';
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = 'none';
+            overlay.classList.remove('active'); // Ensure no active class remains
+            overlay.style.visibility = 'hidden'; // Ensure visibility is hidden
         }
         document.getElementById('toggleFilterBtn').addEventListener('click', function() {
             const filterForm = document.getElementById('filterForm');

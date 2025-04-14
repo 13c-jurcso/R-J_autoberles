@@ -1039,6 +1039,15 @@ footer a:hover {
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 1999;
+    visibility: hidden; /* Ensure it's hidden when not active */
+    opacity: 0; /* Ensure no transparency when inactive */
+    transition: visibility 0s, opacity 0.3s ease; /* Smooth transition */
+}
+
+.overlay.active {
+    display: block;
+    visibility: visible; /* Make it visible when active */
+    opacity: 1; /* Fully opaque when active */
 }
 
 /* Bootstrap Overrides */
