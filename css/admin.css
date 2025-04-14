@@ -160,3 +160,11 @@ body {
 .torles_button:hover {
     background-color: #b01b0f !important;
 }
+
+#confirmDeleteBtnActual {
+    background-color: #e73223;
+}
+
+#confirmDeleteBtnActual:hover {
+    background-color: #b01b0f;
+}

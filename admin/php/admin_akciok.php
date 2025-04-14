@@ -8,10 +8,10 @@ require '../../php/src/SMTP.php';
 require '../../php/src/Exception.php';
 
 session_start();
-if (!isset($_SESSION['felhasznalo_nev'])) {
+if ($_SESSION['admin'] == false) {
     $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
     $_SESSION['alert_type'] = "warning";
-    header("Location: index.php");
+    header("Location: ../../php/index.php");
     exit();
 }
 // Felhasználók e-mail címeinek lekérdezése
@@ -297,7 +297,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
                     <!-- Gombok módosítása -->
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
                     <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
-                    <button type="button" class="torles_button" id="confirmDeleteBtnActual">Törlés</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
                 </div>
             </div>
         </div>

@@ -3,10 +3,10 @@ include "./db_connection.php";
 include "./adatLekeres.php";
 session_start();
 
-if (!isset($_SESSION['felhasznalo_nev'])) {
+if ($_SESSION['admin'] == false) {
     $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
     $_SESSION['alert_type'] = "warning";
-    header("Location: index.php");
+    header("Location: ../../php/index.php");
     exit();
 }
 // PHPMailer betöltése

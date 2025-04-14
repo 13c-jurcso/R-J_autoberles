@@ -4,10 +4,10 @@ session_start();
 include "./db_connection.php"; // Feltételezem, hogy ez $db néven hozza létre a kapcsolatot
 include "./adatLekeres.php"; // Feltételezem, hogy ez tartalmazza az adatokLekerese funkciót
 
-if (!isset($_SESSION['felhasznalo_nev'])) {
+if ($_SESSION['admin'] == false) {
     $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
     $_SESSION['alert_type'] = "warning";
-    header("Location: index.php");
+    header("Location: ../../php/index.php");
     exit();
 }
 

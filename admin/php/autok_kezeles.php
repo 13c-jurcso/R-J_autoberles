@@ -2,10 +2,10 @@
 session_start();
 include "./db_connection.php";
 include "./adatLekeres.php";
-if (!isset($_SESSION['felhasznalo_nev'])) {
+if ($_SESSION['admin'] == false) {
     $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
     $_SESSION['alert_type'] = "warning";
-    header("Location: index.php");
+    header("Location: ../../php/index.php");
     exit();
 }
 
@@ -388,7 +388,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_jarmu']) && iss
                                 <a href="./autok_kezeles_modositas.php?id=<?= $row['jarmu_id'] ?>"><button type="button" class="modositas_button">Módosítás</button></a>
                         </td>
                         <td>
-                            <button type="button" class="torles_button"
+                            <button type="button" class="btn btn-danger torles_button"
                                 data-bs-toggle="modal"
                                 data-bs-target="#confirmDeleteModal"
                                 data-jarmu-id="<?php echo $row['jarmu_id']; ?>">
@@ -428,7 +428,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_jarmu']) && iss
                     <!-- Gombok módosítása -->
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
                     <!-- Adjunk a törlés gombnak egy ID-t, ha később JavaScripttel kezelnénk -->
-                    <button type="button" class="torles_button" id="confirmDeleteBtnActual">Törlés</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
                 </div>
             </div>
         </div>
