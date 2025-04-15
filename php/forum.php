@@ -55,8 +55,7 @@ $result = $conn->query($query);
                     <li><a href="profilom.php">Profilom</a></li>
                     <li><a href="logout.php">Kijelentkezés</a></li>
                 <?php else: ?>
-                    <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
-                    <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
+               
                 <?php endif; ?>
             </ul>
         </nav>

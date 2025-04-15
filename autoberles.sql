@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2025. Ápr 09. 13:05
+-- Létrehozás ideje: 2025. Ápr 15. 21:53
 -- Kiszolgáló verziója: 10.4.32-MariaDB
 -- PHP verzió: 8.2.12
 
@@ -101,7 +101,7 @@ CREATE TABLE `felhasznalo` (
   `felhasznalo_nev` varchar(255) NOT NULL,
   `nev` varchar(255) DEFAULT NULL,
   `emailcim` varchar(255) DEFAULT NULL,
-  `jogositvany_kiallitasDatum` datetime DEFAULT NULL,
+  `jogositvany_kiallitasDatum` date DEFAULT NULL,
   `szamlazasi_cim` varchar(255) DEFAULT NULL,
   `jelszo` varchar(255) DEFAULT NULL,
   `admin` tinyint(1) DEFAULT NULL,
@@ -114,11 +114,11 @@ CREATE TABLE `felhasznalo` (
 --
 
 INSERT INTO `felhasznalo` (`felhasznalo_nev`, `nev`, `emailcim`, `jogositvany_kiallitasDatum`, `szamlazasi_cim`, `jelszo`, `admin`, `Telefonszám`, `husegpontok`) VALUES
-('admin', 'admin', 'admin@admin.com', '2024-11-21 00:00:00', 'dsdsdx', '$2y$10$eA4teVtYs8mUFgNVW/fi7Om.pWa9QzTVQ0SKsnzdy4hgDujq8V/m.', 1, '', 11297450),
-('Géza', 'Géza Kiss', 'gez@gmail.com', '2000-01-23 00:00:00', 'fghjkléáű', '$2y$10$geElDWF/r3FMkmdy1Ufi6ujZJzgXsjtu/Y3/doEYRlWQGqtBqyHTm', NULL, '', 0),
-('Janos', 'Jurcsó János', 'jurcso.ocsi@gmail.com', '2023-12-22 00:00:00', 'Balatonkenese Urbánus utca 3/1', '$2y$10$CHWVcQZEdPKTpEEk5sAMEeRSuxEK9WxADiObEullZTQ076fx5O0.W', NULL, '', 1419706),
-('lanctalpaskecske', 'Blank Máté', '13c-blank@ipari.vein.hu', '2025-04-07 00:00:00', 'Nemesvámos', '$2y$10$T4Nh.YsG9RXl1vdeR7zUM.wJH0pZw7E2ZU9r0oAmTYcspr1Kzf25O', NULL, '', 35560),
-('rolika', 'Dávid Roland', '13c-david@ipari.vein.hu', '2023-02-28 00:00:00', 'Herend', '$2y$10$otKlDNmNwtAuZa1HYpg8j.FqFId9e.1XVQmxawFCUUB1UI5262iCO', NULL, '', 24892);
+('admin', 'admin', 'admin@admin.com', '2024-11-21', 'dsdsdx', '$2y$10$eA4teVtYs8mUFgNVW/fi7Om.pWa9QzTVQ0SKsnzdy4hgDujq8V/m.', 1, '', 11297450),
+('Géza', 'Géza Kiss', 'gez@gmail.com', '2000-01-23', 'fghjkléáű', '$2y$10$geElDWF/r3FMkmdy1Ufi6ujZJzgXsjtu/Y3/doEYRlWQGqtBqyHTm', NULL, '', 0),
+('Janos', 'Jurcsó János', 'jurcso.ocsi@gmail.com', '2023-12-22', 'Balatonkenese Urbánus utca 3/1', '$2y$10$CHWVcQZEdPKTpEEk5sAMEeRSuxEK9WxADiObEullZTQ076fx5O0.W', NULL, '', 1419706),
+('lanctalpaskecske', 'Blank Máté', '13c-blank@ipari.vein.hu', '2025-04-07', 'Nemesvámos', '$2y$10$T4Nh.YsG9RXl1vdeR7zUM.wJH0pZw7E2ZU9r0oAmTYcspr1Kzf25O', NULL, '', 35560),
+('rolika', 'Dávid Roland', '13c-david@ipari.vein.hu', '2023-02-28', 'Herend', '$2y$10$otKlDNmNwtAuZa1HYpg8j.FqFId9e.1XVQmxawFCUUB1UI5262iCO', NULL, '', 24892);
 
 -- --------------------------------------------------------
 

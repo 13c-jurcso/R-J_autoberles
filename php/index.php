@@ -143,8 +143,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Bejelentkezés</h2>
             <form action="index.php" method="post">
+            <div class="form-group">
                 <input type="text" name="felhasznalo_nev" placeholder="Felhasználónév" required>
                 <input type="password" name="jelszo" placeholder="Jelszó" required>
+                </div>
                 <input type="submit" value="Bejelentkezés">
             </form>
         </div>
@@ -191,7 +193,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style>
         .form-group {
             position: relative;
-          
+            width: -webkit-fill-available;
         }
 
         .form-group label {

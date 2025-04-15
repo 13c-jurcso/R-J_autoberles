@@ -71,11 +71,11 @@ $conn->close();
 <body>
     <!-- Alert message display -->
     <?php if (isset($_SESSION['alert_message'])): ?>
-        <div class="alert alert-<?= $_SESSION['alert_type'] ?> alert-dismissible fade show" role="alert">
-            <?= htmlspecialchars($_SESSION['alert_message']) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <?php
+    <div class="alert alert-<?= $_SESSION['alert_type'] ?> alert-dismissible fade show" role="alert">
+        <?= htmlspecialchars($_SESSION['alert_message']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php
         // Clear the alert message after displaying it
         unset($_SESSION['alert_message']);
         unset($_SESSION['alert_type']);
@@ -91,20 +91,26 @@ $conn->close();
                 <li><a href="jarmuvek.php">Bérlés</a></li>
                 <li><a href="forum.php">Gépjárművek</a></li>
                 <?php if (isset($_SESSION['felhasznalo_nev'])): ?>
-                    <li><a href="profilom.php">Profilom</a></li>
-                    <li><a href="logout.php">Kijelentkezés</a></li>
+                <li><a href="profilom.php">Profilom</a></li>
+                <li><a href="logout.php">Kijelentkezés</a></li>
                 <?php else: ?>
-                    <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
-                    <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
+                <li><a href="#" onclick="openModal('loginModal')">Bejelentkezés</a></li>
+                <li><a href="#" onclick="openModal('registerModal')">Regisztráció</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
     </header>
     <div class="container mt-5">
         <h1>Kapcsolat</h1>
-        <p>Vegye fel velünk a kapcsolatot az alábbi elérhetőségek egyikén, vagy használja a kapcsolatfelvételi űrlapot.</p>
+        <p style="
+    text-align: center;
+    font-variant-caps: all-small-caps;
+    font-size: large;">Vegye fel velünk a kapcsolatot az alábbi elérhetőségek egyikén, vagy használja a
+            kapcsolatfelvételi űrlapot.</p>
 
-        <div class="contact-info">
+        <div class="contact-info" style="
+    text-align: center;
+">
             <h2>Elérhetőségeink</h2>
             <p><strong>Cím:</strong> 1234 Budapest, Fő utca 1.</p>
             <p><strong>Telefon:</strong> +36 1 234 5678</p>
@@ -114,13 +120,15 @@ $conn->close();
         <h1>Kapcsolatfelvételi űrlap</h1>
         <form action="kapcsolat.php" method="post">
             <label for="name">Név</label>
-            <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($_SESSION['felhasznalo_nev']); ?>" readonly>
+            <input type="text" id="name" name="name"
+                value="<?php echo htmlspecialchars($_SESSION['felhasznalo_nev']); ?>" readonly>
 
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
 
             <label for="message">Üzenet</label>
-            <textarea id="message" name="message" rows="5" maxlength="200" required oninput="updateCharCount()"></textarea>
+            <textarea id="message" name="message" rows="5" maxlength="200" required
+                oninput="updateCharCount()"></textarea>
             <div id="charCount">0/200</div>
 
             <button type="submit" name="submit">Küldés</button>
@@ -130,16 +138,16 @@ $conn->close();
         © <?= date('Y') ?> R&J - Minden jog fenntartva
     </footer>
     <script>
-        document.querySelector(".menu-toggle").addEventListener("click", function() {
-            document.querySelector("header").classList.toggle("menu-opened");
-        });
+    document.querySelector(".menu-toggle").addEventListener("click", function() {
+        document.querySelector("header").classList.toggle("menu-opened");
+    });
 
-        function updateCharCount() {
-            const textarea = document.getElementById("message");
-            const charCount = document.getElementById("charCount");
-            const currentLength = textarea.value.length;
-            charCount.textContent = `${currentLength}/200`;
-        }
+    function updateCharCount() {
+        const textarea = document.getElementById("message");
+        const charCount = document.getElementById("charCount");
+        const currentLength = textarea.value.length;
+        charCount.textContent = `${currentLength}/200`;
+    }
     </script>
 </body>
 
