@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
             </ul>
         </nav>
     </header>
-    <h1>Jogosúltság</h1>
+    <h1>Jogosultság</h1>
 
     <div class="menu">
         <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek" onclick="mutatResz('resz1')">Járművek </button></a>
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
     <div class="jogosultsagok">
         <h2>Jogosultság módosítása</h2>
         <form method="POST" class="form">
-            <label>Regisztrált emberek:</label>
+            <label>Regisztrált ügyfelek:</label>
             <select name="felhasznalo_nev">
                 <option>-- Kérem válasszon --</option>
                 <?php
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
                     }
                 ?>
             </select>
-            <label for="admin">Admin jogosultság:</label>
+            <label for="admin">Felhasználó jogosultság:</label>
             <select id="admin" name="admin">
                 <option>-- Kérem válasszon --</option>
                 <option value="1">Admin</option>

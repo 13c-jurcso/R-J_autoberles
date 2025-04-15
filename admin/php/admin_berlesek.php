@@ -3,31 +3,157 @@ session_start(); // Session indítása az üzenetekhez
 
 // Adatbázis kapcsolat és segédfüggvények
 include "./db_connection.php";
-// Feltételezzük, hogy van egy adatLekerese függvény vagy használunk direkt SQL-t
-// include "./adatLekerese.php"; // Ha használod
-if ($_SESSION['admin'] == false) {
+include "./adatLekeres.php";
+// Az adatLekeres.php-t most nem használjuk itt, de a db_connection.php-ra szükség van
+
+// Admin ellenőrzés
+if (!isset($_SESSION['admin']) || $_SESSION['admin'] == false) {
     $_SESSION['alert_message'] = "Kérem jelentkezzen be, hogy tovább tudjon lépni!";
     $_SESSION['alert_type'] = "warning";
     header("Location: ../../php/index.php");
     exit();
 }
+
 // Ellenőrizzük a DB kapcsolatot
 if (!isset($db) || $db->connect_error) {
     $error_msg = isset($db) ? $db->connect_error : 'A $db kapcsolat objektum nem jött létre.';
-    // Itt nem 'die', hanem hibaüzenetet jelenítünk meg a HTML-ben
-    $db_hiba = "Adatbázis kapcsolati hiba: " . htmlspecialchars($error_msg);
-} else {
-    $db_hiba = null; // Nincs hiba
+    // Naplózás és session üzenet a felhasználónak
+    error_log("Adatbázis kapcsolati hiba (admin_berlesek.php): " . $error_msg);
+    $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Adatbázis kapcsolati hiba. Kérjük, próbálja meg később.</div>';
+    // Nem szakítjuk meg a script futását itt, hogy a HTML váza megjelenhessen a hibaüzenettel
 }
+
+// --- Segédfüggvények (az api.php-ból átemelve) ---
+function sanitize_input($data)
+{
+    if (is_array($data)) {
+        return array_map('sanitize_input', $data);
+    }
+    // Csak trim és alap htmlspecialchars, mivel a felhasználónév lehet speciálisabb
+    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+}
+
+function validate_date($date, $format = 'Y-m-d')
+{
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) === $date;
+}
+
+// --- POST Kérések Kezelése (Hozzáadás és Törlés) ---
+
+// Bérlés Hozzáadása
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_berles']) && !isset($db->connect_error)) {
+    // Adatok fogadása és tisztítása
+    $jarmu_id = filter_input(INPUT_POST, 'jarmu_id', FILTER_VALIDATE_INT);
+    $felhasznalo = sanitize_input($_POST['felhasznalo'] ?? ''); // FelhasználóNÉV fogadása
+    $tol = sanitize_input($_POST['tol'] ?? '');
+    $ig = sanitize_input($_POST['ig'] ?? '');
+
+    // Validáció
+    $errors = [];
+    if (!$jarmu_id || $jarmu_id <= 0) $errors[] = "Érvénytelen jármű ID.";
+    if (empty($felhasznalo)) $errors[] = "A felhasználónév megadása kötelező.";
+
+    // Ellenőrzés: Létezik-e a felhasználónév?
+    $checkUserStmt = $db->prepare("SELECT COUNT(*) FROM felhasznalo WHERE felhasznalo_nev = ?");
+    if ($checkUserStmt) {
+        $checkUserStmt->bind_param("s", $felhasznalo);
+        $checkUserStmt->execute();
+        $checkUserStmt->bind_result($userCount);
+        $checkUserStmt->fetch();
+        $checkUserStmt->close();
+        if ($userCount == 0) $errors[] = "A megadott felhasználónév ('" . htmlspecialchars($felhasznalo) . "') nem létezik.";
+    } else {
+        $errors[] = "Hiba a felhasználónév ellenőrzésekor.";
+        error_log("SQL Prepare hiba (felhasználó ellenőrzés): " . $db->error);
+    }
+
+    // Ellenőrzés: Létezik-e a jármű ID?
+    $checkCarStmt = $db->prepare("SELECT COUNT(*) FROM jarmuvek WHERE jarmu_id = ?");
+    if ($checkCarStmt) {
+        $checkCarStmt->bind_param("i", $jarmu_id);
+        $checkCarStmt->execute();
+        $checkCarStmt->bind_result($carCount);
+        $checkCarStmt->fetch();
+        $checkCarStmt->close();
+        if ($carCount == 0) $errors[] = "A megadott jármű ID ('" . htmlspecialchars($jarmu_id) . "') nem létezik.";
+    } else {
+        $errors[] = "Hiba a jármű ID ellenőrzésekor.";
+        error_log("SQL Prepare hiba (jármű ellenőrzés): " . $db->error);
+    }
+
+
+    if (!validate_date($tol)) $errors[] = "Érvénytelen átvételi dátum formátum (YYYY-MM-DD).";
+    if (!validate_date($ig)) $errors[] = "Érvénytelen leadási dátum formátum (YYYY-MM-DD).";
+    if (validate_date($tol) && validate_date($ig) && strtotime($ig) < strtotime($tol)) {
+        $errors[] = "A leadás dátuma nem lehet korábbi az átvétel dátumánál.";
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">A leadás dátuma nem lehet korábbi az átvétel dátumánál.</div>';
+    }
+    // Itt lehetne további validáció: ütközik-e a bérlés más bérléssel ugyanarra az autóra?
+
+    if (!empty($errors)) {
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a hozzáadás során:<ul><li>' . implode('</li><li>', $errors) . '</li></ul></div>';
+    } else {
+        // Prepared Statement
+        $stmt = $db->prepare("INSERT INTO berlesek (jarmu_id, felhasznalo, tol, ig) VALUES (?, ?, ?, ?)");
+        if ($stmt === false) {
+            $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az SQL előkészítésekor (INSERT).</div>';
+            error_log("SQL Prepare Hiba (INSERT berlesek): " . $db->error);
+        } else {
+            // jarmu_id (i), felhasznalo (s), tol (s), ig (s) -> isss
+            $stmt->bind_param("isss", $jarmu_id, $felhasznalo, $tol, $ig);
+            if ($stmt->execute()) {
+                $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Bérlés sikeresen hozzáadva!</div>';
+            } else {
+                $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a bérlés hozzáadásakor: ' . htmlspecialchars($stmt->error) . '</div>';
+                error_log("SQL Execute Hiba (INSERT berlesek): " . $stmt->error);
+            }
+            $stmt->close();
+        }
+    }
+    // Átirányítás PRG minta szerint
+    header("Location: ./admin_berlesek.php");
+    exit;
+}
+
+// Bérlés Törlése
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_berles']) && !isset($db->connect_error)) {
+    $berles_id = filter_input(INPUT_POST, 'berles_id', FILTER_VALIDATE_INT);
+
+    if (!$berles_id || $berles_id <= 0) {
+        $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Érvénytelen bérlés ID a törléshez.</div>';
+    } else {
+        $stmt = $db->prepare("DELETE FROM berlesek WHERE berles_id = ?");
+        if ($stmt === false) {
+            $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba az SQL előkészítésekor (DELETE).</div>';
+            error_log("SQL Prepare Hiba (DELETE berlesek): " . $db->error);
+        } else {
+            $stmt->bind_param("i", $berles_id);
+            if ($stmt->execute()) {
+                if ($stmt->affected_rows > 0) {
+                    $_SESSION['uzenet'] = '<div class="alert alert-success" role="alert">Bérlés (ID: ' . $berles_id . ') sikeresen törölve!</div>';
+                } else {
+                    $_SESSION['uzenet'] = '<div class="alert alert-warning" role="alert">A törlés nem sikerült (lehet, hogy a bérlés ID már nem létezett).</div>';
+                }
+            } else {
+                $_SESSION['uzenet'] = '<div class="alert alert-danger" role="alert">Hiba a bérlés törlésekor: ' . htmlspecialchars($stmt->error) . '</div>';
+                error_log("SQL Execute Hiba (DELETE berlesek): " . $stmt->error);
+            }
+            $stmt->close();
+        }
+    }
+    // Átirányítás PRG minta szerint
+    header("Location: ./admin_berlesek.php");
+    exit;
+}
+
 
 // --- Bérlések lekérdezése a táblázathoz ---
 $berlesek = []; // Alapértelmezett üres tömb
 $fetch_error = null; // Hibaüzenet a lekérdezéshez
 
-if (!$db_hiba) { // Csak akkor próbálkozunk, ha van kapcsolat
-    // SQL lekérdezés JOIN-okkal a kapcsolódó adatokhoz (jármű gyártó/típus, felhasználó név)
-    // Fontos: A felhasználók táblájának és oszlopneveinek helyesnek kell lenniük!
-    // Példa: feltételezzük, hogy van `felhasznalok` tábla `felhasznalo_id`-vel és `nev`-vel.
+// Csak akkor próbálkozunk lekérdezni, ha nincs adatbázis kapcsolati hiba
+if (!isset($db->connect_error)) {
     $sql = "SELECT
                 b.berles_id, b.tol, b.ig,
                 j.gyarto, j.tipus,
@@ -39,19 +165,23 @@ if (!$db_hiba) { // Csak akkor próbálkozunk, ha van kapcsolat
             LEFT JOIN felhasznalo f ON b.felhasznalo = f.felhasznalo_nev -- JOIN a 'felhasznalo' táblához a felhasználónév alapján
             ORDER BY b.tol DESC";
 
-$result = $db->query($sql);
+    $result = $db->query($sql);
 
-if ($result) {
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $berlesek[] = $row;
+    if ($result) {
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $berlesek[] = $row;
+            }
         }
+        // Nem hiba, ha nincs eredmény, csak üres a tömb
+        $result->free();
+    } else {
+        $fetch_error = "Hiba a bérlések lekérdezése során: " . htmlspecialchars($db->error);
+        error_log("SQL Hiba (bérlések lekérdezése): " . $db->error);
     }
-    $result->free();
 } else {
-    $fetch_error = "Hiba a bérlések lekérdezése során: " . htmlspecialchars($db->error);
-    error_log("SQL Hiba (bérlések lekérdezése): " . $db->error);
-}
+    // Ha már a kapcsolatnál hiba volt, azt jelezzük
+    $fetch_error = "Az adatbázis kapcsolat hibája miatt a bérlések nem tölthetők be.";
 }
 
 ?>
@@ -67,7 +197,6 @@ if ($result) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Bérlések Kezelése</title>
-    
 </head>
 
 <body>
@@ -82,156 +211,168 @@ if ($result) {
         </nav>
     </header>
 
-    <div class="container mt-4">
-        <h1>Bérlések Kezelése</h1>
+    <h1>Bérlések Kezelése</h1>
 
-        <div class="menu">
-        <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek">Járművek
-        </button></a>
-        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag">Jogosultságok 
-        </button></a>
-        <a href="./admin_berlesek.php"><button type="submit" id="berlesek">Bérlések 
-        </button></a>
+    <div class="menu">
+        <a href="./autok_kezeles.php"><button type="submit" id="jarmuvek">Járművek </button></a>
+        <a href="./admin_jogosultsag.php"><button type="submit" id="jogosultsag">Jogosultságok</button></a>
+        <a href="./admin_berlesek.php"><button type="submit" id="berlesek">Bérlések</button></a>
         <a href="./admin_velemenyek.php"><button type="submit">Vélemények</button></a>
         <a href="./admin_akciok.php"><button type="submit">Akciók</button></a>
     </div>
-        <hr>
+    <hr>
 
-        <!-- Üzenetek helye -->
-        <div id="uzenet-container">
-            <?php
-            if (isset($_SESSION['uzenet'])) {
-                // A session üzenet már tartalmazza a teljes alert div-et
-                echo $_SESSION['uzenet'];
-                unset($_SESSION['uzenet']); // Üzenet törlése a megjelenítés után
-            }
-            if ($db_hiba) {
-                 echo '<div class="alert alert-danger" role="alert">' . $db_hiba . '</div>';
-            }
-            if ($fetch_error) {
-                 echo '<div class="alert alert-warning" role="alert">' . $fetch_error . '</div>';
-            }
-            ?>
-        </div>
+    <!-- Üzenetek helye -->
+    <div id="uzenet-container">
+        <?php
+        if (isset($_SESSION['uzenet'])) {
+            echo $_SESSION['uzenet'];
+            unset($_SESSION['uzenet']); // Üzenet törlése a megjelenítés után
+        }
+        // A fetch_error most már csak lekérdezési hibát jelez, a kapcsolati hibát a session üzenet kezeli fentebb
+        if ($fetch_error && !isset($db->connect_error)) {
+            echo '<div class="alert alert-warning" role="alert">' . $fetch_error . '</div>';
+        }
+        ?>
+    </div>
 
-        
-            <!-- Új bérlés form -->
-           
-                 <h2>Új bérlés hozzáadása</h2>
-                 <!-- Az action az API kezelőre mutat -->
-                 <form action="./api.php" method="POST" class="form" novalidate>
-                     <!-- Nincs szükség _method-ra POST esetén -->
-                     
-                         <label for="jarmu_id" class="form-label">Jármű ID:</label>
-                         <input type="number"  id="jarmu_id" name="jarmu_id" required min="1">
-                         <div class="invalid-feedback">Jármű ID megadása kötelező.</div>
-                    
-                         <label for="felhasznalo_id" class="form-label">Felhasználó ID:</label>
-                         <input type="number"  id="felhasznalo_id" name="felhasznalo_id" required min="1">
-                          <div class="invalid-feedback">Felhasználó ID megadása kötelező.</div>
-                   
-                         <label for="tol" class="form-label">Átvétel időpontja:</label>
-                         <input type="date" " id="tol" name="tol" required>
-                          <div class="invalid-feedback">Átvétel dátumának megadása kötelező.</div>
-                 
-                         <label for="ig" class="form-label">Leadás dátuma:</label>
-                         <input type="date"  id="ig" name="ig" required>
-                          <div class="invalid-feedback">Leadás dátumának megadása kötelező.</div>
-                     
-                     <button type="submit" class="btn btn-success">Hozzáadás🆙</button>
-                 </form>
-           
+    <h2>Új bérlés hozzáadása</h2>
+    <?php if (isset($db->connect_error)): ?>
+        <div class="alert alert-danger">Az adatbázis kapcsolat hibás, új bérlés nem adható hozzá.</div>
+    <?php else: ?>
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="form needs-validation" novalidate>
 
-            <!-- Bérlés módosítása form -->
-            
-                 <h2>Bérlés módosítása</h2>
-                 <!-- Az action az API kezelőre mutat -->
-                 <form action="./api.php" method="POST" class="form" novalidate>
-                     <!-- Rejtett mező a PUT metódus jelzésére -->
-                     <input type="hidden" name="_method" value="PUT">
-                     
-                         <label for="edit_berles_id" class="form-label">Módosítandó Bérlés ID:</label>
-                         <input type="number"  id="edit_berles_id" name="berles_id" required min="1">
-                          <div class="invalid-feedback">Módosítandó Bérlés ID megadása kötelező.</div>
-                  
-                         <label for="edit_jarmu_id" class="form-label">Új Jármű ID:</label>
-                         <input type="number"  id="edit_jarmu_id" name="jarmu_id" required min="1">
-                         <div class="invalid-feedback">Jármű ID megadása kötelező.</div>
-                    
-                         <label for="edit_felhasznalo_id" class="form-label">Új Felhasználó ID:</label>
-                         <input type="number"  id="edit_felhasznalo_id" name="felhasznalo_id" required min="1">
-                         <div class="invalid-feedback">Felhasználó ID megadása kötelező.</div>
-                    
-                         <label for="edit_tol" class="form-label">Új Átvétel időpontja:</label>
-                         <input type="date"  id="edit_tol" name="tol" required>
-                          <div class="invalid-feedback">Átvétel dátumának megadása kötelező.</div>
-                    
-                         <label for="edit_ig" class="form-label">Új Leadás dátuma:</label>
-                         <input type="date"  id="edit_ig" name="ig" required>
-                         <div class="invalid-feedback">Leadás dátumának megadása kötelező.</div>
-                    
-                     <button type="submit" class="btn btn-primary">Módosítás💾</button>
-                 </form>
-            
-        
-        <hr>
+            <label for="jarmu_id" class="form-label">Jármű:</label>
+            <select name="jarmu_id" required>
+                <?php
+                $jarmuvek_sql = "SELECT jarmu_id, gyarto, tipus FROM jarmuvek";
+                $jarmuvek = adatokLekerese($jarmuvek_sql);
+                if (is_array($jarmuvek) && !empty($jarmuvek)) {
+                    foreach ($jarmuvek as $j) {
+                        echo '<option value="' . $j['jarmu_id'] . '">' . $j['gyarto'] . ' ' . $j['tipus'] . '</option>';
+                    }
+                } else {
+                    echo '<option value="">Nincsenek elérhető járművek</option>';
+                }
+                ?>
+            </select>
 
-        <h2>Aktuális Bérlések</h2>
-        <div class="table-container">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Gyártó</th>
-                        <th>Típus</th>
-                        <th>Bérlő Neve</th>
-                        <th>Átvétel</th>
-                        <th>Leadás</th>
-                        <th>Művelet</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($berlesek)): ?>
-                        <?php foreach ($berlesek as $berles): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($berles['berles_id']) ?></td>
-                                <td><?= htmlspecialchars($berles['gyarto'] ?? 'N/A') ?></td>
-                                <td><?= htmlspecialchars($berles['tipus'] ?? 'N/A') ?></td>
-                                <td><?= htmlspecialchars($berles['felhasznalo_teljes_nev'] ?? 'N/A') ?> (<?= htmlspecialchars($berles['berlo_felhasznalonev']) ?>)</td>
-                                <td><?= htmlspecialchars($berles['tol']) ?></td>
-                                <td><?= htmlspecialchars($berles['ig']) ?></td>
-                                <td>
-                                    <!-- Törlés form -->
-                                    <form action="./api.php" method="POST" class="delete-form" onsubmit="return confirm('Biztosan törölni szeretné ezt a bérlést?');">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <input type="hidden" name="berles_id" value="<?= htmlspecialchars($berles['berles_id']) ?>">
-                                        <button type="submit" title="Törlés">Törlés🗑️</button>
-                                    </form>
-                                    <!-- Opcionális: Módosítás link egy külön oldalra -->
-                                    <!-- <a href="edit_berles_page.php?id=<?= htmlspecialchars($berles['berles_id']) ?>" class="btn btn-warning btn-sm" title="Módosítás">✎</a> -->
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php elseif (!$fetch_error && !$db_hiba): ?>
+            <label for="felhasznalo" class="form-label">Bérlő neve:</label>
+            <select name="felhasznalo" id="felhasznalo" required>
+                <option value="">-- Kérem válasszon --</option>
+                <?php
+
+                $user_sql = "SELECT felhasznalo_nev, nev FROM felhasznalo ORDER BY nev";
+                $user = adatokLekerese($user_sql);
+                if (is_array($user) && !empty($user)) {
+                    foreach ($user as $u) {
+                        echo '<option value="' . $u['felhasznalo_nev'] . '">' . $u['nev'] . ' (' . $u['felhasznalo_nev'] . ')</option>';
+                    }
+                } else {
+                    echo '<option value="">Nincsenek elérhető járművek</option>';
+                }
+
+                ?>
+            </select>
+
+            <label for="tol" class="form-label">Átvétel időpontja:</label>
+            <input type="date" id="tol" name="tol" required>
+
+
+            <label for="ig" class="form-label">Leadás dátuma:</label>
+            <input type="date" id="ig" name="ig" required>
+
+
+            <button type="submit" name="add_berles" class="btn btn-success">Hozzáadás</button>
+        </form>
+    <?php endif; ?>
+    <hr>
+
+    <h2>Aktuális Bérlések</h2>
+    <div class="table-container">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Gyártó</th>
+                    <th>Típus</th>
+                    <th>Bérlő Neve</th>
+                    <th>Átvétel</th>
+                    <th>Leadás</th>
+                    <th>Művelet</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($berlesek)): ?>
+                    <?php foreach ($berlesek as $berles): ?>
                         <tr>
-                            <td colspan="7" class="text-center">Nincsenek aktuális bérlések.</td>
+                            <td><?= htmlspecialchars($berles['berles_id']) ?></td>
+                            <td><?= htmlspecialchars($berles['gyarto'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($berles['tipus'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($berles['felhasznalo_teljes_nev'] ?? 'N/A') ?> (<?= htmlspecialchars($berles['berlo_felhasznalonev']) ?>)</td>
+                            <td><?= htmlspecialchars($berles['tol']) ?></td>
+                            <td><?= htmlspecialchars($berles['ig']) ?></td>
+                            <td>
+                            <td>
+                                <input type="hidden" name="berles_id" value="<?php echo $berles['berles_id']; ?>">
+                                <a href="./admin_berlesek_mod.php?id=<?= $berles['berles_id'] ?>"><button type="button" class="modositas_button">Módosítás</button></a>
+                            </td>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm torles_button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmDeleteModal"
+                                    data-berles-id="<?= htmlspecialchars($berles['berles_id']) ?>"
+                                    title="Törlés">
+                                    Törlés
+                                </button>
+                            </td>
                         </tr>
-                    <?php else: ?>
-                         <tr>
-                            <td colspan="7" class="text-center text-danger">Hiba történt a bérlések betöltésekor.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
-    </div> <!-- /.container -->
+                    <?php endforeach; ?>
+                <?php elseif (!$fetch_error && !isset($db->connect_error)): ?>
+                    <tr>
+                        <td colspan="7" class="text-center">Nincsenek aktuális bérlések.</td>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="7" class="text-center text-danger">Hiba történt a bérlések betöltésekor vagy az adatbázis nem elérhető.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 
     <footer class="container mt-5 mb-3 text-center text-muted">
         © <?= date('Y M') ?> R&J - Admin
     </footer>
 
-    <!-- Bootstrap Bundle JS (csak ha kell pl. dropdownokhoz, de a validációhoz nem feltétlenül) -->
+    <!-- Törlés Megerősítő Modal (Bootstrap) -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Törlés Megerősítése</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Biztosan törölni szeretné ezt a bérlést? Ez a művelet nem vonható vissza.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtnActual">Törlés</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rejtett Form a Törléshez -->
+    <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" id="deleteForm" style="display: none;">
+        <input type="hidden" name="berles_id" id="deleteBerlesId">
+        <button type="submit" name="delete_berles" id="submitDeleteButton"></button>
+    </form>
+
+
+    <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
@@ -246,21 +387,82 @@ if ($result) {
             });
         }
 
-        // Egyszerű Bootstrap kliens oldali validáció inicializálása
-         (() => {
-           'use strict'
-           const forms = document.querySelectorAll('.needs-validation')
-           Array.from(forms).forEach(form => {
-             form.addEventListener('submit', event => {
-               if (!form.checkValidity()) {
-                 event.preventDefault()
-                 event.stopPropagation()
-               }
-               form.classList.add('was-validated')
-             }, false)
-           })
-         })()
+        // Bootstrap kliens oldali validáció inicializálása
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    // Dátum összehasonlítás (opcionális kliens oldali)
+                    const tolInput = form.querySelector('#tol');
+                    const igInput = form.querySelector('#ig');
+                    if (tolInput && igInput && tolInput.value && igInput.value && igInput.value < tolInput.value) {
+                        igInput.setCustomValidity('A leadás dátuma nem lehet korábbi az átvételnél.');
+                        event.preventDefault();
+                        event.stopPropagation();
+                    } else if (igInput) {
+                        igInput.setCustomValidity(''); // Hiba törlése
+                    }
+
+                    form.classList.add('was-validated')
+                }, false);
+
+                // Dátumhiba törlése gépeléskor
+                const igInput = form.querySelector('#ig');
+                if (igInput) {
+                    igInput.addEventListener('input', () => igInput.setCustomValidity(''));
+                }
+            })
+        })();
+
+        // Törlés Modal Kezelése
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedBerlesId = null;
+            const confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal')); // Cache modal instance if needed elsewhere
+            const deleteBerlesIdInput = document.getElementById('deleteBerlesId');
+            const submitDeleteButton = document.getElementById('submitDeleteButton');
+
+            // Minden törlés gomb eseménykezelése a táblázatban
+            document.querySelectorAll('.torles_button').forEach(button => {
+                button.addEventListener('click', function() {
+                    selectedBerlesId = this.getAttribute('data-berles-id');
+                    // A modal megjelenítése már a data-bs-toggle/target attribútumokkal történik
+                });
+            });
+
+            // A modálon belüli "Törlés" gomb eseménykezelése
+            const confirmDeleteBtnActual = document.getElementById('confirmDeleteBtnActual');
+            if (confirmDeleteBtnActual) {
+                confirmDeleteBtnActual.addEventListener('click', function() {
+                    if (selectedBerlesId && deleteBerlesIdInput && submitDeleteButton) {
+                        deleteBerlesIdInput.value = selectedBerlesId;
+                        submitDeleteButton.click(); // A rejtett form elküldése
+                    } else {
+                        console.error("Hiba: Nem található a törlendő ID vagy a rejtett form elemei.");
+                        // Esetleg egy hibaüzenet a felhasználónak
+                    }
+                    // Modal bezárása manuálisan, ha a form küldés nem irányít át azonnal
+                    // confirmDeleteModal.hide(); // Erre általában nincs szükség a form submit miatt
+                });
+            }
+
+            // Opcionális: Modal elrejtésekor töröljük a kiválasztott ID-t
+            const modalElement = document.getElementById('confirmDeleteModal');
+            if (modalElement) {
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    selectedBerlesId = null;
+                    if (deleteBerlesIdInput) {
+                        deleteBerlesIdInput.value = ''; // Ürítjük a rejtett inputot is
+                    }
+                });
+            }
+        });
     </script>
 
 </body>
+
 </html>
