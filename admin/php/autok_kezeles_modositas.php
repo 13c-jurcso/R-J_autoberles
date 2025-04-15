@@ -429,7 +429,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($errors)) {
                 <label for="tipus">Típus:</label>
                 <input type="text" id="tipus" name="tipus" value="<?= htmlspecialchars($_POST['tipus'] ?? $car['tipus'] ?? '') ?>" required><br>
 
-                <label for="motor">Motor:</label>
+                <label for="motor">Hengerűrtartalom és motor Üzem:</label>
                 <input type="text" id="motor" name="motor" value="<?= htmlspecialchars($_POST['motor'] ?? $car['motor'] ?? '') ?>"><br>
 
                 <label for="felhasznalas_id">Felhasználási mód:</label>
@@ -455,10 +455,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($errors)) {
                     ?>
                 </select><br>
 
-                <label for="szerviz_id">Szerviz ID (opcionális):</label>
+                <label for="szerviz_id">Szerviz ID:</label>
                 <input type="number" id="szerviz_id" name="szerviz_id" value="<?= htmlspecialchars($_POST['szerviz_id'] ?? $car['szerviz_id'] ?? '') ?>" min="1"><br> <!-- min="1" ha csak pozitív ID lehet -->
 
-                <label for="gyartasi_ev">Gyártási év (opcionális):</label>
+                <label for="gyartasi_ev">Gyártási év:</label>
                 <?php
                 // Formátum beállítása YYYY-MM-DD -ra, POST érték használata hiba esetén
                 $display_gyartasi_ev = $_POST['gyartasi_ev'] ?? $car['gyartasi_ev'] ?? '';
@@ -482,7 +482,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($errors)) {
                 <label for="leiras">Leírás:</label>
                 <textarea name="leiras" id="message" rows="4"><?= htmlspecialchars($_POST['leiras'] ?? $car['leiras'] ?? '') ?></textarea><br>
 
-                <label for="ar">Ár (Ft):</label>
+                <label for="ar">Bérleti díj /nap:</label>
                 <input type="number" id="ar" name="ar" value="<?= htmlspecialchars($_POST['ar'] ?? $car['ar'] ?? '') ?>" required min="0" step="any"><br> <!-- step="any" a tizedesekhez, ha float -->
 
                  <!-- Képek Kezelése Szekció -->

@@ -97,32 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
         ?>
     </div>
 
-    <div class="regisztralas">
-        <h2>Felhasználó Regisztrálás</h2>
-        <form method="POST" class="form">
-            <label>Felhasználónév</label>
-            <input type="text" name="username">
-
-            <label>Teljes Név</label>
-            <input type="text" name="name">
-
-            <label>Email</label>
-            <input type="email" name="email">
-
-            <label>Jelszó</label>
-            <input type="password" name="jelszo">
-
-            <label>Jelszó újra</label>
-            <input type="password" name="jelszo_ujra">
-
-            <label>Számlázási cím</label>
-            <input type="text" name="szamlazasi_cim">
-
-            <button type="submit" name="regisztralas">Regisztrálás</button>
-        </form>
-    </div>
-    <hr>
-
     <!-- Jogosúltságok aloldal -->
     <div class="jogosultsagok">
         <h2>Jogosultság módosítása</h2>
@@ -161,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
                 $felhasznalok_listazasa_sql = "SELECT felhasznalo.felhasznalo_nev, felhasznalo.nev, felhasznalo.emailcim, felhasznalo.szamlazasi_cim, 
                                                 felhasznalo.husegpontok, felhasznalo.admin FROM felhasznalo;";
                 $felhasznalok_listazasa = adatokLekerese($felhasznalok_listazasa_sql);
-                echo '<table><tr><th>Felhasználónév</th><th>Teljsen név</th><th>Email</th><th>Számlázási cím</th><th>Hűségpontok</th><th>Admin</th><th>Művelet</th></tr>';
+                echo '<table><tr><th>Felhasználónév</th><th>Teljsen név</th><th>Email</th><th>Számlázási cím</th><th>Hűségpontok</th><th>Admin</th><th></th><th>Művelet</th></tr>';
                 if(is_array($felhasznalok_listazasa)){
                     foreach ($felhasznalok_listazasa as $f) {
                         echo '<tr><td>' . $f['felhasznalo_nev'] . '</td>';
@@ -170,6 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['felhasznalo_modositas
                         echo '<td>' . $f['szamlazasi_cim'] . '</td>';
                         echo '<td>' . $f['husegpontok'] . '</td>';
                         echo '<td>' . $f['admin'] . '</td>';
+                        echo '<td>
+                                <input type="hidden" name="felhasznalo_nev" value="' . $f['felhasznalo_nev'] . '">
+                                <a href="./admin_jog_mod.php?id=' . $f['felhasznalo_nev'] . '"><button type="button" class="modositas_button">Módosítás</button></a>
+                            </td>';
                         echo '<td>
                                 <button type="button" class="btn btn-danger torles_button" 
                                     data-bs-toggle="modal" 

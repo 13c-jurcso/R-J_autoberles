@@ -306,13 +306,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_jarmu']) && iss
         <h2>Jármű hozzáadása</h2>
         <form method="POST" enctype="multipart/form-data" class="form">
             <label for="gyarto">Gyártó:</label>
-            <input type="text" name="gyarto" required><br>
+            <input type="text" name="gyarto" placeholder="pl.: Opel" required><br>
 
             <label for="tipus">Típus:</label>
-            <input type="text" name="tipus" required><br>
+            <input type="text" name="tipus" placeholder="pl.: Astra" required><br>
 
-            <label for="motor">Motor:</label>
-            <input type="text" name="motor" required><br>
+            <label for="motor">Hengerűrtartalom és motor Üzem:</label>
+            <input type="text" name="motor" placeholder="pl.: 1.6 Hybrid" required><br>
 
             <label for="felhasznalas_id">Felhasználási mód:</label>
             <select name="felhasznalas_id">
@@ -331,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_jarmu']) && iss
             </select>
 
             <label for="szerviz_id">Műszaki lejárat:(Csak év)</label>
-            <input type="number" name="szerviz_id" required><br>
+            <input type="number" name="szerviz_id" placeholder="pl.: 2019" required><br>
 
             <label for="gyartasi_ev">Gyártási év:</label>
             <input type="date" name="gyartasi_ev" required><br>
@@ -340,8 +340,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_jarmu']) && iss
             <textarea name="leiras" id="message" rows="5" placeholder="Max 300 karakter, a kártyák egységes kinézete miatt!" maxlength="300" required oninput="updateCharCount()" required></textarea>
             <div id="charCount">0/300</div>
 
-            <label for="ar">Ár:</label>
-            <input type="number" name="ar" required><br>
+            <label for="ar">Bérleti díj /nap:</label>
+            <input type="number" name="ar" placeholder="pl.: 8900" required><br>
 
             <label for="kep_url">Képek:</label>
             <div class="mb-3">

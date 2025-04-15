@@ -168,3 +168,25 @@ body {
 #confirmDeleteBtnActual:hover {
     background-color: #b01b0f;
 }
+
+.password-section {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+.password-section legend {
+     font-weight: bold;
+     margin-bottom: 10px;
+     font-size: 1.1em;
+     width: auto; /* Override Bootstrap default */
+     float: none; /* Override Bootstrap default */
+     padding: 0; /* Override Bootstrap default */
+}
+.password-section .form-text {
+    margin-top: -10px; /* Közelebb a mezőhöz */
+    margin-bottom: 10px;
+    display: block;
+}
