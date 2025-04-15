@@ -155,7 +155,7 @@ $fetch_error = null; // Hibaüzenet a lekérdezéshez
 // Csak akkor próbálkozunk lekérdezni, ha nincs adatbázis kapcsolati hiba
 if (!isset($db->connect_error)) {
     $sql = "SELECT
-                b.berles_id, b.tol, b.ig,
+                b.berles_id, b.tol, b.ig, b.kifizetve,
                 j.gyarto, j.tipus,
                 f.nev AS felhasznalo_teljes_nev, -- A 'felhasznalo' tábla 'nev' oszlopa (teljes név)
                 b.felhasznalo AS berlo_felhasznalonev, -- A 'berlesek' tábla 'felhasznalo' oszlopa (felhasználónév)
@@ -289,8 +289,8 @@ if (!isset($db->connect_error)) {
     <hr>
 
     <h2>Aktuális Bérlések</h2>
-    <div class="table-container">
-        <table class="table table-striped table-hover">
+    <div class="tartalmi-resz">
+        <table border="1">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -299,6 +299,8 @@ if (!isset($db->connect_error)) {
                     <th>Bérlő Neve</th>
                     <th>Átvétel</th>
                     <th>Leadás</th>
+                    <th>Kifizetés</th>
+                    <th></th>
                     <th>Művelet</th>
                 </tr>
             </thead>
@@ -313,10 +315,21 @@ if (!isset($db->connect_error)) {
                             <td><?= htmlspecialchars($berles['tol']) ?></td>
                             <td><?= htmlspecialchars($berles['ig']) ?></td>
                             <td>
+                                <?php
+                                    // Ellenőrizzük a kifizetve értékét
+                                    if ($berles['kifizetve'] == 0) {
+                                        echo htmlspecialchars('helyszínen');
+                                    } elseif ($berles['kifizetve'] == 1) {
+                                        echo htmlspecialchars('utalással');
+                                    } else {
+                                        // Opcionális: Kezeld az egyéb (váratlan) értékeket, ha lehetnek
+                                        echo htmlspecialchars($berles['kifizetve']); // Vagy pl. echo 'Ismeretlen';
+                                    }
+                                ?>
+                            </td>
                             <td>
                                 <input type="hidden" name="berles_id" value="<?php echo $berles['berles_id']; ?>">
                                 <a href="./admin_berlesek_mod.php?id=<?= $berles['berles_id'] ?>"><button type="button" class="modositas_button">Módosítás</button></a>
-                            </td>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm torles_button"

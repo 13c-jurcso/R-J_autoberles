@@ -386,11 +386,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($errors)) {
                 <li><a href="../../php/index.php">Főoldal</a></li>
                 <li><a href="../../php/husegpontok.php">Hűségpontok</a></li>
                 <li><a href="../../php/jarmuvek.php">Gépjárművek</a></li>
-                <li><a href="./autok_kezeles.php">Járművek Kezelése</a></li>
             </ul>
         </nav>
     </header>
-    <h1>Módosítás</h1>
+    <h1>Jármű Módosítása: <?= htmlspecialchars(trim(($car['gyarto'] ?? '') . ' ' . ($car['tipus'] ?? ''))) ?></h1>
     <hr>
 
     <div>

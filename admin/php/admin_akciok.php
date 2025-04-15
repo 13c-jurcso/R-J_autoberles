@@ -1,8 +1,10 @@
 <?php
 include "./db_connection.php";
 include "./adatLekeres.php";
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
 require '../../php/src/PHPMailer.php';
 require '../../php/src/SMTP.php';
 require '../../php/src/Exception.php';
@@ -15,7 +17,8 @@ if ($_SESSION['admin'] == false) {
     exit();
 }
 // Felhasználók e-mail címeinek lekérdezése
-function sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday) {
+function sendAkcioEmail($jarmu_nev, $kedvezmeny_szazalek, $kezdete, $vege, $leiras, $is_black_friday)
+{
     global $db;
     $users_sql = "SELECT emailcim, nev FROM felhasznalo";
     $users = adatokLekerese($users_sql);
@@ -145,6 +148,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
 
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -152,10 +156,11 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
     <link rel="icon" href="../../admin_favicon.png" type="image/png">
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/admin.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
     <header>
         <div class="menu-toggle">☰ Menu</div>
@@ -203,7 +208,7 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
             </select>
 
             <label>Kedvezmény (%):</label>
-            <input type="number" name="kedvezmeny_szazalek" min="1" max="100" required>
+            <input type="number" name="kedvezmeny_szazalek" min="1" max="100" placeholder="pl.: 20" required>
 
             <label>Kezdete:</label>
             <input type="date" name="kezdete" required>
@@ -212,7 +217,8 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
             <input type="date" name="vege" required>
 
             <label>Leírás:</label>
-            <input type="text" name="leiras">
+            <textarea name="leiras" id="message" rows="5" placeholder="Max 100 karakter!" maxlength="100" required oninput="updateCharCount()" required></textarea>
+            <div id="charCount">0/100</div>
 
             <label><input type="checkbox" name="is_black_friday"> Black Friday akció</label>
 
@@ -326,8 +332,16 @@ $jarmuvek = adatokLekerese($jarmuvek_sql);
                 }
             });
         });
+
+        function updateCharCount() {
+            const textarea = document.getElementById("message");
+            const charCount = document.getElementById("charCount");
+            const currentLength = textarea.value.length;
+            charCount.textContent = `${currentLength}/100`;
+        }
     </script>
 
 </body>
+
 </html>
 <?php $db->close(); ?>

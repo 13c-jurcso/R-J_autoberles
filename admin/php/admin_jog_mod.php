@@ -211,7 +211,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_user'])) {
                 <li><a href="../../php/index.php">Főoldal</a></li>
                 <li><a href="../../php/husegpontok.php">Hűségpontok</a></li>
                 <li><a href="../../php/jarmuvek.php">Gépjárművek</a></li>
-                <li><a href="./autok_kezeles.php">Járművek Kezelése</a></li>
             </ul>
         </nav>
     </header>
